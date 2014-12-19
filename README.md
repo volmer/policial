@@ -1,5 +1,7 @@
 # Policial
 
+[![Build Status](https://travis-ci.org/volmer/policial.svg)](https://travis-ci.org/volmer/policial)
+
 *Policial* is a gem that investigates pull requests and accuses style guide
 violations. It is based on thoughtbot's [Hound project](https://github.com/thoughtbot/hound).
 
@@ -50,7 +52,7 @@ investigation.accuse
 
 ## Contributing
 
-1. Fork it ( https://github.com/[my-github-username]/policial/fork )
+1. Fork it ( https://github.com/volmer/policial/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
