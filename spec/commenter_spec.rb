@@ -2,7 +2,11 @@ require 'spec_helper'
 
 describe Policial::Commenter do
   subject { described_class.new(pull_request) }
-  let(:pull_request) { Policial::PullRequest.new('volmer/cerberus', 2, 'sha') }
+  let(:pull_request) do
+    Policial::PullRequest.new(
+      repo: 'volmer/cerberus', number: 2, head_sha: 'sha'
+    )
+  end
 
   describe '#comment_violation' do
     it 'adds a comment regarding the given violation to the pull request' do

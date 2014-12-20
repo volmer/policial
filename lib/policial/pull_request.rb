@@ -1,12 +1,13 @@
 module Policial
   # Public: A GibHub Pull Request.
   class PullRequest
-    attr_reader :repo, :number
+    attr_reader :repo, :number, :user
 
-    def initialize(repo, number, head_sha)
+    def initialize(repo:, number:, head_sha:, user: nil)
       @repo     = repo
       @number   = number
       @head_sha = head_sha
+      @user     = user
     end
 
     def comments

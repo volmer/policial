@@ -11,9 +11,10 @@ module Policial
 
     def pull_request
       @pull_request ||= PullRequest.new(
-        @payload['repository']['full_name'],
-        @payload['number'],
-        @payload['pull_request']['head']['sha']
+        repo: @payload['repository']['full_name'],
+        number: @payload['number'],
+        head_sha: @payload['pull_request']['head']['sha'],
+        user: @payload['pull_request']['user']['login']
       )
     end
 

@@ -18,6 +18,7 @@ describe Policial::PullRequestEvent do
       expect(pull_request.head_commit.sha).to eq(
         '498b81cd038f8a3ac02f035a8537b7ddcff38a81'
       )
+      expect(pull_request.user).to eq('volmerius')
     end
   end
 

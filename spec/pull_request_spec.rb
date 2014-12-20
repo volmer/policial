@@ -1,7 +1,14 @@
 require 'spec_helper'
 
 describe Policial::PullRequest do
-  subject { described_class.new('volmer/cerberus', 45, 'commitsha') }
+  subject do
+    described_class.new(
+      repo: 'volmer/cerberus',
+      number:  45,
+      head_sha: 'commitsha',
+      user: 'volmerius'
+    )
+  end
 
   describe '#repo' do
     it 'returns the repo name' do
@@ -12,6 +19,12 @@ describe Policial::PullRequest do
   describe '#number' do
     it 'returns the pull request number' do
       expect(subject.number).to eq(45)
+    end
+  end
+
+  describe '#user' do
+    it 'returns the pull request user' do
+      expect(subject.user).to eq('volmerius')
     end
   end
 

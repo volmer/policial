@@ -3,9 +3,11 @@
 [![Build Status](https://travis-ci.org/volmer/policial.svg)](https://travis-ci.org/volmer/policial)
 
 *Policial* is a gem that investigates pull requests and accuses style guide
-violations. It is based on thoughtbot's [Hound project](https://github.com/thoughtbot/hound).
-Currently it only investigates ruby code. You can setup your ruby code style rules by defining
-a `.rubocop.yml` file in you repo. Please see [RuboCop's README](https://github.com/bbatsov/rubocop).
+violations. It is based on thoughtbot's
+[Hound project](https://github.com/thoughtbot/hound).
+Currently it only investigates ruby code. You can setup your ruby code style
+rules by defining a `.rubocop.yml` file in you repo. Please see
+[RuboCop's README](https://github.com/bbatsov/rubocop).
 
 ## Installation
 
@@ -38,10 +40,14 @@ You start with a pull request which Policial will run an investigation
 against. You can setup a pull request manually:
 
 ```ruby
-pull_request = Policial::PullRequest.new('volmer/my_repo', 3, 'headsha')
+pull_request = Policial::PullRequest.new(
+  repo: 'volmer/my_repo',
+  number: 3,
+  head_sha: 'headsha'
+)
 ```
 
-Or you can extract a pull request from a 
+Or you can extract a pull request from a
 [GitHub `pull_request` webhook](https://developer.github.com/webhooks):
 
 ```ruby
