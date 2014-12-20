@@ -20,6 +20,14 @@ describe Policial::PullRequestEvent do
       )
       expect(pull_request.user).to eq('volmerius')
     end
+
+    context 'when payload is invalid' do
+      let(:payload) { 'not_a_valid_payload' }
+
+      it 'is nil' do
+        expect(subject.pull_request).to be_nil
+      end
+    end
   end
 
   describe '#should_investigate?' do
@@ -37,6 +45,14 @@ describe Policial::PullRequestEvent do
       subject.payload['action'] = 'closed'
 
       expect(subject.should_investigate?).to be false
+    end
+
+    context 'when payload is invalid' do
+      let(:payload) { 'not_a_valid_payload' }
+
+      it 'is false' do
+        expect(subject.should_investigate?).to be false
+      end
     end
   end
 

@@ -16,10 +16,14 @@ module Policial
         head_sha: @payload['pull_request']['head']['sha'],
         user: @payload['pull_request']['user']['login']
       )
+    rescue NoMethodError
+      nil
     end
 
     def should_investigate?
-      @payload['action'] == 'opened' || @payload['action'] == 'synchronize'
+      !pull_request.nil? && (
+        @payload['action'] == 'opened' || @payload['action'] == 'synchronize'
+      )
     end
   end
 end
