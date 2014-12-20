@@ -13,9 +13,8 @@ module Policial
         if config.file_to_exclude?(file.filename)
           []
         else
-          team.inspect_file(parsed_source(file)).map do |violation|
-            Violation.new(file, violation.line, violation.message)
-          end
+          offenses = team.inspect_file(parsed_source(file))
+          build_violations(offenses, file)
         end
       end
 
@@ -44,6 +43,17 @@ module Policial
 
       def rubocop_options
         { debug: true } if config['ShowCopNames']
+      end
+
+      def build_violations(offenses, file)
+        offenses.each_with_object({}) do |offense, violations|
+          if violations[offense.line]
+            violations[offense.line].add_messages([offense.message])
+          else
+            violations[offense.line] =
+              Violation.new(file, offense.line, offense.message)
+          end
+        end.values
       end
     end
   end
