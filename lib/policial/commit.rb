@@ -3,14 +3,13 @@ module Policial
   class Commit
     attr_reader :repo, :sha
 
-    def initialize(repo, sha, github)
+    def initialize(repo, sha)
       @repo = repo
-      @sha       = sha
-      @github    = github
+      @sha  = sha
     end
 
     def file_content(filename)
-      contents = @github.contents(@repo, path: filename, ref: @sha)
+      contents = Octokit.contents(@repo, path: filename, ref: @sha)
 
       if contents.try(:content)
         Base64.decode64(contents.content).force_encoding('UTF-8')

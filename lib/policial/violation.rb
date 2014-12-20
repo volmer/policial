@@ -5,10 +5,10 @@ module Policial
     attr_reader :line_number, :filename
 
     def initialize(file, line_number, message)
-      @filename = file.filename
-      @line = file.line_at(line_number)
+      @filename    = file.filename
+      @line        = file.line_at(line_number)
       @line_number = line_number
-      @messages = [message]
+      @messages    = [message]
     end
 
     def add_messages(messages)

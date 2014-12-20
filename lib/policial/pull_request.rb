@@ -14,13 +14,13 @@ module Policial
     end
 
     def files
-      @files ||= api.pull_request_files(@repo, @number).map do |file|
+      @files ||= Octokit.pull_request_files(@repo, @number).map do |file|
         build_commit_file(file)
       end
     end
 
     def head_commit
-      @head_commit ||= Commit.new(@repo, @head_sha, api)
+      @head_commit ||= Commit.new(@repo, @head_sha)
     end
 
     private
@@ -29,13 +29,9 @@ module Policial
       CommitFile.new(file, head_commit)
     end
 
-    def api
-      @api ||= Policial::GitHubApi.new
-    end
-
     def fetch_comments
       paginate do |page|
-        api.pull_request_comments(
+        Octokit.pull_request_comments(
           @repo,
           @number,
           page: page

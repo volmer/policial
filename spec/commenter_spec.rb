@@ -13,20 +13,18 @@ describe Policial::Commenter do
       )
       violation.add_messages(['violation_2'])
 
-      expected_params = [
-        'volmer/cerberus',
-        2,
+      request = stub_comment_request(
         'violation_1<br/>violation_2',
-        'sha',
-        'lib/octokit.rb',
-        42
-      ]
+        repo: 'volmer/cerberus',
+        pull_request: 2,
+        commit: 'sha',
+        file: 'lib/octokit.rb',
+        line: 42
+      )
 
-      expect_any_instance_of(Policial::GitHubApi)
-        .to receive(:create_pull_request_comment)
-        .with(*expected_params).and_return(true)
+      subject.comment_violation(violation)
 
-      expect(subject.comment_violation(violation)).to be true
+      expect(request).to have_been_requested
     end
   end
 end

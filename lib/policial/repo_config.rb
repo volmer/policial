@@ -6,7 +6,7 @@ module Policial
     end
 
     def enabled_for?(style_guide)
-      Policial.enabled_style_guides.include?(style_guide.class)
+      Policial::STYLE_GUIDES.include?(style_guide.class)
     end
 
     def for(style_guide)
