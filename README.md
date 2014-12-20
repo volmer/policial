@@ -4,8 +4,8 @@
 
 *Policial* is a gem that investigates pull requests and accuses style guide
 violations. It is based on thoughtbot's [Hound project](https://github.com/thoughtbot/hound).
-
-Currently it only investigates Ruby code throught [RuboCop](https://github.com/bbatsov/rubocop).
+Currently it only investigates ruby code. You can setup your ruby code style rules by defining
+a `.rubocop.yml` file in you repo. Please see [RuboCop's README](https://github.com/bbatsov/rubocop).
 
 ## Installation
 
@@ -25,20 +25,34 @@ Or install it yourself as:
 
 ## Usage
 
-First, you need to configure Policial with a GitHub access token:
+First, you need to set your GitHub credentials. For more information on
+this, please check [Octokit README](https://github.com/octokit/octokit.rb).
 
 ```ruby
-Policial.setup do |config|
-  config.github_access_token = 'myAccessToken'
+Octokit.configure do |c|
+  c.access_tokein = 'mygithubtoken666'
 end
 ```
 
-Then you can start running investigations based on pull request events.
-Once you get a event payload from a [GitHub `pull_request` webhook](https://developer.github.com/webhooks),
-you can instantiate an investigation:
+You start with a pull request which Policial will run an investigation
+against. You can setup a pull request manually:
 
 ```ruby
-investigation = Policial::Investigation.new(webhook_pull_request_payload)
+pull_request = Policial::PullRequest.new('volmer/my_repo', 3, 'headsha')
+```
+
+Or you can extract a pull request from a 
+[GitHub `pull_request` webhook](https://developer.github.com/webhooks):
+
+```ruby
+event = Policial::PullRequestEvent.new(webhook_payload)
+pull_request = event.pull_request
+```
+
+Now you can start an investigation:
+
+```ruby
+investigation = Policial::Investigation.new(pull_request)
 
 # Let's investigate this pull request...
 investigation.run
