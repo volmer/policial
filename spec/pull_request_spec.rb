@@ -27,11 +27,10 @@ describe Policial::PullRequest do
 
   describe '#comments' do
     it 'returns comments on pull request' do
-      expect_any_instance_of(Policial::GitHubApi)
-        .to receive(:pull_request_comments)
-        .with('volmer/cerberus', 4).and_return(:tons_of_comments)
+      stub_pull_request_comments_request('volmer/cerberus', 4)
 
-      expect(subject.comments).to eq(:tons_of_comments)
+      expect(subject.comments.size).to eq(4)
+      expect(subject.comments.first.body).to eq('Single quotes please.')
     end
   end
 

@@ -47,24 +47,4 @@ describe Policial::GitHubApi do
       expect(request).to have_been_requested
     end
   end
-
-  describe '#pull_request_comments' do
-    it 'returns comments added to pull request' do
-      pull_request = double(:pull_request, full_repo_name: 'volmer/cerberus')
-      pull_request_id = 253
-      expected_comment = "inline if's and while's are not violations?"
-      stub_pull_request_comments_request(
-        pull_request.full_repo_name,
-        pull_request_id
-      )
-
-      comments = api.pull_request_comments(
-        pull_request.full_repo_name,
-        pull_request_id
-      )
-
-      expect(comments.size).to eq(4)
-      expect(comments.first.body).to eq expected_comment
-    end
-  end
 end

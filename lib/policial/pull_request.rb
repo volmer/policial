@@ -10,7 +10,7 @@ module Policial
     end
 
     def comments
-      @comments ||= api.pull_request_comments(@repo, @number)
+      @comments ||= fetch_comments
     end
 
     def files
@@ -31,6 +31,33 @@ module Policial
 
     def api
       @api ||= Policial::GitHubApi.new
+    end
+
+    def fetch_comments
+      paginate do |page|
+        api.pull_request_comments(
+          @repo,
+          @number,
+          page: page
+        )
+      end
+    end
+
+    private
+
+    def paginate
+      page, results, all_pages_fetched = 1, [], false
+
+      until all_pages_fetched
+        if (page_results = yield(page)).empty?
+          all_pages_fetched = true
+        else
+          results += page_results
+          page += 1
+        end
+      end
+
+      results
     end
   end
 end

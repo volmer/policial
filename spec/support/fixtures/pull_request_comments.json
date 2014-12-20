@@ -27,7 +27,7 @@
       "type": "User",
       "site_admin": false
     },
-    "body": "inline if's and while's are not violations?",
+    "body": "Single quotes please.",
     "created_at": "2014-05-01T16:57:49Z",
     "updated_at": "2014-05-01T17:17:03Z",
     "html_url": "https://github.com/volmer/policial/pull/253#discussion_r12195368",
