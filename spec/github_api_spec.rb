@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-describe Policial::GithubApi do
-  let(:api) { Policial::GithubApi.new }
+describe Policial::GitHubApi do
+  let(:api) { Policial::GitHubApi.new }
 
   describe '#pull_request_files' do
     it 'returns changed files in a pull request' do

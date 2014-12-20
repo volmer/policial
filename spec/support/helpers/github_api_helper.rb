@@ -1,7 +1,7 @@
 require 'webmock/rspec'
 
 # Private: Helpers to stub GitHub calls.
-module GithubApiHelper
+module GitHubApiHelper
   def stub_pull_request_files_request(repo, pull_request)
     stub_request(
       :get,

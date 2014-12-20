@@ -30,7 +30,7 @@ module Policial
     end
 
     def api
-      @api ||= Policial::GithubApi.new
+      @api ||= Policial::GitHubApi.new
     end
   end
 end

@@ -27,7 +27,7 @@ describe Policial::PullRequest do
 
   describe '#comments' do
     it 'returns comments on pull request' do
-      expect_any_instance_of(Policial::GithubApi)
+      expect_any_instance_of(Policial::GitHubApi)
         .to receive(:pull_request_comments)
         .with('volmer/cerberus', 4).and_return(:tons_of_comments)
 
@@ -44,7 +44,7 @@ describe Policial::PullRequest do
     end
 
     before do
-      expect_any_instance_of(Policial::GithubApi)
+      expect_any_instance_of(Policial::GitHubApi)
         .to receive(:pull_request_files)
         .with('volmer/cerberus', 4).and_return(files)
     end

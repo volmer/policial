@@ -19,7 +19,7 @@ module Policial
     private
 
     def api
-      @api ||= GithubApi.new
+      @api ||= GitHubApi.new
     end
 
     def comment_body(violation)

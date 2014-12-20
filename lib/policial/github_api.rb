@@ -3,7 +3,7 @@ require 'base64'
 
 module Policial
   # Public: Wrapper that ecapsulates all calls to GitHub.
-  class GithubApi
+  class GitHubApi
     delegate :create_pull_request_comment,
              :contents,
              :pull_request_files,

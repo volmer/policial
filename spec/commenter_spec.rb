@@ -22,7 +22,7 @@ describe Policial::Commenter do
         42
       ]
 
-      expect_any_instance_of(Policial::GithubApi)
+      expect_any_instance_of(Policial::GitHubApi)
         .to receive(:create_pull_request_comment)
         .with(*expected_params).and_return(true)
 

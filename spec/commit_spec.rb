@@ -16,7 +16,7 @@ describe Policial::Commit do
       it 'does not error when linters try writing to disk' do
         text = '€25.00'
         file_contents = double(content: Base64.encode64(text))
-        github = double('GithubApi', contents: file_contents)
+        github = double('GitHubApi', contents: file_contents)
         commit = described_class.new('test/test', 'abc', github)
         tmp_file = Tempfile.new('foo', encoding: 'utf-8')
 
