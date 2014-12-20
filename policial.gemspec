@@ -17,5 +17,4 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'octokit', '~> 3.7'
   spec.add_dependency 'rubocop', '~> 0.2'
-  spec.add_dependency 'activesupport', '~> 4.1'
 end
