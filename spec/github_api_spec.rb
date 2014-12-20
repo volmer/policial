@@ -17,7 +17,7 @@ describe Policial::GithubApi do
     end
   end
 
-  describe '#add_pull_request_comment' do
+  describe '#create_pull_request_comment' do
     it 'adds comment to GitHub' do
       repo = 'test/repo'
       pull_request_number = 2
@@ -25,7 +25,6 @@ describe Policial::GithubApi do
       commit_sha = 'commitsha'
       file = 'test.rb'
       patch_position = 123
-      commit = double(:commit, repo_name: repo, sha: commit_sha)
 
       request = stub_comment_request(
         comment,
@@ -36,12 +35,13 @@ describe Policial::GithubApi do
         file: file
       )
 
-      api.add_pull_request_comment(
-        pull_request_number: pull_request_number,
-        commit: commit,
-        comment: comment,
-        filename: file,
-        patch_position: patch_position
+      api.create_pull_request_comment(
+        repo,
+        pull_request_number,
+        comment,
+        commit_sha,
+        file,
+        patch_position
       )
 
       expect(request).to have_been_requested
@@ -66,15 +66,5 @@ describe Policial::GithubApi do
       expect(comments.size).to eq(4)
       expect(comments.first.body).to eq expected_comment
     end
-  end
-
-  it 'returns the user teams' do
-    teams = ['volmer']
-    client = double(user_teams: teams)
-    allow(Octokit::Client).to receive(:new).and_return(client)
-
-    user_teams = api.user_teams
-
-    expect(user_teams).to eq teams
   end
 end

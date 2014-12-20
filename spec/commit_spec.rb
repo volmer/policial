@@ -5,7 +5,7 @@ describe Policial::Commit do
     context 'when content is returned from GitHub' do
       it 'returns content' do
         file_contents = double(content: Base64.encode64('some content'))
-        github = double(:github_api, file_contents: file_contents)
+        github = double(:github_api, contents: file_contents)
         commit = described_class.new('test/test', 'abc', github)
 
         expect(commit.file_content('test.rb')).to eq 'some content'
@@ -16,7 +16,7 @@ describe Policial::Commit do
       it 'does not error when linters try writing to disk' do
         text = '€25.00'
         file_contents = double(content: Base64.encode64(text))
-        github = double('GithubApi', file_contents: file_contents)
+        github = double('GithubApi', contents: file_contents)
         commit = described_class.new('test/test', 'abc', github)
         tmp_file = Tempfile.new('foo', encoding: 'utf-8')
 
@@ -27,7 +27,7 @@ describe Policial::Commit do
 
     context 'when nothing is returned from GitHub' do
       it 'returns blank string' do
-        github = double(:github_api, file_contents: nil)
+        github = double(:github_api, contents: nil)
         commit = described_class.new('test/test', 'abc', github)
 
         expect(commit.file_content('test.rb')).to eq ''
@@ -37,7 +37,7 @@ describe Policial::Commit do
     context 'when content is nil' do
       it 'returns blank string' do
         contents = double(:contents, content: nil)
-        github = double(:github_api, file_contents: contents)
+        github = double(:github_api, contents: contents)
         commit = described_class.new('test/test', 'abc', github)
 
         expect(commit.file_content('test.rb')).to eq ''
@@ -48,7 +48,7 @@ describe Policial::Commit do
       it 'returns blank string' do
         github = double(:github_api)
         commit = described_class.new('test/test', 'abc', github)
-        allow(github).to receive(:file_contents).and_raise(Octokit::NotFound)
+        allow(github).to receive(:contents).and_raise(Octokit::NotFound)
 
         expect(commit.file_content('test.rb')).to eq ''
       end

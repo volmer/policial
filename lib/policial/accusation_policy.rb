@@ -1,6 +1,6 @@
 module Policial
   # Public: Checks if a given pull request should be investigated or not.
-  class CommentingPolicy
+  class AccusationPolicy
     def initialize(pull_request)
       @pull_request = pull_request
     end

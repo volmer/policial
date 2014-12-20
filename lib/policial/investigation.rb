@@ -6,34 +6,30 @@ module Policial
   class Investigation
     attr_accessor :violations, :pull_request
 
-    def initialize(unparsed_data)
-      @payload      = Payload.new(unparsed_data)
-      @pull_request = PullRequest.new(@payload)
+    def initialize(pull_request)
+      @pull_request = pull_request
     end
 
     def run
-      return unless relevant_pull_request?
       @violations ||= StyleChecker.new(@pull_request).violations
     end
 
     def accuse
       return if @violations.blank?
 
+      commenter = Commenter.new(@pull_request)
+
       @violations.each do |violation|
-        if commenting_policy.allowed_for?(violation)
-          pull_request.comment_on_violation(violation)
+        if accusation_policy.allowed_for?(violation)
+          commenter.comment_violation(violation)
         end
       end
     end
 
     private
 
-    def commenting_policy
-      @commenting_policy ||= CommentingPolicy.new(pull_request)
-    end
-
-    def relevant_pull_request?
-      pull_request.opened? || pull_request.synchronize?
+    def accusation_policy
+      @accusation_policy ||= AccusationPolicy.new(@pull_request)
     end
   end
 end

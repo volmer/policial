@@ -13,7 +13,7 @@ module Policial
       config_file = style_guide.class::CONFIG_FILE
 
       if config_file
-        load_file(config_file[:path], config_file[:type])
+        load_file(config_file)
       else
         {}
       end
@@ -21,11 +21,11 @@ module Policial
 
     private
 
-    def load_file(file_path, file_type)
-      config_file_content = @commit.file_content(file_path)
+    def load_file(file)
+      config_file_content = @commit.file_content(file[:path])
 
       if config_file_content.present?
-        send("parse_#{file_type}", config_file_content)
+        send("parse_#{file[:type]}", config_file_content)
       else
         {}
       end

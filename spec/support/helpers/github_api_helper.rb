@@ -50,7 +50,7 @@ module GithubApiHelper
     stub_request(
       :post,
       url(repo, "/pulls/#{pull_request}/comments")
-    ).with(body: body.to_json).to_return(status: 200)
+    ).with(body: body.to_json, headers: request_headers).to_return(status: 200)
   end
   # rubocop:enable Metrics/ParameterLists
 

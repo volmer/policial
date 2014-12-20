@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Policial::CommentingPolicy do
+describe Policial::AccusationPolicy do
   describe '#allowed_for?' do
     context 'when line with violation has not been previously commented on' do
       it 'returns true' do

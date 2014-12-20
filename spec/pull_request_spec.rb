@@ -1,99 +1,68 @@
 require 'spec_helper'
 
 describe Policial::PullRequest do
-  subject { described_class.new(payload) }
+  subject { described_class.new('volmer/cerberus', 4, 'commitsha') }
 
-  describe '#opened?' do
-    context 'when payload action is opened' do
-      let(:payload) { payload_stub(action: 'opened') }
-
-      it 'returns true' do
-        expect(subject).to be_opened
-      end
-    end
-
-    context 'when payload action is not opened' do
-      let(:payload) { payload_stub(action: 'notopened') }
-
-      it 'returns false' do
-        expect(subject).not_to be_opened
-      end
+  describe '#repo' do
+    it 'returns the repo name' do
+      expect(subject.repo).to eq('volmer/cerberus')
     end
   end
 
-  describe '#synchronize?' do
-    context 'when payload action is synchronize' do
-      let(:payload) { payload_stub(action: 'synchronize') }
+  describe '#number' do
+    it 'returns the pull request number' do
+      expect(subject.number).to eq(4)
+    end
+  end
 
-      it 'returns true' do
-        expect(subject).to be_synchronize
-      end
+  describe '#head_commit' do
+    it 'contains the head SHA' do
+      expect(subject.head_commit.sha).to eq('commitsha')
     end
 
-    context 'when payload action is not synchronize' do
-      let(:payload) { payload_stub(action: 'notsynchronize') }
-
-      it 'returns false' do
-        expect(subject).not_to be_synchronize
-      end
+    it 'contains the repo name' do
+      expect(subject.head_commit.repo).to eq('volmer/cerberus')
     end
   end
 
   describe '#comments' do
     it 'returns comments on pull request' do
-      filename = 'spec/models/style_guide_spec.rb'
-      comment = double(:comment, position: 7, path: filename)
-      github = double(:github, pull_request_comments: [comment])
-      pull_request = pull_request_stub(github)
+      expect_any_instance_of(Policial::GithubApi)
+        .to receive(:pull_request_comments)
+        .with('volmer/cerberus', 4).and_return(:tons_of_comments)
 
-      comments = pull_request.comments
-
-      expect(comments.size).to eq(1)
-      expect(comments).to match_array([comment])
+      expect(subject.comments).to eq(:tons_of_comments)
     end
   end
 
-  describe '#comment_on_violation' do
-    it 'posts a comment to GitHub' do
-      payload = payload_stub
-      github = double(:github_client, add_pull_request_comment: nil)
-      pull_request = pull_request_stub(github, payload)
-      violation = violation_stub
-      commit = double('Commit')
-      allow(Policial::Commit).to receive(:new).and_return(commit)
-
-      pull_request.comment_on_violation(violation)
-
-      expect(github).to have_received(:add_pull_request_comment).with(
-        pull_request_number: payload.pull_request_number,
-        commit: commit,
-        comment: violation.messages.first,
-        filename: violation.filename,
-        patch_position: violation.patch_position
-      )
+  describe '#files' do
+    let(:files) do
+      [
+        double('file_1', filename: 'lib/code_1.rb'),
+        double('file_2', filename: 'lib/code_2.rb')
+      ]
     end
-  end
 
-  def violation_stub(options = {})
-    defaults =  {
-      messages: ['A comment'],
-      filename: 'test.rb',
-      patch_position: 123
-    }
-    double('Violation', defaults.merge(options))
-  end
+    before do
+      expect_any_instance_of(Policial::GithubApi)
+        .to receive(:pull_request_files)
+        .with('volmer/cerberus', 4).and_return(files)
+    end
 
-  def payload_stub(options = {})
-    defaults = {
-      full_repo_name: 'org/repo',
-      head_sha: '1234abcd',
-      pull_request_number: 5
-    }
-    double('Payload', defaults.merge(options))
-  end
+    it 'returns files on pull request' do
+      expect(subject.files.count).to eq(2)
+    end
 
-  def pull_request_stub(api, payload = payload_stub)
-    allow(Policial::GithubApi).to receive(:new).and_return(api)
-    described_class.new(payload)
+    describe 'the returned files' do
+      it 'has the proper filenames' do
+        expect(subject.files.first.filename).to eq('lib/code_1.rb')
+        expect(subject.files.last.filename).to eq('lib/code_2.rb')
+      end
+
+      it 'belongs to the pull request head commit' do
+        expect(subject.files.first.commit).to eq(subject.head_commit)
+        expect(subject.files.last.commit).to eq(subject.head_commit)
+      end
+    end
   end
 end

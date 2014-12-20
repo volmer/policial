@@ -3,7 +3,9 @@ require 'spec_helper'
 describe Policial::Investigation do
   subject do
     described_class.new(
-      File.read('spec/support/fixtures/pull_request_opened_event.json')
+      Policial::PullRequestEvent.new(JSON.parse(
+        File.read('spec/support/fixtures/pull_request_opened_event.json')
+      )).pull_request
     )
   end
 
