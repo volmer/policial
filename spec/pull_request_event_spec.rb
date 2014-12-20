@@ -22,9 +22,21 @@ describe Policial::PullRequestEvent do
     end
   end
 
-  describe '#head_sha' do
-    it 'returns the payload action' do
-      expect(subject.action).to eq('opened')
+  describe '#should_investigate?' do
+    it 'is true if the pull request was opened' do
+      expect(subject.should_investigate?).to be true
+    end
+
+    it 'is true if the pull request was synchronized' do
+      subject.payload['action'] = 'synchronize'
+
+      expect(subject.should_investigate?).to be true
+    end
+
+    it 'is false if the pull request was neither opened or synchronized' do
+      subject.payload['action'] = 'closed'
+
+      expect(subject.should_investigate?).to be false
     end
   end
 

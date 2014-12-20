@@ -18,8 +18,8 @@ module Policial
       )
     end
 
-    def action
-      @payload['action']
+    def should_investigate?
+      @payload['action'] == 'opened' || @payload['action'] == 'synchronize'
     end
   end
 end
