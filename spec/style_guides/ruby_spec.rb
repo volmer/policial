@@ -104,6 +104,21 @@ describe Policial::StyleGuides::Ruby do
     end
   end
 
+  describe '.config_file' do
+    it 'is the default RuboCop dotfile' do
+      expect(described_class.config_file).to eq('.rubocop.yml')
+    end
+
+    it 'can be overwritten' do
+      old_value = described_class.config_file
+
+      described_class.config_file = '.policial.yml'
+      expect(described_class.config_file).to eq('.policial.yml')
+
+      described_class.config_file = old_value
+    end
+  end
+
   def build_file(name, *lines)
     file = double('CommitFile', filename: name, content: lines.join("\n"))
     allow(file).to receive(:line_at) { |n| lines[n]  }

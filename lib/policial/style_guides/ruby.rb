@@ -4,10 +4,13 @@ module Policial
   module StyleGuides
     # Public: Determine Ruby style guide violations per-line.
     class Ruby < Base
-      CONFIG_FILE = {
-        path: '.rubocop.yml',
-        type: 'yaml'
-      }
+      class << self
+        attr_writer :config_file
+
+        def config_file
+          @config_file || RuboCop::ConfigLoader::DOTFILE
+        end
+      end
 
       def violations_in_file(file)
         if config.file_to_exclude?(file.filename)

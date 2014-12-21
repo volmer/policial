@@ -10,7 +10,7 @@ module Policial
     end
 
     def for(style_guide)
-      config_file = style_guide.class::CONFIG_FILE
+      config_file = style_guide.class.config_file
 
       if config_file
         load_file(config_file)
@@ -22,13 +22,9 @@ module Policial
     private
 
     def load_file(file)
-      config_file_content = @commit.file_content(file[:path])
+      config_file_content = @commit.file_content(file)
 
-      if config_file_content.present?
-        send("parse_#{file[:type]}", config_file_content)
-      else
-        {}
-      end
+      parse_yaml(config_file_content) || {}
     end
 
     def parse_yaml(content)
