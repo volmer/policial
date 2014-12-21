@@ -1,4 +1,4 @@
-# Policial
+# Policial :cop:
 
 [![Gem Version](https://badge.fury.io/rb/policial.svg)](http://badge.fury.io/rb/policial)
 [![Build Status](https://travis-ci.org/volmer/policial.svg)](https://travis-ci.org/volmer/policial)
@@ -33,7 +33,7 @@ this, please check [Octokit README](https://github.com/octokit/octokit.rb).
 
 ```ruby
 Octokit.configure do |c|
-  c.access_tokein = 'mygithubtoken666'
+  c.access_token = 'mygithubtoken666'
 end
 ```
 
