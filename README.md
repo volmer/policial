@@ -1,5 +1,6 @@
 # Policial
 
+[![Gem Version](https://badge.fury.io/rb/policial.svg)](http://badge.fury.io/rb/policial)
 [![Build Status](https://travis-ci.org/volmer/policial.svg)](https://travis-ci.org/volmer/policial)
 
 *Policial* is a gem that investigates pull requests and accuses style guide
