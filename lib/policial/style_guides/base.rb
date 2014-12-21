@@ -7,7 +7,7 @@ module Policial
       end
 
       def enabled?
-        @repo_config.enabled_for?(self)
+        @repo_config.enabled_for?(self.class)
       end
 
       def violations_in_file(_file)

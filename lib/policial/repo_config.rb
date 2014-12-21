@@ -5,12 +5,12 @@ module Policial
       @commit = commit
     end
 
-    def enabled_for?(style_guide)
-      Policial::STYLE_GUIDES.include?(style_guide.class)
+    def enabled_for?(style_guide_class)
+      Policial::STYLE_GUIDES.include?(style_guide_class)
     end
 
-    def for(style_guide)
-      config_file = style_guide.class.config_file
+    def for(style_guide_class)
+      config_file = style_guide_class.config_file
 
       if config_file
         load_file(config_file)

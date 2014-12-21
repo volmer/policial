@@ -2,13 +2,28 @@ require 'spec_helper'
 
 describe Policial::StyleGuides::Ruby do
   subject do
-    described_class.new(
-      double('RepoConfig', enabled_for?: true, for: custom_config)
-    )
+    described_class.new(Policial::RepoConfig.new(
+      Policial::Commit.new('volmer/cerberus', 'commitsha')
+    ))
   end
   let(:custom_config) { nil }
 
+  describe '#enabled?' do
+    it 'is true' do
+      expect(subject.enabled?).to be true
+    end
+  end
+
   describe '#violations_in_file' do
+    before do
+      stub_contents_request_with_content(
+        'volmer/cerberus',
+        sha: 'commitsha',
+        file: '.rubocop.yml',
+        content: custom_config.to_yaml
+      )
+    end
+
     it 'detects offenses to the Ruby community Style Guide' do
       file = build_file('test.rb', "\"I am naughty\"\n")
       violations = subject.violations_in_file(file)

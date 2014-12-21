@@ -4,19 +4,19 @@ describe Policial::Commit do
   subject { described_class.new('volmer/cerberus', 'commitsha') }
 
   describe '#file_content' do
-    let(:body) { nil }
+    let(:content) { '' }
 
     before do
-      stub_contents_request(
+      stub_contents_request_with_content(
         'volmer/cerberus',
         sha: 'commitsha',
         file: 'test.rb',
-        body: body
+        content: content
       )
     end
 
     context 'when content is returned from GitHub' do
-      let(:body) { { content: Base64.encode64('some content') }.to_json }
+      let(:content) { 'some content' }
 
       it 'returns content' do
         expect(subject.file_content('test.rb')).to eq('some content')
@@ -24,7 +24,7 @@ describe Policial::Commit do
     end
 
     context 'when file contains special characters' do
-      let(:body) { { content: Base64.encode64('€25.00') }.to_json }
+      let(:content) { '€25.00' }
 
       it 'does not error when linters try writing to disk' do
         tmp_file = Tempfile.new('foo', encoding: 'utf-8')
@@ -41,9 +41,9 @@ describe Policial::Commit do
     end
 
     context 'when content is nil' do
-      let(:body) { { content: nil }.to_json }
-
       it 'returns blank string' do
+        expect(Octokit).to receive(:contents).and_return(nil)
+
         expect(subject.file_content('test.rb')).to eq('')
       end
     end

@@ -13,16 +13,18 @@ module GitHubApiHelper
     )
   end
 
-  def stub_contents_request(repo, sha:, file:, body: nil, fixture: nil)
-    body ||= File.read("spec/support/fixtures/#{fixture}") if fixture
-
-    stub_request(
-      :get, url(repo, "/contents/#{file}", ref: sha)
-    ).with(headers: request_headers).to_return(
-      status: 200,
-      body: body,
-      headers: { 'Content-Type' => 'application/json; charset=utf-8' }
+  def stub_contents_request_with_content(repo, sha:, file:, content:)
+    body = JSON.generate(
+      content: Base64.encode64(content)
     )
+
+    stub_contents_request(repo, sha, file, body)
+  end
+
+  def stub_contents_request_with_fixture(repo, sha:, file:, fixture:)
+    body = File.read("spec/support/fixtures/#{fixture}")
+
+    stub_contents_request(repo, sha, file, body)
   end
 
   # rubocop:disable Metrics/ParameterLists
@@ -73,6 +75,16 @@ module GitHubApiHelper
       host: 'api.github.com',
       path: "/repos/#{repo}" + path,
       query: query.to_query.presence
+    )
+  end
+
+  def stub_contents_request(repo, sha, file, body)
+    stub_request(
+      :get, url(repo, "/contents/#{file}", ref: sha)
+    ).with(headers: request_headers).to_return(
+      status: 200,
+      body: body,
+      headers: { 'Content-Type' => 'application/json; charset=utf-8' }
     )
   end
 end

@@ -36,12 +36,16 @@ module Policial
       end
 
       def custom_config
-        RuboCop::Config.new(@repo_config.for(self), '').tap do |config|
-          config.add_missing_namespaces
-          config.make_excludes_absolute
+        custom = @repo_config.for(self.class)
+
+        if custom.is_a?(Hash)
+          RuboCop::Config.new(custom, '').tap do |config|
+            config.add_missing_namespaces
+            config.make_excludes_absolute
+          end
+        else
+          RuboCop::Config.new
         end
-      rescue NoMethodError
-        RuboCop::Config.new
       end
 
       def rubocop_options

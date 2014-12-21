@@ -2,39 +2,41 @@ require 'spec_helper'
 
 describe Policial::RepoConfig do
   subject { described_class.new(commit) }
-  let(:commit) { double('Commit') }
+  let(:commit) { Policial::Commit.new('volmer/cerberus', 'commitsha') }
+  let(:guide) { double('guide', config_file: '.policial.yml') }
 
   describe '#enabled_for?' do
     it 'returns true for StyleGuides::Ruby' do
-      expect(subject).to be_enabled_for(
-        Policial::StyleGuides::Ruby.new(subject)
-      )
+      expect(subject).to be_enabled_for(Policial::StyleGuides::Ruby)
     end
   end
 
   describe '#for' do
-    context 'when Ruby config file is specified' do
-      it 'returns parsed config' do
-        config_for_file('.rubocop.yml', <<-EOS.strip_heredoc)
-          StringLiterals:
-            EnforcedStyle: double_quotes
+    it 'is a Hash with the config from the file found on the repo' do
+      content_request_returns('DoubleQuotes: enabled')
 
-          LineLength:
-            Max: 90
-        EOS
-
-        result = subject.for(Policial::StyleGuides::Ruby.new(subject))
-
-        expect(result).to eq(
-          'StringLiterals' => { 'EnforcedStyle' => 'double_quotes' },
-          'LineLength' => { 'Max' => 90 }
-        )
-      end
+      expect(subject.for(guide)).to eq('DoubleQuotes' => 'enabled')
     end
 
-    def config_for_file(file_path, content)
-      allow(commit).to receive(:file_content).with(file_path)
-        .and_return(content)
+    it 'is empty if style guide class does not use a config file' do
+      guide = double('guide', config_file: nil)
+
+      expect(subject.for(guide)).to eq({})
     end
+
+    it 'is empty if the retrieved config file is invalid' do
+      content_request_returns('###')
+
+      expect(subject.for(guide)).to eq({})
+    end
+  end
+
+  def content_request_returns(content)
+    stub_contents_request_with_content(
+      'volmer/cerberus',
+      sha: 'commitsha',
+      file: '.policial.yml',
+      content: content
+    )
   end
 end

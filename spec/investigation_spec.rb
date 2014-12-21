@@ -12,13 +12,13 @@ describe Policial::Investigation do
   describe '#run' do
     it 'finds all violations present in the pull request' do
       stub_pull_request_files_request('volmer/cerberus', 2)
-      stub_contents_request(
+      stub_contents_request_with_fixture(
         'volmer/cerberus',
         sha: '498b81cd038f8a3ac02f035a8537b7ddcff38a81',
         file: '.rubocop.yml',
         fixture: 'config_contents.json'
       )
-      stub_contents_request(
+      stub_contents_request_with_fixture(
         'volmer/cerberus',
         sha: '498b81cd038f8a3ac02f035a8537b7ddcff38a81',
         file: 'config/unicorn.rb',
@@ -40,11 +40,6 @@ describe Policial::Investigation do
   describe '#accuse' do
     it 'add comments to the pull request regarding all current violations' do
       stub_pull_request_files_request('volmer/cerberus', 2)
-      stub_contents_request(
-        'volmer/cerberus',
-        sha: '498b81cd038f8a3ac02f035a8537b7ddcff38a81',
-        file: 'config/unicorn.rb'
-      )
       stub_pull_request_comments_request('volmer/cerberus', 2)
       comment_request_1 = stub_comment_request(
         'violation1',
