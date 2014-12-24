@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    policial (0.0.1)
+    policial (0.0.2)
       octokit (~> 3.7)
       rubocop (~> 0.2)
 
