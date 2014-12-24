@@ -9,7 +9,7 @@ module Policial
     end
 
     def file_content(filename)
-      contents = Octokit.contents(@repo, path: filename, ref: @sha)
+      contents = Policial.octokit.contents(@repo, path: filename, ref: @sha)
 
       if contents && contents.content
         Base64.decode64(contents.content).force_encoding('UTF-8')

@@ -4,6 +4,7 @@ require 'policial/accusation_policy'
 require 'policial/commenter'
 require 'policial/commit'
 require 'policial/commit_file'
+require 'policial/octokit_client'
 require 'policial/investigation'
 require 'policial/line'
 require 'policial/patch'
@@ -22,7 +23,7 @@ require 'policial/violation'
 # so you can configure GitHub credentials, enable/disable style guides
 # and more.
 module Policial
-  STYLE_GUIDES = [Policial::StyleGuides::Ruby]
+  extend OctokitClient
 
-  Octokit.auto_paginate = true
+  STYLE_GUIDES = [Policial::StyleGuides::Ruby]
 end

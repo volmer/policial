@@ -5,7 +5,7 @@ module GitHubApiHelper
   def stub_pull_request_files_request(repo, pull_request)
     stub_request(
       :get,
-      url(repo, "/pulls/#{pull_request}/files", per_page: 100)
+      url(repo, "/pulls/#{pull_request}/files")
     ).with(headers: request_headers).to_return(
       status: 200,
       body: File.read('spec/support/fixtures/pull_request_files.json'),

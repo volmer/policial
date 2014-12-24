@@ -15,7 +15,9 @@ module Policial
     end
 
     def files
-      @files ||= Octokit.pull_request_files(@repo, @number).map do |file|
+      @files ||= Policial.octokit.pull_request_files(
+        @repo, @number
+      ).map do |file|
         build_commit_file(file)
       end
     end
@@ -32,7 +34,7 @@ module Policial
 
     def fetch_comments
       paginate do |page|
-        Octokit.pull_request_comments(
+        Policial.octokit.pull_request_comments(
           @repo,
           @number,
           page: page

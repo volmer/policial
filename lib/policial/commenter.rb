@@ -6,7 +6,7 @@ module Policial
     end
 
     def comment_violation(violation)
-      Octokit.create_pull_request_comment(
+      Policial.octokit.create_pull_request_comment(
         @pull_request.repo,
         @pull_request.number,
         comment_body(violation),

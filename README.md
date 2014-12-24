@@ -28,52 +28,57 @@ Or install it yourself as:
 
 ## Usage
 
-First, you need to set your GitHub credentials. For more information on
-this, please check [Octokit README](https://github.com/octokit/octokit.rb).
+1. You might need to instantiate an Octokit client with your GitHub
+  credentials. For more information on this please check the
+  [Octokit README](https://github.com/octokit/octokit.rb).
 
-```ruby
-Octokit.configure do |c|
-  c.access_token = 'mygithubtoken666'
-end
-```
+  ```ruby
+  Policial.octokit = Octokit::Client.new(access_token: 'mygithubtoken666')
+  ```
+  Ignore this step if you want Policial to use the global Octokit configuration.
 
-You start with a pull request which Policial will run an investigation
-against. You can setup a pull request manually:
 
-```ruby
-pull_request = Policial::PullRequest.new(
-  repo: 'volmer/my_repo',
-  number: 3,
-  head_sha: 'headsha'
-)
-```
+2. Let's investigate! Start with a pull request which Policial will run an
+  investigation against. You can setup a pull request manually:
 
-Or you can extract a pull request from a
-[GitHub `pull_request` webhook](https://developer.github.com/webhooks):
+  ```ruby
+  pull_request = Policial::PullRequest.new(
+    repo: 'volmer/my_repo',
+    number: 3,
+    head_sha: 'headsha'
+  )
+  ```
 
-```ruby
-event = Policial::PullRequestEvent.new(webhook_payload)
-pull_request = event.pull_request
-```
+  Or you can extract a pull request from a
+  [GitHub `pull_request` webhook](https://developer.github.com/webhooks):
 
-Now you can start an investigation:
+  ```ruby
+  event = Policial::PullRequestEvent.new(webhook_payload)
+  pull_request = event.pull_request
+  ```
 
-```ruby
-investigation = Policial::Investigation.new(pull_request)
+3. Now you can run the investigation:
 
-# Let's investigate this pull request...
-investigation.run
+  ```ruby
+  investigation = Policial::Investigation.new(pull_request)
 
-# Want to know the violations found?
-investigation.violations
+  # Let's investigate this pull request...
+  investigation.run
 
-# Hurry, post comments about those violations on the pull request!
-investigation.accuse
-```
+  # Want to know the violations found?
+  investigation.violations
+  ```
+
+4. Hurry, post comments about those violations on the pull request!
+  ```ruby
+  investigation.accuse
+  ```
+  The result are comments like this on each line that contains violations:
+  ![image](https://cloud.githubusercontent.com/assets/301187/5545861/d5c3da76-8afe-11e4-8c15-341b01f3b820.png)
 
 ## Contributing
 
-1. Fork it ( https://github.com/volmer/policial/fork )
+1. Fork it
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
