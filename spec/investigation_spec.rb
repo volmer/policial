@@ -10,14 +10,18 @@ describe Policial::Investigation do
   end
 
   describe '#run' do
-    it 'finds all violations present in the pull request' do
+    before do
       stub_pull_request_files_request('volmer/cerberus', 2)
+
       stub_contents_request_with_fixture(
         'volmer/cerberus',
         sha: '498b81cd038f8a3ac02f035a8537b7ddcff38a81',
         file: '.rubocop.yml',
         fixture: 'config_contents.json'
       )
+    end
+
+    it 'finds and returns all violations present in the pull request' do
       stub_contents_request_with_fixture(
         'volmer/cerberus',
         sha: '498b81cd038f8a3ac02f035a8537b7ddcff38a81',
@@ -25,7 +29,7 @@ describe Policial::Investigation do
         fixture: 'contents_with_violations.json'
       )
 
-      subject.run
+      expect(subject.run).to eq(subject.violations)
 
       messages = subject.violations.map(&:messages).flatten
 
@@ -34,6 +38,17 @@ describe Policial::Investigation do
         'arguments.',
         'Trailing whitespace detected.'
       ])
+    end
+
+    it 'returns empty if no violations are found' do
+      stub_contents_request_with_fixture(
+        'volmer/cerberus',
+        sha: '498b81cd038f8a3ac02f035a8537b7ddcff38a81',
+        file: 'config/unicorn.rb',
+        fixture: 'contents.json'
+      )
+
+      expect(subject.run).to be_empty
     end
   end
 
