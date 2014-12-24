@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'tempfile'
 
 describe Policial::Commit do
   subject { described_class.new('volmer/cerberus', 'commitsha') }

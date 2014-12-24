@@ -70,5 +70,11 @@ describe Policial::Investigation do
       expect(comment_request_1).to have_been_requested
       expect(comment_request_2).to have_been_requested
     end
+
+    it 'does nothing if there are no violations' do
+      subject.violations = nil
+
+      expect(subject.accuse).to be_nil
+    end
   end
 end

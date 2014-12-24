@@ -1,6 +1,4 @@
 require 'webmock/rspec'
-require 'active_support'
-require 'active_support/core_ext'
 require 'policial'
 
 require 'support/helpers/github_api_helper'

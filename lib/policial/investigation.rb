@@ -15,7 +15,7 @@ module Policial
     end
 
     def accuse
-      return if @violations.blank?
+      return if @violations.nil?
 
       commenter = Commenter.new(@pull_request)
 

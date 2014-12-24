@@ -60,7 +60,7 @@ describe Policial::CommitFile do
   end
 
   def commit_file(options = {})
-    file = double(:file, options.reverse_merge(patch: '', filename: 'test.rb'))
+    file = double(:file, { patch: '', filename: 'test.rb' }.merge(options))
     commit = double(
       :commit,
       repo_name: 'test/test',
