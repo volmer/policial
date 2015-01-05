@@ -10,8 +10,10 @@ describe Policial::Commenter do
 
   describe '#comment_violation' do
     it 'adds a comment regarding the given violation to the pull request' do
+      line = double('line', patch_position: 56)
+
       violation = Policial::Violation.new(
-        double('file', filename: 'lib/octokit.rb', line_at: ''),
+        double('file', filename: 'lib/octokit.rb', line_at: line),
         42,
         'violation_1'
       )
@@ -23,7 +25,7 @@ describe Policial::Commenter do
         pull_request: 2,
         commit: 'sha',
         file: 'lib/octokit.rb',
-        line: 42
+        line: 56
       )
 
       subject.comment_violation(violation)

@@ -12,7 +12,7 @@ module Policial
         comment_body(violation),
         @pull_request.head_commit.sha,
         violation.filename,
-        violation.line_number
+        violation.patch_position
       )
     end
 
