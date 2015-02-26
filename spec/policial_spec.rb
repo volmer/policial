@@ -10,6 +10,12 @@ describe Policial do
       it 'is the client' do
         expect(subject.octokit).to eq(custom_client)
       end
+
+      it 'is not shared between threads' do
+        Thread.new do
+          expect(subject.octokit).not_to eq(custom_client)
+        end.join
+      end
     end
 
     context 'when no client is set' do
