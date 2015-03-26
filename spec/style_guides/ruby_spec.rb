@@ -2,9 +2,11 @@ require 'spec_helper'
 
 describe Policial::StyleGuides::Ruby do
   subject do
-    described_class.new(Policial::RepoConfig.new(
-      Policial::Commit.new('volmer/cerberus', 'commitsha')
-    ))
+    described_class.new(
+      Policial::RepoConfig.new(
+        Policial::Commit.new('volmer/cerberus', 'commitsha')
+      )
+    )
   end
   let(:custom_config) { nil }
 

@@ -15,6 +15,6 @@ Gem::Specification.new do |spec|
   spec.files = Dir['lib/**/*'] + ['LICENSE.txt', 'Rakefile', 'README.md']
   spec.require_paths = ['lib']
 
-  spec.add_dependency 'octokit', '~> 3.7'
-  spec.add_dependency 'rubocop', '~> 0.2'
+  spec.add_dependency 'octokit', '~> 3.8'
+  spec.add_dependency 'rubocop', '~> 0.29'
 end
