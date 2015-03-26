@@ -6,7 +6,7 @@ Gem::Specification.new do |spec|
   spec.name          = 'policial'
   spec.version       = Policial::VERSION
   spec.authors       = ['Volmer Soares']
-  spec.email         = ['volmerius@gmail.com']
+  spec.email         = ['volmer@radicaos.com']
   spec.summary       = 'Review pull requests for style guide violations'
   spec.description   = 'Review pull requests for style guide violations.'
   spec.homepage      = 'https://github.com/volmer/policial'
