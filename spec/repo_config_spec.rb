@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Policial::RepoConfig do
   subject { described_class.new(commit) }
-  let(:commit) { Policial::Commit.new('volmer/cerberus', 'commitsha') }
+  let(:commit) { Policial::Commit.new('volmer/cerberus', 'commitsha', Octokit) }
   let(:guide) { double('guide', config_file: '.policial.yml') }
 
   describe '#enabled_for?' do

@@ -1,26 +1,48 @@
 require 'spec_helper'
 
-describe Policial::Investigation do
-  subject do
-    described_class.new(
-      Policial::PullRequestEvent.new(
-        JSON.parse(
-          File.read('spec/support/fixtures/pull_request_opened_event.json')
-        )
-      ).pull_request
+describe Policial::Detective do
+  let(:pull_request_event) do
+    Policial::PullRequestEvent.new(
+      JSON.parse(
+        File.read('spec/support/fixtures/pull_request_opened_event.json')
+      )
     )
   end
 
-  describe '#run' do
+  describe '#brief' do
+    it 'creates a pull request based on the given pull request event' do
+      subject.brief(pull_request_event)
+
+      expect(subject.pull_request.repo).to eq('volmer/cerberus')
+      expect(subject.pull_request.number).to eq(2)
+      expect(subject.pull_request.user).to eq('volmerius')
+    end
+
+    it 'creates a pull request based on the given pull request attributes' do
+      subject.brief(
+        repo: 'volmer/policial',
+        number: 666,
+        user: 'rafaelfranca',
+        head_sha: '123abc'
+      )
+
+      expect(subject.pull_request.repo).to eq('volmer/policial')
+      expect(subject.pull_request.number).to eq(666)
+      expect(subject.pull_request.user).to eq('rafaelfranca')
+    end
+  end
+
+  describe '#investigate' do
     before do
       stub_pull_request_files_request('volmer/cerberus', 2)
-
       stub_contents_request_with_fixture(
         'volmer/cerberus',
         sha: '498b81cd038f8a3ac02f035a8537b7ddcff38a81',
         file: '.rubocop.yml',
         fixture: 'config_contents.json'
       )
+
+      subject.brief(pull_request_event)
     end
 
     it 'finds and returns all violations present in the pull request' do
@@ -31,7 +53,7 @@ describe Policial::Investigation do
         fixture: 'contents_with_violations.json'
       )
 
-      expect(subject.run).to eq(subject.violations)
+      expect(subject.investigate).to eq(subject.violations)
 
       messages = subject.violations.map(&:messages).flatten
 
@@ -50,7 +72,7 @@ describe Policial::Investigation do
         fixture: 'contents.json'
       )
 
-      expect(subject.run).to be_empty
+      expect(subject.investigate).to be_empty
     end
   end
 
@@ -74,7 +96,7 @@ describe Policial::Investigation do
         commit: '498b81cd038f8a3ac02f035a8537b7ddcff38a81',
         line: 5
       )
-
+      subject.brief(pull_request_event)
       file = subject.pull_request.files.first
 
       subject.violations = [
@@ -92,6 +114,23 @@ describe Policial::Investigation do
       subject.violations = nil
 
       expect(subject.accuse).to be_nil
+    end
+  end
+
+  describe '#github_client' do
+    context 'when a custom client is set' do
+      let(:custom_client) { Octokit::Client.new }
+      subject { described_class.new(custom_client) }
+
+      it 'is the client' do
+        expect(subject.github_client).to eq(custom_client)
+      end
+    end
+
+    context 'when no client is set' do
+      it 'is Octokit' do
+        expect(subject.github_client).to eq(Octokit)
+      end
     end
   end
 end

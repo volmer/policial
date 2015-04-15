@@ -29,21 +29,27 @@ Or install it yourself as:
 
 ## Usage
 
-1. You might need to instantiate an Octokit client with your GitHub
-  credentials. For more information on this please check the
+1. First, instantiate a new Detective:
+  ```ruby
+  detective = Policial::Detective.new
+  ```
+
+  You might need to pass an Octokit client with your GitHub credentials.
+  For more information on this please check the
   [Octokit README](https://github.com/octokit/octokit.rb).
 
   ```ruby
-  Policial.octokit = Octokit::Client.new(access_token: 'mygithubtoken666')
+  octokit = Octokit::Client.new(access_token: 'mygithubtoken666')
+  detective = Policial::Detective.new(octokit)
   ```
-  Ignore this step if you want Policial to use the global Octokit configuration.
+  If you don't pass an Octokit client Policial will use the global Octokit
+  configuration.
 
-
-2. Let's investigate! Start with a pull request which Policial will run an
-  investigation against. You can setup a pull request manually:
+2. Let's investigate! Start by briefing your detective about the pull request it
+  will run an investigation against. You can setup a pull request manually:
 
   ```ruby
-  pull_request = Policial::PullRequest.new(
+  detective.brief(
     repo: 'volmer/my_repo',
     number: 3,
     head_sha: 'headsha'
@@ -55,24 +61,22 @@ Or install it yourself as:
 
   ```ruby
   event = Policial::PullRequestEvent.new(webhook_payload)
-  pull_request = event.pull_request
+  detective.brief(event)
   ```
 
 3. Now you can run the investigation:
 
   ```ruby
-  investigation = Policial::Investigation.new(pull_request)
-
   # Let's investigate this pull request...
-  investigation.run
+  detective.investigate
 
   # Want to know the violations found?
-  investigation.violations
+  detective.violations
   ```
 
 4. Hurry, post comments about those violations on the pull request!
   ```ruby
-  investigation.accuse
+  detective.accuse
   ```
   The result are comments like this on each line that contains violations:
   ![image](https://cloud.githubusercontent.com/assets/301187/5545861/d5c3da76-8afe-11e4-8c15-341b01f3b820.png)

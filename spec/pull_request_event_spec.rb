@@ -9,23 +9,23 @@ describe Policial::PullRequestEvent do
     )
   end
 
-  describe '#pull_request' do
-    it 'returns a pull request based on the payload' do
-      pull_request = subject.pull_request
+  describe '#pull_request_attributes' do
+    it 'returns pull request attributes based on the payload' do
+      attributes = subject.pull_request_attributes
 
-      expect(pull_request.number).to eq(2)
-      expect(pull_request.repo).to eq('volmer/cerberus')
-      expect(pull_request.head_commit.sha).to eq(
+      expect(attributes[:number]).to eq(2)
+      expect(attributes[:repo]).to eq('volmer/cerberus')
+      expect(attributes[:head_sha]).to eq(
         '498b81cd038f8a3ac02f035a8537b7ddcff38a81'
       )
-      expect(pull_request.user).to eq('volmerius')
+      expect(attributes[:user]).to eq('volmerius')
     end
 
     context 'when payload is invalid' do
       let(:payload) { 'not_a_valid_payload' }
 
       it 'is nil' do
-        expect(subject.pull_request).to be_nil
+        expect(subject.pull_request_attributes).to be_nil
       end
     end
   end
