@@ -56,7 +56,7 @@ Or install it yourself as:
   )
   ```
 
-  Or you can extract a pull request from a
+  Or you can brief it with a
   [GitHub `pull_request` webhook](https://developer.github.com/webhooks):
 
   ```ruby
