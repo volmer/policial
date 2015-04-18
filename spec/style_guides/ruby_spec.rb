@@ -4,7 +4,7 @@ describe Policial::StyleGuides::Ruby do
   subject do
     described_class.new(
       Policial::RepoConfig.new(
-        Policial::Commit.new('volmer/cerberus', 'commitsha')
+        Policial::Commit.new('volmer/cerberus', 'commitsha', Octokit)
       )
     )
   end

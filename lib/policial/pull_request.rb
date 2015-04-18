@@ -1,13 +1,15 @@
 module Policial
-  # Public: A GibHub Pull Request.
+  # Public: A GitHub Pull Request.
   class PullRequest
     attr_reader :repo, :number, :user
+    attr_accessor :github_client
 
-    def initialize(repo:, number:, head_sha:, user: nil)
+    def initialize(repo:, number:, head_sha:, github_client:, user: nil)
       @repo     = repo
       @number   = number
       @head_sha = head_sha
       @user     = user
+      @github_client  = github_client
     end
 
     def comments
@@ -15,7 +17,7 @@ module Policial
     end
 
     def files
-      @files ||= Policial.octokit.pull_request_files(
+      @files ||= @github_client.pull_request_files(
         @repo, @number
       ).map do |file|
         build_commit_file(file)
@@ -23,7 +25,7 @@ module Policial
     end
 
     def head_commit
-      @head_commit ||= Commit.new(@repo, @head_sha)
+      @head_commit ||= Commit.new(@repo, @head_sha, @github_client)
     end
 
     private
@@ -34,7 +36,7 @@ module Policial
 
     def fetch_comments
       paginate do |page|
-        Policial.octokit.pull_request_comments(
+        @github_client.pull_request_comments(
           @repo,
           @number,
           page: page
