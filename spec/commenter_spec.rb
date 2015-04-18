@@ -4,7 +4,10 @@ describe Policial::Commenter do
   subject { described_class.new(pull_request) }
   let(:pull_request) do
     Policial::PullRequest.new(
-      repo: 'volmer/cerberus', number: 2, head_sha: 'sha'
+      repo: 'volmer/cerberus',
+      number: 2,
+      head_sha: 'sha',
+      github_client: Octokit
     )
   end
 
