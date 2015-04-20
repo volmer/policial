@@ -13,12 +13,14 @@ module Policial
 
     def brief(event_or_attributes)
       pull_request_attributes = extract_attributes(event_or_attributes)
+      return unless pull_request_attributes
       @pull_request = PullRequest.new(
         pull_request_attributes.merge(github_client: @github_client)
       )
     end
 
     def investigate
+      return unless pull_request
       @violations ||= StyleChecker.new(pull_request).violations
     end
 
