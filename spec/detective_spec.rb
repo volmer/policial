@@ -30,49 +30,67 @@ describe Policial::Detective do
       expect(subject.pull_request.number).to eq(666)
       expect(subject.pull_request.user).to eq('rafaelfranca')
     end
+
+    context 'when the given event is invalid' do
+      let(:pull_request_event) { Policial::PullRequestEvent.new({}) }
+
+      it 'does not initialize a pull request' do
+        subject.brief(pull_request_event)
+
+        expect(subject.pull_request).to be_nil
+      end
+    end
   end
 
   describe '#investigate' do
-    before do
-      stub_pull_request_files_request('volmer/cerberus', 2)
-      stub_contents_request_with_fixture(
-        'volmer/cerberus',
-        sha: '498b81cd038f8a3ac02f035a8537b7ddcff38a81',
-        file: '.rubocop.yml',
-        fixture: 'config_contents.json'
-      )
+    context 'when detective is briefed about a pull request' do
+      before do
+        stub_pull_request_files_request('volmer/cerberus', 2)
+        stub_contents_request_with_fixture(
+          'volmer/cerberus',
+          sha: '498b81cd038f8a3ac02f035a8537b7ddcff38a81',
+          file: '.rubocop.yml',
+          fixture: 'config_contents.json'
+        )
 
-      subject.brief(pull_request_event)
+        subject.brief(pull_request_event)
+      end
+
+      it 'finds and returns all violations present in the pull request' do
+        stub_contents_request_with_fixture(
+          'volmer/cerberus',
+          sha: '498b81cd038f8a3ac02f035a8537b7ddcff38a81',
+          file: 'config/unicorn.rb',
+          fixture: 'contents_with_violations.json'
+        )
+
+        expect(subject.investigate).to eq(subject.violations)
+
+        messages = subject.violations.map(&:messages).flatten
+
+        expect(messages).to eq([
+          "Omit the parentheses in defs when the method doesn't accept any "\
+          'arguments.',
+          'Trailing whitespace detected.'
+        ])
+      end
+
+      it 'returns empty if no violations are found' do
+        stub_contents_request_with_fixture(
+          'volmer/cerberus',
+          sha: '498b81cd038f8a3ac02f035a8537b7ddcff38a81',
+          file: 'config/unicorn.rb',
+          fixture: 'contents.json'
+        )
+
+        expect(subject.investigate).to be_empty
+      end
     end
 
-    it 'finds and returns all violations present in the pull request' do
-      stub_contents_request_with_fixture(
-        'volmer/cerberus',
-        sha: '498b81cd038f8a3ac02f035a8537b7ddcff38a81',
-        file: 'config/unicorn.rb',
-        fixture: 'contents_with_violations.json'
-      )
-
-      expect(subject.investigate).to eq(subject.violations)
-
-      messages = subject.violations.map(&:messages).flatten
-
-      expect(messages).to eq([
-        "Omit the parentheses in defs when the method doesn't accept any "\
-        'arguments.',
-        'Trailing whitespace detected.'
-      ])
-    end
-
-    it 'returns empty if no violations are found' do
-      stub_contents_request_with_fixture(
-        'volmer/cerberus',
-        sha: '498b81cd038f8a3ac02f035a8537b7ddcff38a81',
-        file: 'config/unicorn.rb',
-        fixture: 'contents.json'
-      )
-
-      expect(subject.investigate).to be_empty
+    context 'when detective is not briefed about a pull request' do
+      it 'is nil' do
+        expect(subject.investigate).to be_nil
+      end
     end
   end
 
