@@ -47,15 +47,12 @@ module Policial
     private
 
     def paginate
-      page, results, all_pages_fetched = 1, [], false
+      page = 1
+      results = []
 
-      until all_pages_fetched
-        if (page_results = yield(page)).empty?
-          all_pages_fetched = true
-        else
-          results += page_results
-          page += 1
-        end
+      until (page_results = yield(page)).empty?
+        results += page_results
+        page += 1
       end
 
       results
