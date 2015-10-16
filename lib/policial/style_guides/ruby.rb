@@ -55,10 +55,10 @@ module Policial
       def build_violations(offenses, file)
         offenses.each_with_object({}) do |offense, violations|
           if violations[offense.line]
-            violations[offense.line].add_messages([offense.message])
+            violations[offense.line].add_offense(offense)
           else
             violations[offense.line] =
-              Violation.new(file, offense.line, offense.message)
+              Violation.new(file, offense)
           end
         end.values
       end
