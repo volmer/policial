@@ -2,7 +2,7 @@ module Policial
   # Public: Hold file, line, and violation message values. Built by style
   # guides.
   class Violation
-    attr_reader :line_number, :filename, :offenses
+    attr_reader :line, :line_number, :filename, :offenses
 
     def initialize(file, offense)
       @filename    = file.filename
