@@ -1,7 +1,7 @@
 module Policial
   # Public: a changed line in a commit file.
   class Line
-    attr_reader :number, :patch_position
+    attr_reader :content, :number, :patch_position
 
     def initialize(number, content, patch_position)
       @number         = number
