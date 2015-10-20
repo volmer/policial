@@ -116,10 +116,16 @@ describe Policial::Detective do
       )
       subject.brief(pull_request_event)
       file = subject.pull_request.files.first
+      violation_1 = double('offense', line: 3,
+                                      message: 'violation1',
+                                      cop_name: 'cop')
+      violation_2 = double('offense', line: 5,
+                                      message: 'violation2',
+                                      cop_name: 'cop')
 
       subject.violations = [
-        Policial::Violation.new(file, 3, 'violation1'),
-        Policial::Violation.new(file, 5, 'violation2')
+        Policial::Violation.new(file, violation_1),
+        Policial::Violation.new(file, violation_2)
       ]
 
       subject.accuse
