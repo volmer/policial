@@ -138,7 +138,7 @@ describe Policial::StyleGuides::Ruby do
 
   def build_file(name, *lines)
     file = double('CommitFile', filename: name, content: lines.join("\n"))
-    allow(file).to receive(:line_at) { |n| lines[n]  }
+    allow(file).to receive(:line_at) { |n| lines[n] }
     file
   end
 end

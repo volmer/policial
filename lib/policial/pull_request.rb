@@ -5,11 +5,11 @@ module Policial
     attr_accessor :github_client
 
     def initialize(repo:, number:, head_sha:, github_client:, user: nil)
-      @repo     = repo
-      @number   = number
+      @repo = repo
+      @number = number
       @head_sha = head_sha
-      @user     = user
-      @github_client  = github_client
+      @user = user
+      @github_client = github_client
     end
 
     def comments
