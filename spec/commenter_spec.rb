@@ -17,10 +17,14 @@ describe Policial::Commenter do
 
       violation = Policial::Violation.new(
         double('file', filename: 'lib/octokit.rb', line_at: line),
-        42,
-        'violation_1'
+        double('offense', line: 42,
+                          cop_name: 'cop',
+                          message: 'violation_1')
       )
-      violation.add_messages(['violation_2'])
+      offense = double('offense', line: 42,
+                                  cop_name: 'cop2',
+                                  message: 'violation_2')
+      violation.add_offense(offense)
 
       request = stub_comment_request(
         'violation_1<br/>violation_2',
