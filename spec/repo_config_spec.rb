@@ -29,6 +29,15 @@ describe Policial::RepoConfig do
 
       expect(subject.for(guide)).to eq({})
     end
+
+    it 'forwards options to the given style guide' do
+      content_request_returns('###')
+
+      config = described_class.new(commit, my: :option)
+      expect(guide).to receive(:config_file).with(my: :option)
+
+      config.for(guide)
+    end
   end
 
   def content_request_returns(content)

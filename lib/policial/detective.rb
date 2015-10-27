@@ -19,9 +19,9 @@ module Policial
       )
     end
 
-    def investigate
+    def investigate(options = {})
       return unless pull_request
-      @violations ||= StyleChecker.new(pull_request).violations
+      @violations ||= StyleChecker.new(pull_request, options).violations
     end
 
     def accuse

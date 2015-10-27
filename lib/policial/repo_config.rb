@@ -1,16 +1,17 @@
 module Policial
   # Public: Load and parse config files from GitHub repo.
   class RepoConfig
-    def initialize(commit)
+    def initialize(commit, options = {})
       @commit = commit
+      @options = options
     end
 
     def enabled_for?(style_guide_class)
       Policial::STYLE_GUIDES.include?(style_guide_class)
     end
 
-    def for(style_guide_class)
-      config_file = style_guide_class.config_file
+    def for(style_guide)
+      config_file = style_guide.config_file(@options)
 
       if config_file
         load_file(config_file)

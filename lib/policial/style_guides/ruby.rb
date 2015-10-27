@@ -4,12 +4,8 @@ module Policial
   module StyleGuides
     # Public: Determine Ruby style guide violations per-line.
     class Ruby < Base
-      class << self
-        attr_writer :config_file
-
-        def config_file
-          @config_file || RuboCop::ConfigLoader::DOTFILE
-        end
+      def config_file(options = {})
+        options[:rubocop_config] || RuboCop::ConfigLoader::DOTFILE
       end
 
       def violations_in_file(file)
@@ -36,7 +32,7 @@ module Policial
       end
 
       def custom_config
-        custom = @repo_config.for(self.class)
+        custom = @repo_config.for(self)
 
         if custom.is_a?(Hash)
           RuboCop::Config.new(custom, '').tap do |config|

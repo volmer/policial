@@ -121,18 +121,14 @@ describe Policial::StyleGuides::Ruby do
     end
   end
 
-  describe '.config_file' do
+  describe '#config_file' do
     it 'is the default RuboCop dotfile' do
-      expect(described_class.config_file).to eq('.rubocop.yml')
+      expect(subject.config_file).to eq('.rubocop.yml')
     end
 
-    it 'can be overwritten' do
-      old_value = described_class.config_file
-
-      described_class.config_file = '.policial.yml'
-      expect(described_class.config_file).to eq('.policial.yml')
-
-      described_class.config_file = old_value
+    it 'can be overwritten via config options' do
+      expect(subject.config_file(rubocop_config: '.custom.yml')).to eq(
+        '.custom.yml')
     end
   end
 
