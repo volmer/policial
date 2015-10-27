@@ -19,6 +19,16 @@ describe Policial::StyleChecker do
       expect(violation_messages).to eq expected_violations
     end
 
+    it 'forwards options to RepoConfig' do
+      file = stub_commit_file('ruby.rb', 'puts 123')
+      pull_request = stub_pull_request(files: [file])
+
+      expect(Policial::RepoConfig).to receive(:new).with(
+        anything, my: :options).and_call_original
+
+      described_class.new(pull_request, my: :options).violations
+    end
+
     context 'for a Ruby file' do
       context 'with violations' do
         it 'returns violations' do

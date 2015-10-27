@@ -85,6 +85,21 @@ describe Policial::Detective do
 
         expect(subject.investigate).to be_empty
       end
+
+      it 'forwards any given options to StyleChecker' do
+        stub_contents_request_with_fixture(
+          'volmer/cerberus',
+          sha: '498b81cd038f8a3ac02f035a8537b7ddcff38a81',
+          file: 'config/unicorn.rb',
+          fixture: 'contents_with_violations.json'
+        )
+
+        expect(Policial::StyleChecker).to receive(:new).with(
+          anything, my: :option
+        ).and_call_original
+
+        subject.investigate(my: :option)
+      end
     end
 
     context 'when detective is not briefed about a pull request' do

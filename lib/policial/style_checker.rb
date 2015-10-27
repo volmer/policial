@@ -2,9 +2,10 @@ module Policial
   # Public: Filters files to reviewable subset, builds style guide based on file
   # extension and delegates to style guide for line violations.
   class StyleChecker
-    def initialize(pull_request)
+    def initialize(pull_request, options = {})
       @pull_request = pull_request
       @style_guides = {}
+      @options = options
     end
 
     def violations
@@ -28,8 +29,8 @@ module Policial
     end
 
     def style_guide(filename)
-      style_guide_class = style_guide_class(filename)
-      style_guides[style_guide_class] ||= style_guide_class.new(config)
+      klass = style_guide_class(filename)
+      style_guides[klass] ||= klass.new(config)
     end
 
     def style_guide_class(filename)
@@ -42,7 +43,7 @@ module Policial
     end
 
     def config
-      @config ||= RepoConfig.new(pull_request.head_commit)
+      @config ||= RepoConfig.new(pull_request.head_commit, @options)
     end
   end
 end
