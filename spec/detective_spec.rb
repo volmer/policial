@@ -109,53 +109,6 @@ describe Policial::Detective do
     end
   end
 
-  describe '#accuse' do
-    it 'add comments to the pull request regarding all current violations' do
-      stub_pull_request_files_request('volmer/cerberus', 2)
-      stub_pull_request_comments_request('volmer/cerberus', 2)
-      comment_request_1 = stub_comment_request(
-        'violation1',
-        repo: 'volmer/cerberus',
-        pull_request: 2,
-        file: 'config/unicorn.rb',
-        commit: '498b81cd038f8a3ac02f035a8537b7ddcff38a81',
-        line: 3
-      )
-      comment_request_2 = stub_comment_request(
-        'violation2',
-        repo: 'volmer/cerberus',
-        pull_request: 2,
-        file: 'config/unicorn.rb',
-        commit: '498b81cd038f8a3ac02f035a8537b7ddcff38a81',
-        line: 5
-      )
-      subject.brief(pull_request_event)
-      file = subject.pull_request.files.first
-      violation_1 = double('offense', line: 3,
-                                      message: 'violation1',
-                                      cop_name: 'cop')
-      violation_2 = double('offense', line: 5,
-                                      message: 'violation2',
-                                      cop_name: 'cop')
-
-      subject.violations = [
-        Policial::Violation.new(file, violation_1),
-        Policial::Violation.new(file, violation_2)
-      ]
-
-      subject.accuse
-
-      expect(comment_request_1).to have_been_requested
-      expect(comment_request_2).to have_been_requested
-    end
-
-    it 'does nothing if there are no violations' do
-      subject.violations = nil
-
-      expect(subject.accuse).to be_nil
-    end
-  end
-
   describe '#github_client' do
     context 'when a custom client is set' do
       let(:custom_client) { Octokit::Client.new }
