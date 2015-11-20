@@ -27,38 +27,6 @@ module GitHubApiHelper
     stub_contents_request(repo, sha, file, body)
   end
 
-  # rubocop:disable Metrics/ParameterLists
-  def stub_comment_request(comment, repo:, pull_request:, commit:, file:, line:)
-    body = JSON.generate(
-      body: comment,
-      commit_id: commit,
-      path: file,
-      position: line
-    )
-
-    stub_request(
-      :post,
-      url(repo, "/pulls/#{pull_request}/comments")
-    ).with(body: body, headers: request_headers).to_return(status: 200)
-  end
-  # rubocop:enable Metrics/ParameterLists
-
-  def stub_pull_request_comments_request(repo, pull_request)
-    comments_body =
-      File.read('spec/support/fixtures/pull_request_comments.json')
-
-    path = "/pulls/#{pull_request}/comments"
-
-    headers = { 'Content-Type' => 'application/json; charset=utf-8' }
-
-    stub_request(:get, url(repo, path)).with(query: { page: 1 })
-      .with(headers: request_headers)
-      .to_return(status: 200, body: comments_body, headers: headers)
-
-    stub_request(:get, url(repo, path)).with(query: { page: 2 })
-      .to_return(status: 200, body: '[]', headers: headers)
-  end
-
   private
 
   def request_headers
@@ -66,7 +34,7 @@ module GitHubApiHelper
       'Accept'          => 'application/vnd.github.v3+json',
       'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
       'Content-Type'    => 'application/json',
-      'User-Agent'      => 'Octokit Ruby Gem 4.1.1'
+      'User-Agent'      => 'Octokit Ruby Gem 4.2.0'
     }
   end
 

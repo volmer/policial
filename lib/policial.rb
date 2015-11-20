@@ -1,7 +1,5 @@
 require 'octokit'
 
-require 'policial/accusation_policy'
-require 'policial/commenter'
 require 'policial/commit'
 require 'policial/commit_file'
 require 'policial/detective'

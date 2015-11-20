@@ -12,10 +12,6 @@ module Policial
       @github_client = github_client
     end
 
-    def comments
-      @comments ||= fetch_comments
-    end
-
     def files
       @files ||= @github_client.pull_request_files(
         @repo, @number
@@ -32,30 +28,6 @@ module Policial
 
     def build_commit_file(file)
       CommitFile.new(file, head_commit)
-    end
-
-    def fetch_comments
-      paginate do |page|
-        @github_client.pull_request_comments(
-          @repo,
-          @number,
-          page: page
-        )
-      end
-    end
-
-    private
-
-    def paginate
-      page = 1
-      results = []
-
-      until (page_results = yield(page)).empty?
-        results += page_results
-        page += 1
-      end
-
-      results
     end
   end
 end

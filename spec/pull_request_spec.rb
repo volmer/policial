@@ -39,15 +39,6 @@ describe Policial::PullRequest do
     end
   end
 
-  describe '#comments' do
-    it 'returns comments on pull request' do
-      stub_pull_request_comments_request('volmer/cerberus', 45)
-
-      expect(subject.comments.size).to eq(4)
-      expect(subject.comments.first.body).to eq('Single quotes please.')
-    end
-  end
-
   describe '#files' do
     it 'returns files on pull request' do
       stub_pull_request_files_request('volmer/cerberus', 45)
