@@ -33,10 +33,10 @@ describe Policial::StyleGuides::Ruby do
       expect(violations.count).to eq(1)
       expect(violations.first.filename).to eq('test.rb')
       expect(violations.first.line_number).to eq(1)
-      expect(violations.first.messages).to eq([
+      expect(violations.first.message).to eq(
         "Prefer single-quoted strings when you don't need string interpolation"\
         ' or special symbols.'
-      ])
+      )
     end
 
     it 'returns only one violation containing all offenses per line' do
@@ -46,21 +46,24 @@ describe Policial::StyleGuides::Ruby do
 
       violations = subject.violations_in_file(file)
 
-      expect(violations.count).to eq(2)
+      expect(violations.count).to eq(3)
 
-      expect(violations.first.filename).to eq('test.rb')
-      expect(violations.first.line_number).to eq(1)
-      expect(violations.first.messages).to eq([
-        'Literal `{first_line: :violates }` used in void context.',
-        'Space inside { missing.'
-      ])
+      expect(violations[0].filename).to eq('test.rb')
+      expect(violations[0].line_number).to eq(1)
+      expect(violations[0].message).to eq(
+        'Literal `{first_line: :violates }` used in void context.'
+      )
 
-      expect(violations.last.filename).to eq('test.rb')
-      expect(violations.last.line_number).to eq(2)
-      expect(violations.last.messages).to eq([
+      expect(violations[1].filename).to eq('test.rb')
+      expect(violations[1].line_number).to eq(1)
+      expect(violations[1].message).to eq('Space inside { missing.')
+
+      expect(violations[2].filename).to eq('test.rb')
+      expect(violations[2].line_number).to eq(2)
+      expect(violations[2].message).to eq(
         "Prefer single-quoted strings when you don't need string interpolation"\
         ' or special symbols.'
-      ])
+      )
     end
 
     context 'with custom configuration' do
@@ -80,10 +83,10 @@ describe Policial::StyleGuides::Ruby do
         expect(violations.count).to eq(1)
         expect(violations.first.filename).to eq('test.rb')
         expect(violations.first.line_number).to eq(1)
-        expect(violations.first.messages).to eq([
+        expect(violations.first.message).to eq(
           'Prefer double-quoted strings unless you need single quotes to '\
           'avoid extra backslashes for escaping.'
-        ])
+        )
       end
     end
 
@@ -96,7 +99,7 @@ describe Policial::StyleGuides::Ruby do
         file = build_file('test.rb', '"I am naughty"')
         violation = subject.violations_in_file(file).first
 
-        expect(violation.messages).to include(
+        expect(violation.message).to eq(
           "Style/StringLiterals: Prefer single-quoted strings when you don't "\
           'need string interpolation or special symbols.'
         )

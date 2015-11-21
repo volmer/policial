@@ -10,11 +10,12 @@ describe Policial::StyleChecker do
       expected_violations = [
         'Avoid single-line method definitions.',
         'Space inside parentheses detected.',
+        'Space inside parentheses detected.',
         'Trailing whitespace detected.'
       ]
 
       violation_messages =
-        described_class.new(pull_request).violations.flat_map(&:messages).uniq
+        described_class.new(pull_request).violations.map(&:message)
 
       expect(violation_messages).to eq expected_violations
     end
@@ -36,7 +37,7 @@ describe Policial::StyleChecker do
           pull_request = stub_pull_request(files: [file])
 
           violations = described_class.new(pull_request).violations
-          messages = violations.flat_map(&:messages)
+          messages = violations.map(&:message)
 
           expect(messages).to eq ['Trailing whitespace detected.']
         end
@@ -61,9 +62,8 @@ describe Policial::StyleChecker do
           pull_request = stub_pull_request(files: [file])
 
           violations = described_class.new(pull_request).violations
-          messages = violations.flat_map(&:messages)
 
-          expect(messages).to be_empty
+          expect(violations).to be_empty
         end
       end
     end
