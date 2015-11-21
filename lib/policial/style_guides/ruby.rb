@@ -13,7 +13,7 @@ module Policial
           []
         else
           offenses = team.inspect_file(parsed_source(file))
-          build_violations(offenses, file)
+          offenses.map { |offense| Violation.new(file, offense) }
         end
       end
 
@@ -46,17 +46,6 @@ module Policial
 
       def rubocop_options
         { debug: true } if config['ShowCopNames']
-      end
-
-      def build_violations(offenses, file)
-        offenses.each_with_object({}) do |offense, violations|
-          if violations[offense.line]
-            violations[offense.line].add_offense(offense)
-          else
-            violations[offense.line] =
-              Violation.new(file, offense)
-          end
-        end.values
       end
     end
   end

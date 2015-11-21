@@ -66,7 +66,7 @@ describe Policial::Detective do
 
         expect(subject.investigate).to eq(subject.violations)
 
-        messages = subject.violations.map(&:messages).flatten
+        messages = subject.violations.map(&:message)
 
         expect(messages).to eq([
           "Omit the parentheses in defs when the method doesn't accept any "\
