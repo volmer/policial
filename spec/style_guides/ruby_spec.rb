@@ -27,7 +27,7 @@ describe Policial::StyleGuides::Ruby do
     end
 
     it 'detects offenses to the Ruby community Style Guide' do
-      file = build_file('test.rb', "\"I am naughty\"\n")
+      file = build_file('test.rb', '"I am naughty"')
       violations = subject.violations_in_file(file)
 
       expect(violations.count).to eq(1)
@@ -41,7 +41,7 @@ describe Policial::StyleGuides::Ruby do
 
     it 'returns only one violation containing all offenses per line' do
       file_content =
-        ['{first_line: :violates }', '"second too!".to_sym', "'third ok'\n"]
+        ['{first_line: :violates }', '"second too!".to_sym', "'third ok'"]
       file = build_file('test.rb', file_content)
 
       violations = subject.violations_in_file(file)
@@ -69,15 +69,14 @@ describe Policial::StyleGuides::Ruby do
     context 'with custom configuration' do
       let(:custom_config) do
         {
-          'StringLiterals' => {
-            'EnforcedStyle' => 'double_quotes',
-            'Enabled' => 'true'
+          'Style/StringLiterals' => {
+            'EnforcedStyle' => 'double_quotes'
           }
         }
       end
 
       it 'detects offenses to the custom style guide' do
-        file = build_file('test.rb', "'You do not like me'\n")
+        file = build_file('test.rb', "'You do not like me'")
         violations = subject.violations_in_file(file)
 
         expect(violations.count).to eq(1)
@@ -88,38 +87,29 @@ describe Policial::StyleGuides::Ruby do
           'avoid extra backslashes for escaping.'
         )
       end
-    end
 
-    context 'with ShowCopNames' do
-      let(:custom_config) do
-        { 'ShowCopNames' => 'true' }
-      end
-
-      it 'includes RuboCop cop names in violation messages' do
-        file = build_file('test.rb', '"I am naughty"')
-        violation = subject.violations_in_file(file).first
-
-        expect(violation.message).to eq(
-          "Style/StringLiterals: Prefer single-quoted strings when you don't "\
-          'need string interpolation or special symbols.'
-        )
-      end
-    end
-
-    context 'with excluded files' do
-      let(:custom_config) do
-        {
-          'AllCops' => {
-            'Exclude' => ['lib/test.rb']
+      context 'with excluded files' do
+        let(:custom_config) do
+          {
+            'AllCops' => {
+              'Exclude' => ['app/models/ugly.rb']
+            },
+            'Style/StringLiterals' => {
+              'Exclude' => ['lib/**/*', 'config/ext.rb']
+            }
           }
-        }
-      end
+        end
 
-      it 'has no violations' do
-        file = build_file('lib/test.rb', 4, '"Awful code"')
-        violations = subject.violations_in_file(file)
+        it 'has no violations' do
+          file = build_file('app/models/ugly.rb', '"Awful code"')
+          expect(subject.violations_in_file(file)).to be_empty
 
-        expect(violations).to be_empty
+          file = build_file('lib/test.rb', '"Awful code"')
+          expect(subject.violations_in_file(file)).to be_empty
+
+          file = build_file('config/ext.rb', '"Awful code"')
+          expect(subject.violations_in_file(file)).to be_empty
+        end
       end
     end
   end
@@ -136,7 +126,7 @@ describe Policial::StyleGuides::Ruby do
   end
 
   def build_file(name, *lines)
-    file = double('CommitFile', filename: name, content: lines.join("\n"))
+    file = double('file', filename: name, content: lines.join("\n") + "\n")
     allow(file).to receive(:line_at) { |n| lines[n] }
     file
   end
