@@ -20,11 +20,13 @@ module Policial
       private
 
       def team
-        RuboCop::Cop::Team.new(RuboCop::Cop::Cop.all, config, rubocop_options)
+        RuboCop::Cop::Team.new(RuboCop::Cop::Cop.all, config)
       end
 
       def parsed_source(file)
-        RuboCop::ProcessedSource.new(file.content, file.filename)
+        absolute_path =
+          File.join(config.base_dir_for_path_parameters, file.filename)
+        RuboCop::ProcessedSource.new(file.content, absolute_path)
       end
 
       def config
@@ -35,17 +37,10 @@ module Policial
         custom = @repo_config.for(self)
 
         if custom.is_a?(Hash)
-          RuboCop::Config.new(custom, '').tap do |config|
-            config.add_missing_namespaces
-            config.make_excludes_absolute
-          end
+          RuboCop::Config.new(custom, '').tap(&:make_excludes_absolute)
         else
           RuboCop::Config.new
         end
-      end
-
-      def rubocop_options
-        { debug: true } if config['ShowCopNames']
       end
     end
   end
