@@ -74,12 +74,14 @@ Or install it yourself as:
   detective.violations
   ```
 
-4. Hurry, post comments about those violations on the pull request!
+4. Want to know the violations found?
   ```ruby
-  detective.accuse
+  violations = detective.violations
+  # => [#<Policial::Violation:0x007ff0b5abad30 @filename="lib/test.rb", @line_number=1, ...>]
+
+  violations.first.message
+  "Prefer single-quoted strings when you don't need string interpolation or special symbols."
   ```
-  The result are comments like this on each line that contains violations:
-  ![image](https://cloud.githubusercontent.com/assets/301187/5545861/d5c3da76-8afe-11e4-8c15-341b01f3b820.png)
 
 ## Contributing
 
