@@ -20,7 +20,9 @@ module Policial
       private
 
       def team
-        RuboCop::Cop::Team.new(RuboCop::Cop::Cop.all, config)
+        cop_classes = RuboCop::Cop::Cop.all
+        cop_classes.reject!(&:rails?) unless config['AllCops']['RunRailsCops']
+        RuboCop::Cop::Team.new(cop_classes, config)
       end
 
       def parsed_source(file)
