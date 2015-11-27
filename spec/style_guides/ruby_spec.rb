@@ -112,6 +112,33 @@ describe Policial::StyleGuides::Ruby do
         end
       end
     end
+
+    it 'ignores Rails cops by default' do
+      file = build_file('app/models/ugly.rb', "puts 'my logs'")
+      expect(subject.violations_in_file(file)).to be_empty
+    end
+
+    context 'when custom config enables Rails cops' do
+      let(:custom_config) do
+        { 'AllCops' => { 'RunRailsCops' => true } }
+      end
+
+      it 'runs Rails cops' do
+        file = build_file('app/models/ugly.rb', "puts 'my logs'")
+        expect(subject.violations_in_file(file)).not_to be_empty
+      end
+    end
+
+    context 'when custom config explicitly disables Rails cops' do
+      let(:custom_config) do
+        { 'AllCops' => { 'RunRailsCops' => false } }
+      end
+
+      it 'ignores Rails cops' do
+        file = build_file('app/models/ugly.rb', "puts 'my logs'")
+        expect(subject.violations_in_file(file)).to be_empty
+      end
+    end
   end
 
   describe '#config_file' do
