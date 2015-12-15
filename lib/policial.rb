@@ -11,6 +11,7 @@ require 'policial/repo_config'
 require 'policial/style_checker'
 require 'policial/style_guides/base'
 require 'policial/style_guides/ruby'
+require 'policial/style_guides/scss'
 require 'policial/style_guides/unsupported'
 require 'policial/unchanged_line'
 require 'policial/version'
@@ -20,5 +21,5 @@ require 'policial/violation'
 # so you can configure GitHub credentials, enable/disable style guides
 # and more.
 module Policial
-  STYLE_GUIDES = [Policial::StyleGuides::Ruby]
+  STYLE_GUIDES = [Policial::StyleGuides::Ruby, Policial::StyleGuides::Scss]
 end

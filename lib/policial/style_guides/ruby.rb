@@ -12,8 +12,9 @@ module Policial
         if config.file_to_exclude?(file.filename)
           []
         else
-          offenses = team.inspect_file(parsed_source(file))
-          offenses.map { |offense| Violation.new(file, offense) }
+          team.inspect_file(parsed_source(file)).map do |offense|
+            Violation.new(file, offense.line, offense.message, offense.cop_name)
+          end
         end
       end
 

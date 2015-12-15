@@ -32,14 +32,19 @@ describe Policial::StyleChecker do
 
     context 'for a Ruby file' do
       context 'with violations' do
-        it 'returns violations' do
-          file = stub_commit_file('ruby.rb', 'puts 123    ')
-          pull_request = stub_pull_request(files: [file])
+        let(:file) { stub_commit_file('ruby.rb', 'puts 123    ') }
+        let(:pull_request) { stub_pull_request(files: [file]) }
 
+        it 'returns violations' do
           violations = described_class.new(pull_request).violations
           messages = violations.map(&:message)
 
           expect(messages).to eq ['Trailing whitespace detected.']
+        end
+
+        it 'does not return violations if Ruby is disabled' do
+          violations = described_class.new(pull_request, ruby: false).violations
+          expect(violations).to be_empty
         end
       end
 
@@ -60,6 +65,49 @@ describe Policial::StyleChecker do
         it 'returns no violations' do
           file = stub_commit_file('ruby.rb', 'puts 123')
           pull_request = stub_pull_request(files: [file])
+
+          violations = described_class.new(pull_request).violations
+
+          expect(violations).to be_empty
+        end
+      end
+    end
+
+    context 'for a SCSS file' do
+      context 'with violations' do
+        let(:file) { stub_commit_file('style.scss', 'p { content: "hi!"; }') }
+        let(:pull_request) { stub_pull_request(files: [file]) }
+
+        it 'returns violations if SCSS is enabled' do
+          violations = described_class.new(pull_request, scss: true).violations
+          messages = violations.map(&:message)
+
+          expect(messages).to eq ['Prefer single quoted strings']
+        end
+
+        it 'does not return violations' do
+          violations = described_class.new(pull_request).violations
+          expect(violations).to be_empty
+        end
+      end
+
+      context 'with violation on unchanged line' do
+        it 'returns no violations' do
+          file = stub_commit_file(
+            'style.scss', 'p { content: "hi!"; }', Policial::UnchangedLine.new
+          )
+          pull_request = stub_pull_request(files: [file], scss: true)
+
+          violations = described_class.new(pull_request).violations
+
+          expect(violations.count).to eq 0
+        end
+      end
+
+      context 'without violations' do
+        it 'returns no violations' do
+          file = stub_commit_file('style.scss', "p { content: 'hi!'; }")
+          pull_request = stub_pull_request(files: [file], scss: true)
 
           violations = described_class.new(pull_request).violations
 
