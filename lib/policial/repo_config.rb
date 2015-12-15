@@ -20,6 +20,16 @@ module Policial
       end
     end
 
+    def raw(style_guide)
+      config_file = style_guide.config_file(@options)
+
+      if config_file
+        @commit.file_content(config_file) || ''
+      else
+        ''
+      end
+    end
+
     private
 
     def load_file(file)

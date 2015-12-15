@@ -33,13 +33,14 @@ describe Policial::StyleGuides::Ruby do
       expect(violations.count).to eq(1)
       expect(violations.first.filename).to eq('test.rb')
       expect(violations.first.line_number).to eq(1)
+      expect(violations.first.linter).to eq('Style/StringLiterals')
       expect(violations.first.message).to eq(
         "Prefer single-quoted strings when you don't need string interpolation"\
         ' or special symbols.'
       )
     end
 
-    it 'returns only one violation containing all offenses per line' do
+    it 'returns one violation per offense' do
       file_content =
         ['{first_line: :violates }', '"second too!".to_sym', "'third ok'"]
       file = build_file('test.rb', file_content)
@@ -50,16 +51,19 @@ describe Policial::StyleGuides::Ruby do
 
       expect(violations[0].filename).to eq('test.rb')
       expect(violations[0].line_number).to eq(1)
+      expect(violations[0].linter).to eq('Lint/Void')
       expect(violations[0].message).to eq(
         'Literal `{first_line: :violates }` used in void context.'
       )
 
       expect(violations[1].filename).to eq('test.rb')
       expect(violations[1].line_number).to eq(1)
+      expect(violations[1].linter).to eq('Style/SpaceInsideHashLiteralBraces')
       expect(violations[1].message).to eq('Space inside { missing.')
 
       expect(violations[2].filename).to eq('test.rb')
       expect(violations[2].line_number).to eq(2)
+      expect(violations[2].linter).to eq('Style/StringLiterals')
       expect(violations[2].message).to eq(
         "Prefer single-quoted strings when you don't need string interpolation"\
         ' or special symbols.'
@@ -82,6 +86,7 @@ describe Policial::StyleGuides::Ruby do
         expect(violations.count).to eq(1)
         expect(violations.first.filename).to eq('test.rb')
         expect(violations.first.line_number).to eq(1)
+        expect(violations.first.linter).to eq('Style/StringLiterals')
         expect(violations.first.message).to eq(
           'Prefer double-quoted strings unless you need single quotes to '\
           'avoid extra backslashes for escaping.'
