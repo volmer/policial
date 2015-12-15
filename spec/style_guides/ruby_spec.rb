@@ -39,7 +39,7 @@ describe Policial::StyleGuides::Ruby do
       )
     end
 
-    it 'returns only one violation containing all offenses per line' do
+    it 'returns one violation per offense' do
       file_content =
         ['{first_line: :violates }', '"second too!".to_sym', "'third ok'"]
       file = build_file('test.rb', file_content)

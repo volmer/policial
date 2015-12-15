@@ -34,9 +34,10 @@ module Policial
     end
 
     def style_guide_class(filename)
-      case filename
-      when /.+\.rb\z/
+      if (@options[:ruby] != false) && (filename =~ /.+\.rb\z/)
         StyleGuides::Ruby
+      elsif (@options[:scss] != false) && (filename =~ /.+\.scss\z/)
+        StyleGuides::Scss
       else
         StyleGuides::Unsupported
       end
