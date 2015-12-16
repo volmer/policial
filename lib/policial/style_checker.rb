@@ -38,6 +38,8 @@ module Policial
         StyleGuides::Ruby
       elsif (@options[:scss] != false) && (filename =~ /.+\.scss\z/)
         StyleGuides::Scss
+      elsif (@options[:coffeescript] != false) && (filename =~ /.+\.coffee\z/)
+        StyleGuides::Coffeescript
       else
         StyleGuides::Unsupported
       end
