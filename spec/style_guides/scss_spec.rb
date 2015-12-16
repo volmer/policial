@@ -33,6 +33,7 @@ describe Policial::StyleGuides::Scss do
       expect(violations.count).to eq(1)
       expect(violations.first.filename).to eq('test.scss')
       expect(violations.first.line_number).to eq(1)
+      expect(violations.first.linter).to eq('BorderZero')
       expect(violations.first.message).to eq(
         '`border: 0` is preferred over `border: none`'
       )
@@ -52,18 +53,21 @@ describe Policial::StyleGuides::Scss do
 
       expect(violations[0].filename).to eq('test.scss')
       expect(violations[0].line_number).to eq(1)
+      expect(violations[0].linter).to eq('BorderZero')
       expect(violations[0].message).to eq(
         '`border: 0` is preferred over `border: none`'
       )
 
       expect(violations[1].filename).to eq('test.scss')
       expect(violations[1].line_number).to eq(2)
+      expect(violations[1].linter).to eq('BorderZero')
       expect(violations[1].message).to eq(
         '`border: 0` is preferred over `border: none`'
       )
 
       expect(violations[2].filename).to eq('test.scss')
       expect(violations[2].line_number).to eq(2)
+      expect(violations[2].linter).to eq('StringQuotes')
       expect(violations[2].message).to eq('Prefer single quoted strings')
     end
 
@@ -83,6 +87,7 @@ describe Policial::StyleGuides::Scss do
         expect(violations.count).to eq(1)
         expect(violations.first.filename).to eq('test.scss')
         expect(violations.first.line_number).to eq(1)
+        expect(violations.first.linter).to eq('StringQuotes')
         expect(violations.first.message).to eq('Prefer double-quoted strings')
       end
 

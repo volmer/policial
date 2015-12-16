@@ -10,7 +10,7 @@ module Policial
 
       def violations_in_file(file)
         tempfile_from(file.filename, file.content) do |tempfile|
-          errors = Coffeelint.lint_file(tempfile, :config_file => config)
+          errors = Coffeelint.lint_file(tempfile, config_file: config)
           violations(file, errors)
         end
       end
@@ -24,7 +24,7 @@ module Policial
       def violations(file, errors)
         errors.map do |error|
           Violation.new(file, error['lineNumber'], error['message'], error)
-        end 
+        end
       end
 
       def tempfile_from(filename, content)

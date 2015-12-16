@@ -36,7 +36,7 @@ module Policial
     def style_guide_class(filename)
       if (@options[:ruby] != false) && (filename =~ /.+\.rb\z/)
         StyleGuides::Ruby
-      elsif (@options[:scss] != false) && (filename =~ /.+\.scss\z/)
+      elsif (@options[:scss] == true) && (filename =~ /.+\.scss\z/)
         StyleGuides::Scss
       elsif (@options[:coffeescript] != false) && (filename =~ /.+\.coffee\z/)
         StyleGuides::Coffeescript

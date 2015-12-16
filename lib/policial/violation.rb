@@ -1,13 +1,13 @@
 module Policial
   # Public: Hold file, line, and message. Built by style guides.
   class Violation
-    attr_reader :line_number, :message, :native
+    attr_reader :line_number, :message, :linter
 
-    def initialize(file, line_number, message, native = nil)
+    def initialize(file, line_number, message, linter)
       @file        = file
       @line_number = line_number
       @message     = message
-      @native      = native
+      @linter      = linter
     end
 
     def filename

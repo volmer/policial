@@ -17,7 +17,6 @@ describe Policial::StyleGuides::Coffeescript do
   end
 
   describe '#violations_in_file' do
-
     it 'detects offenses to the CoffeeScript Style Guide' do
       file = build_file('test.coffee', 'foo: -> "bar"')
       violations = subject.violations_in_file(file)
@@ -56,11 +55,12 @@ describe Policial::StyleGuides::Coffeescript do
 
       expect(violations[2].filename).to eq('test.coffee')
       expect(violations[2].line_number).to eq(3)
-      expect(violations[2].message).to eq('Unnecessary double quotes are forbidden')
+      expect(violations[2].message).to eq(
+        'Unnecessary double quotes are forbidden'
+      )
     end
 
     context 'with valid file' do
-
       it 'has no violations' do
         file_content = [
           'foo: ->',
@@ -72,7 +72,6 @@ describe Policial::StyleGuides::Coffeescript do
 
         expect(violations.count).to eq(0)
       end
-
     end
   end
 

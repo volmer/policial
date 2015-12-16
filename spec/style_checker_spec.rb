@@ -78,15 +78,15 @@ describe Policial::StyleChecker do
         let(:file) { stub_commit_file('style.scss', 'p { content: "hi!"; }') }
         let(:pull_request) { stub_pull_request(files: [file]) }
 
-        it 'returns violations' do
-          violations = described_class.new(pull_request).violations
+        it 'returns violations if SCSS is enabled' do
+          violations = described_class.new(pull_request, scss: true).violations
           messages = violations.map(&:message)
 
           expect(messages).to eq ['Prefer single quoted strings']
         end
 
-        it 'does not return violations if SCSS is disabled' do
-          violations = described_class.new(pull_request, scss: false).violations
+        it 'does not return violations' do
+          violations = described_class.new(pull_request).violations
           expect(violations).to be_empty
         end
       end
@@ -96,7 +96,7 @@ describe Policial::StyleChecker do
           file = stub_commit_file(
             'style.scss', 'p { content: "hi!"; }', Policial::UnchangedLine.new
           )
-          pull_request = stub_pull_request(files: [file])
+          pull_request = stub_pull_request(files: [file], scss: true)
 
           violations = described_class.new(pull_request).violations
 
@@ -107,7 +107,7 @@ describe Policial::StyleChecker do
       context 'without violations' do
         it 'returns no violations' do
           file = stub_commit_file('style.scss', "p { content: 'hi!'; }")
-          pull_request = stub_pull_request(files: [file])
+          pull_request = stub_pull_request(files: [file], scss: true)
 
           violations = described_class.new(pull_request).violations
 

@@ -5,7 +5,11 @@ module Policial
     # Public: Determine Ruby style guide violations per-line.
     class Ruby < Base
       def config_file(options = {})
-        options[:rubocop_config] || RuboCop::ConfigLoader::DOTFILE
+        if options[:rubocop_config].to_s.strip.empty?
+          RuboCop::ConfigLoader::DOTFILE
+        else
+          options[:rubocop_config]
+        end
       end
 
       def violations_in_file(file)
@@ -13,7 +17,7 @@ module Policial
           []
         else
           team.inspect_file(parsed_source(file)).map do |offense|
-            Violation.new(file, offense.line, offense.message, offense)
+            Violation.new(file, offense.line, offense.message, offense.cop_name)
           end
         end
       end

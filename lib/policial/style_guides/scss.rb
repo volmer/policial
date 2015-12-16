@@ -1,14 +1,15 @@
-require 'scss_lint'
-
 module Policial
   module StyleGuides
     # Public: Determine SCSS style guide violations per-line.
     class Scss < Base
       def config_file(*)
+        require 'scss_lint'
         SCSSLint::Config::FILE_NAME
       end
 
       def violations_in_file(file)
+        require 'scss_lint'
+
         absolute_path = File.expand_path(file.filename)
         return [] if config.excluded_file?(absolute_path)
 
@@ -29,7 +30,8 @@ module Policial
 
       def violations(file)
         runner.lints.map do |lint|
-          Violation.new(file, lint.location.line, lint.description, lint)
+          Violation.new(
+            file, lint.location.line, lint.description, lint.linter.name)
         end
       end
 
