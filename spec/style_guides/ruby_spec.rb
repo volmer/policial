@@ -155,6 +155,14 @@ describe Policial::StyleGuides::Ruby do
       expect(subject.config_file(rubocop_config: '.custom.yml')).to eq(
         '.custom.yml')
     end
+
+    it 'ignores blank rubocop_config values' do
+      expect(subject.config_file(rubocop_config: nil)).to eq(
+        '.rubocop.yml')
+
+      expect(subject.config_file(rubocop_config: ' ')).to eq(
+        '.rubocop.yml')
+    end
   end
 
   def build_file(name, *lines)
