@@ -3,6 +3,7 @@ module Policial
     # Public: Determine SCSS style guide violations per-line.
     class Scss < Base
       def config_file(*)
+        require 'scss_lint'
         SCSSLint::Config::FILE_NAME
       end
 
