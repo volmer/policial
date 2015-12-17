@@ -2,6 +2,8 @@ module Policial
   module StyleGuides
     # Public: Determine SCSS style guide violations per-line.
     class Scss < Base
+      KEY = :scss
+
       def config_file(*)
         require 'scss_lint'
         SCSSLint::Config::FILE_NAME
@@ -11,7 +13,8 @@ module Policial
         require 'scss_lint'
 
         absolute_path = File.expand_path(file.filename)
-        return [] if config.excluded_file?(absolute_path)
+
+        return [] if ignore?(absolute_path)
 
         tempfile_from(file.filename, file.content) do |tempfile|
           runner.run([{ file: tempfile, path: absolute_path }])
@@ -26,6 +29,11 @@ module Policial
         @config ||= tempfile_from(config_file, @repo_config.raw(self)) do |temp|
           SCSSLint::Config.load(temp, merge_with_default: true)
         end
+      end
+
+      def ignore?(filename)
+        return true unless filename =~ /.+\.scss\z/
+        config.excluded_file?(filename)
       end
 
       def violations(file)

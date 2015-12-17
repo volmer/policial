@@ -4,6 +4,8 @@ module Policial
   module StyleGuides
     # Public: Determine Ruby style guide violations per-line.
     class Ruby < Base
+      KEY = :ruby
+
       def config_file(options = {})
         if options[:rubocop_config].to_s.strip.empty?
           RuboCop::ConfigLoader::DOTFILE
@@ -13,16 +15,17 @@ module Policial
       end
 
       def violations_in_file(file)
-        if config.file_to_exclude?(file.filename)
-          []
-        else
-          team.inspect_file(parsed_source(file)).map do |offense|
-            Violation.new(file, offense.line, offense.message, offense.cop_name)
-          end
+        return [] if ignore?(file.filename)
+        team.inspect_file(parsed_source(file)).map do |offense|
+          Violation.new(file, offense.line, offense.message, offense.cop_name)
         end
       end
 
       private
+
+      def ignore?(filename)
+        (filename =~ /.+\.rb\z/).nil? || config.file_to_exclude?(filename)
+      end
 
       def team
         cop_classes = RuboCop::Cop::Cop.all

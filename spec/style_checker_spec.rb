@@ -5,13 +5,15 @@ describe Policial::StyleChecker do
     it 'returns a collection of computed violations' do
       stylish_file = stub_commit_file('good.rb', 'def good; end')
       violated_file = stub_commit_file('bad.rb', 'def bad( a ); a; end  ')
+      bad_scss = stub_commit_file('bad.scss', 'h1 { border: none; }')
       pull_request =
-        stub_pull_request(files: [stylish_file, violated_file])
+        stub_pull_request(files: [stylish_file, violated_file, bad_scss])
       expected_violations = [
         'Avoid single-line method definitions.',
         'Space inside parentheses detected.',
         'Space inside parentheses detected.',
-        'Trailing whitespace detected.'
+        'Trailing whitespace detected.',
+        '`border: 0` is preferred over `border: none`'
       ]
 
       violation_messages =
@@ -30,101 +32,16 @@ describe Policial::StyleChecker do
       described_class.new(pull_request, my: :options).violations
     end
 
-    context 'for a Ruby file' do
-      context 'with violations' do
-        let(:file) { stub_commit_file('ruby.rb', 'puts 123    ') }
-        let(:pull_request) { stub_pull_request(files: [file]) }
+    it 'allows disabling certain style guides via options' do
+      ruby_file = stub_commit_file('bad.rb', 'def bad( a ); a; end  ')
+      scss_file = stub_commit_file('bad.scss', 'h1 { border: none; }')
+      pull_request = stub_pull_request(files: [ruby_file, scss_file])
+      expected_violations = ['`border: 0` is preferred over `border: none`']
 
-        it 'returns violations' do
-          violations = described_class.new(pull_request).violations
-          messages = violations.map(&:message)
+      violation_messages =
+        described_class.new(pull_request, ruby: false).violations.map(&:message)
 
-          expect(messages).to eq ['Trailing whitespace detected.']
-        end
-
-        it 'does not return violations if Ruby is disabled' do
-          violations = described_class.new(pull_request, ruby: false).violations
-          expect(violations).to be_empty
-        end
-      end
-
-      context 'with violation on unchanged line' do
-        it 'returns no violations' do
-          file = stub_commit_file(
-            'foo.rb', '"wrong quotes"', Policial::UnchangedLine.new
-          )
-          pull_request = stub_pull_request(files: [file])
-
-          violations = described_class.new(pull_request).violations
-
-          expect(violations.count).to eq 0
-        end
-      end
-
-      context 'without violations' do
-        it 'returns no violations' do
-          file = stub_commit_file('ruby.rb', 'puts 123')
-          pull_request = stub_pull_request(files: [file])
-
-          violations = described_class.new(pull_request).violations
-
-          expect(violations).to be_empty
-        end
-      end
-    end
-
-    context 'for a SCSS file' do
-      context 'with violations' do
-        let(:file) { stub_commit_file('style.scss', 'p { content: "hi!"; }') }
-        let(:pull_request) { stub_pull_request(files: [file]) }
-
-        it 'returns violations if SCSS is enabled' do
-          violations = described_class.new(pull_request, scss: true).violations
-          messages = violations.map(&:message)
-
-          expect(messages).to eq ['Prefer single quoted strings']
-        end
-
-        it 'does not return violations' do
-          violations = described_class.new(pull_request).violations
-          expect(violations).to be_empty
-        end
-      end
-
-      context 'with violation on unchanged line' do
-        it 'returns no violations' do
-          file = stub_commit_file(
-            'style.scss', 'p { content: "hi!"; }', Policial::UnchangedLine.new
-          )
-          pull_request = stub_pull_request(files: [file], scss: true)
-
-          violations = described_class.new(pull_request).violations
-
-          expect(violations.count).to eq 0
-        end
-      end
-
-      context 'without violations' do
-        it 'returns no violations' do
-          file = stub_commit_file('style.scss', "p { content: 'hi!'; }")
-          pull_request = stub_pull_request(files: [file], scss: true)
-
-          violations = described_class.new(pull_request).violations
-
-          expect(violations).to be_empty
-        end
-      end
-    end
-
-    context 'with unsupported file type' do
-      it 'uses unsupported style guide' do
-        file = stub_commit_file('fortran.f', %({PRINT *, 'Hello World!'\nEND}))
-        pull_request = stub_pull_request(files: [file])
-
-        violations = described_class.new(pull_request).violations
-
-        expect(violations).to eq []
-      end
+      expect(violation_messages).to eq expected_violations
     end
 
     private

@@ -10,12 +10,6 @@ describe Policial::StyleGuides::Ruby do
   end
   let(:custom_config) { nil }
 
-  describe '#enabled?' do
-    it 'is true' do
-      expect(subject.enabled?).to be true
-    end
-  end
-
   describe '#violations_in_file' do
     before do
       stub_contents_request_with_content(
@@ -143,6 +137,11 @@ describe Policial::StyleGuides::Ruby do
         file = build_file('app/models/ugly.rb', "puts 'my logs'")
         expect(subject.violations_in_file(file)).to be_empty
       end
+    end
+
+    it 'ignores non .rb files' do
+      file = build_file('ugly.erb', '"double quotes"')
+      expect(subject.violations_in_file(file)).to be_empty
     end
   end
 
