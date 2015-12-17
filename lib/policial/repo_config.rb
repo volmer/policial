@@ -6,10 +6,6 @@ module Policial
       @options = options
     end
 
-    def enabled_for?(style_guide_class)
-      Policial::STYLE_GUIDES.include?(style_guide_class)
-    end
-
     def for(style_guide)
       config_file = style_guide.config_file(@options)
 

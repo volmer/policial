@@ -6,10 +6,6 @@ module Policial
         @repo_config = repo_config
       end
 
-      def enabled?
-        @repo_config.enabled_for?(self.class)
-      end
-
       def violations_in_file(_file)
         fail NotImplementedError, "must implement ##{__method__}"
       end

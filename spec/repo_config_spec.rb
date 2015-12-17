@@ -5,12 +5,6 @@ describe Policial::RepoConfig do
   let(:commit) { Policial::Commit.new('volmer/cerberus', 'commitsha', Octokit) }
   let(:guide) { double('guide', config_file: '.policial.yml') }
 
-  describe '#enabled_for?' do
-    it 'returns true for StyleGuides::Ruby' do
-      expect(subject).to be_enabled_for(Policial::StyleGuides::Ruby)
-    end
-  end
-
   describe '#for' do
     it 'is a Hash with the config from the file found on the repo' do
       content_request_returns('DoubleQuotes: enabled')

@@ -10,12 +10,6 @@ describe Policial::StyleGuides::Scss do
   end
   let(:custom_config) { nil }
 
-  describe '#enabled?' do
-    it 'is true' do
-      expect(subject.enabled?).to be true
-    end
-  end
-
   describe '#violations_in_file' do
     before do
       stub_contents_request_with_content(
@@ -114,6 +108,11 @@ describe Policial::StyleGuides::Scss do
           expect(subject.violations_in_file(file)).to be_empty
         end
       end
+    end
+
+    it 'ignores non .scss files' do
+      file = build_file('ugly.css', 'p { content: "hi!"; }')
+      expect(subject.violations_in_file(file)).to be_empty
     end
   end
 

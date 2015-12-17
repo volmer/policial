@@ -14,37 +14,32 @@ module Policial
 
     private
 
-    attr_reader :pull_request, :style_guides
-
     def violations_in_checked_files
       files_to_check.flat_map do |file|
-        style_guide(file.filename).violations_in_file(file)
+        style_guides.flat_map do |style_guide|
+          style_guide.violations_in_file(file)
+        end
       end
     end
 
     def files_to_check
-      pull_request.files.reject(&:removed?).select do |file|
-        style_guide(file.filename).enabled?
+      @pull_request.files.reject(&:removed?)
+    end
+
+    def style_guides
+      style_guide_classes.map do |klass|
+        @style_guides[klass] ||= klass.new(config)
       end
     end
 
-    def style_guide(filename)
-      klass = style_guide_class(filename)
-      style_guides[klass] ||= klass.new(config)
-    end
-
-    def style_guide_class(filename)
-      if (@options[:ruby] != false) && (filename =~ /.+\.rb\z/)
-        StyleGuides::Ruby
-      elsif (@options[:scss] == true) && (filename =~ /.+\.scss\z/)
-        StyleGuides::Scss
-      else
-        StyleGuides::Unsupported
+    def style_guide_classes
+      @classes ||= Policial::STYLE_GUIDES.reject do |klass|
+        @options[klass::KEY] == false
       end
     end
 
     def config
-      @config ||= RepoConfig.new(pull_request.head_commit, @options)
+      @config ||= RepoConfig.new(@pull_request.head_commit, @options)
     end
   end
 end
