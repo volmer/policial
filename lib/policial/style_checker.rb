@@ -28,7 +28,7 @@ module Policial
 
     def style_guides
       style_guide_classes.map do |klass|
-        @style_guides[klass] ||= klass.new(config)
+        @style_guides[klass] ||= klass.new(config_loader, @options)
       end
     end
 
@@ -38,8 +38,8 @@ module Policial
       end
     end
 
-    def config
-      @config ||= RepoConfig.new(@pull_request.head_commit, @options)
+    def config_loader
+      @config_loader ||= ConfigLoader.new(@pull_request.head_commit)
     end
   end
 end

@@ -2,8 +2,9 @@ module Policial
   module StyleGuides
     # Public: Base to contain common style guide logic.
     class Base
-      def initialize(repo_config)
-        @repo_config = repo_config
+      def initialize(config_loader, options = {})
+        @config_loader = config_loader
+        @options = options
       end
 
       def violations_in_file(_file)

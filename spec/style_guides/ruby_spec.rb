@@ -3,23 +3,29 @@ require 'spec_helper'
 describe Policial::StyleGuides::Ruby do
   subject do
     described_class.new(
-      Policial::RepoConfig.new(
+      Policial::ConfigLoader.new(
         Policial::Commit.new('volmer/cerberus', 'commitsha', Octokit)
-      )
+      ),
+      options
     )
   end
-  let(:custom_config) { nil }
+
+  let(:options) { {} }
+
+  let(:custom_config_filename) { '.rubocop.yml' }
+
+  let(:custom_config_content) { nil }
+
+  before do
+    stub_contents_request_with_content(
+      'volmer/cerberus',
+      sha: 'commitsha',
+      file: custom_config_filename,
+      content: custom_config_content.to_yaml
+    )
+  end
 
   describe '#violations_in_file' do
-    before do
-      stub_contents_request_with_content(
-        'volmer/cerberus',
-        sha: 'commitsha',
-        file: '.rubocop.yml',
-        content: custom_config.to_yaml
-      )
-    end
-
     it 'detects offenses to the Ruby community Style Guide' do
       file = build_file('test.rb', '"I am naughty"')
       violations = subject.violations_in_file(file)
@@ -65,7 +71,7 @@ describe Policial::StyleGuides::Ruby do
     end
 
     context 'with custom configuration' do
-      let(:custom_config) do
+      let(:custom_config_content) do
         {
           'Style/StringLiterals' => {
             'EnforcedStyle' => 'double_quotes'
@@ -88,7 +94,7 @@ describe Policial::StyleGuides::Ruby do
       end
 
       context 'with excluded files' do
-        let(:custom_config) do
+        let(:custom_config_content) do
           {
             'AllCops' => {
               'Exclude' => ['app/models/ugly.rb']
@@ -110,6 +116,46 @@ describe Policial::StyleGuides::Ruby do
           expect(subject.violations_in_file(file)).to be_empty
         end
       end
+
+      context 'with a custom config file name' do
+        let(:custom_config_filename) { 'config/my_rubocop_conf.yml' }
+        let(:options) { { rubocop_config: 'config/my_rubocop_conf.yml' } }
+
+        it 'detects offenses to the custom style guide' do
+          file = build_file('test.rb', "'You do not like me'")
+          violations = subject.violations_in_file(file)
+          expect(violations.first.message).to eq(
+            'Prefer double-quoted strings unless you need single quotes to '\
+            'avoid extra backslashes for escaping.'
+          )
+        end
+      end
+
+      context 'with a nil config file name' do
+        let(:options) { { rubocop_config: nil } }
+
+        it 'defaults to .robocp.yml' do
+          file = build_file('test.rb', "'You do not like me'")
+          violations = subject.violations_in_file(file)
+          expect(violations.first.message).to eq(
+            'Prefer double-quoted strings unless you need single quotes to '\
+            'avoid extra backslashes for escaping.'
+          )
+        end
+      end
+
+      context 'with a nil config file name' do
+        let(:options) { { rubocop_config: ' ' } }
+
+        it 'detects offenses to the custom style guide' do
+          file = build_file('test.rb', "'You do not like me'")
+          violations = subject.violations_in_file(file)
+          expect(violations.first.message).to eq(
+            'Prefer double-quoted strings unless you need single quotes to '\
+            'avoid extra backslashes for escaping.'
+          )
+        end
+      end
     end
 
     it 'ignores Rails cops by default' do
@@ -118,7 +164,7 @@ describe Policial::StyleGuides::Ruby do
     end
 
     context 'when custom config enables Rails cops' do
-      let(:custom_config) do
+      let(:custom_config_content) do
         { 'AllCops' => { 'RunRailsCops' => true } }
       end
 
@@ -129,7 +175,7 @@ describe Policial::StyleGuides::Ruby do
     end
 
     context 'when custom config explicitly disables Rails cops' do
-      let(:custom_config) do
+      let(:custom_config_content) do
         { 'AllCops' => { 'RunRailsCops' => false } }
       end
 
@@ -142,25 +188,6 @@ describe Policial::StyleGuides::Ruby do
     it 'ignores non .rb files' do
       file = build_file('ugly.erb', '"double quotes"')
       expect(subject.violations_in_file(file)).to be_empty
-    end
-  end
-
-  describe '#config_file' do
-    it 'is the default RuboCop dotfile' do
-      expect(subject.config_file).to eq('.rubocop.yml')
-    end
-
-    it 'can be overwritten via config options' do
-      expect(subject.config_file(rubocop_config: '.custom.yml')).to eq(
-        '.custom.yml')
-    end
-
-    it 'ignores blank rubocop_config values' do
-      expect(subject.config_file(rubocop_config: nil)).to eq(
-        '.rubocop.yml')
-
-      expect(subject.config_file(rubocop_config: ' ')).to eq(
-        '.rubocop.yml')
     end
   end
 

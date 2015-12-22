@@ -1,8 +1,8 @@
 require 'spec_helper'
 
 describe Policial::StyleGuides::Base do
-  subject { described_class.new(repo_config) }
-  let(:repo_config) { Policial::RepoConfig.new('commit') }
+  subject { described_class.new(config_loader) }
+  let(:config_loader) { Policial::ConfigLoader.new('commit') }
 
   describe '#violations_in_file' do
     it 'raises NotImplementedError' do
