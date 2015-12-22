@@ -13,16 +13,18 @@ module Policial
       def violations_in_file(file)
         return [] if ignore?(file.filename)
 
-        tempfile_from(file.filename, file.content) do |tempfile|
-          errors = Coffeelint.lint_file(tempfile, config_file: config)
-          violations(file, errors)
-        end
+        errors = Coffeelint.lint(file.content, config)
+        violations(file, errors)
       end
 
       private
 
       def config
-        @config ||= config_file
+        @config ||= begin
+          JSON.parse(@repo_config.raw(self, '{}'))
+        rescue JSON::ParserError
+          {}
+        end
       end
 
       def ignore?(filename)
@@ -31,17 +33,8 @@ module Policial
 
       def violations(file, errors)
         errors.map do |error|
-          Violation.new(file, error['lineNumber'], error['message'], error)
-        end
-      end
-
-      def tempfile_from(filename, content)
-        filename = File.basename(filename)
-        Tempfile.create(File.basename(filename), Dir.pwd) do |tempfile|
-          tempfile.write(content)
-          tempfile.rewind
-
-          yield(tempfile)
+          Violation.new(
+            file, error['lineNumber'], error['message'], error['rule'])
         end
       end
     end

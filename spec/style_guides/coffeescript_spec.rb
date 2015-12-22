@@ -11,21 +11,18 @@ describe Policial::StyleGuides::Coffeescript do
   let(:custom_config) { nil }
 
   describe '#violations_in_file' do
-    it 'detects offenses to the CoffeeScript Style Guide' do
-      file = build_file('test.coffee', 'foo: -> "bar"')
-      violations = subject.violations_in_file(file)
-
-      expect(violations.count).to eq(1)
-      expect(violations.first.filename).to eq('test.coffee')
-      expect(violations.first.line_number).to eq(1)
-      expect(violations.first.message).to eq(
-        'Unnecessary double quotes are forbidden'
+    before do
+      stub_contents_request_with_content(
+        'volmer/cerberus',
+        sha: 'commitsha',
+        file: 'coffeelint.json',
+        content: custom_config.to_json
       )
     end
 
     it 'returns one violation per lint' do
       file_content = [
-        'foo: => ',
+        'foo: =>',
         '  debugger',
         '  "bar"'
       ]
@@ -33,12 +30,12 @@ describe Policial::StyleGuides::Coffeescript do
 
       violations = subject.violations_in_file(file)
 
-      expect(violations.count).to eq(3)
+      expect(violations.count).to eq(2)
 
       expect(violations[0].filename).to eq('test.coffee')
       expect(violations[0].line_number).to eq(1)
       expect(violations[0].message).to eq(
-        'Line ends with trailing whitespace'
+        'Unnecessary fat arrow'
       )
 
       expect(violations[1].filename).to eq('test.coffee')
@@ -46,11 +43,6 @@ describe Policial::StyleGuides::Coffeescript do
       expect(violations[1].message).to eq(
         'Found debugging code'
       )
-
-      expect(violations[2].filename).to eq('test.coffee')
-      expect(violations[2].line_number).to eq(3)
-      expect(violations[2].message).to eq(
-        'Unnecessary double quotes are forbidden')
     end
 
     context 'with valid file' do
@@ -70,6 +62,29 @@ describe Policial::StyleGuides::Coffeescript do
     it 'ignores non .coffee files' do
       file = build_file('ugly.js', 'foo: -> "bar"')
       expect(subject.violations_in_file(file)).to be_empty
+    end
+
+    context 'with custom configuration' do
+      let(:custom_config) do
+        {
+          'no_unnecessary_double_quotes' => {
+            'level' => 'error'
+          }
+        }
+      end
+
+      it 'detects offenses to the custom style guide' do
+        file_content = ['foo: =>', '  "baz"']
+        file = build_file('test.coffee', file_content)
+
+        violations = subject.violations_in_file(file)
+
+        expect(violations.count).to eq(2)
+        expect(violations[0].message).to eq('Unnecessary fat arrow')
+        expect(violations[1].message).to eq(
+          'Unnecessary double quotes are forbidden'
+        )
+      end
     end
   end
 
