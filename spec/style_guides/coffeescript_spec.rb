@@ -3,23 +3,24 @@ require 'spec_helper'
 describe Policial::StyleGuides::Coffeescript do
   subject do
     described_class.new(
-      Policial::RepoConfig.new(
+      Policial::ConfigLoader.new(
         Policial::Commit.new('volmer/cerberus', 'commitsha', Octokit)
       )
     )
   end
+
   let(:custom_config) { nil }
 
-  describe '#violations_in_file' do
-    before do
-      stub_contents_request_with_content(
-        'volmer/cerberus',
-        sha: 'commitsha',
-        file: 'coffeelint.json',
-        content: custom_config.to_json
-      )
-    end
+  before do
+    stub_contents_request_with_content(
+      'volmer/cerberus',
+      sha: 'commitsha',
+      file: 'coffeelint.json',
+      content: custom_config.to_json
+    )
+  end
 
+  describe '#violations_in_file' do
     it 'returns one violation per lint' do
       file_content = [
         'foo: =>',
@@ -85,12 +86,6 @@ describe Policial::StyleGuides::Coffeescript do
           'Unnecessary double quotes are forbidden'
         )
       end
-    end
-  end
-
-  describe '#config_file' do
-    it 'is the default Coffeelint json file' do
-      expect(subject.config_file).to eq('coffeelint.json')
     end
   end
 

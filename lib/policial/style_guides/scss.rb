@@ -4,11 +4,6 @@ module Policial
     class Scss < Base
       KEY = :scss
 
-      def config_file(*)
-        require 'scss_lint'
-        SCSSLint::Config::FILE_NAME
-      end
-
       def violations_in_file(file)
         require 'scss_lint'
 
@@ -26,8 +21,11 @@ module Policial
       private
 
       def config
-        @config ||= tempfile_from(config_file, @repo_config.raw(self)) do |temp|
-          SCSSLint::Config.load(temp, merge_with_default: true)
+        @config ||= begin
+          content = @config_loader.raw(SCSSLint::Config::FILE_NAME)
+          tempfile_from(SCSSLint::Config::FILE_NAME, content) do |temp|
+            SCSSLint::Config.load(temp, merge_with_default: true)
+          end
         end
       end
 

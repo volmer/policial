@@ -6,14 +6,6 @@ module Policial
     class Ruby < Base
       KEY = :ruby
 
-      def config_file(options = {})
-        if options[:rubocop_config].to_s.strip.empty?
-          RuboCop::ConfigLoader::DOTFILE
-        else
-          options[:rubocop_config]
-        end
-      end
-
       def violations_in_file(file)
         return [] if ignore?(file.filename)
         team.inspect_file(parsed_source(file)).map do |offense|
@@ -22,6 +14,14 @@ module Policial
       end
 
       private
+
+      def config_file
+        if @options[:rubocop_config].to_s.strip.empty?
+          RuboCop::ConfigLoader::DOTFILE
+        else
+          @options[:rubocop_config]
+        end
+      end
 
       def ignore?(filename)
         (filename =~ /.+\.rb\z/).nil? || config.file_to_exclude?(filename)
@@ -44,7 +44,7 @@ module Policial
       end
 
       def custom_config
-        custom = @repo_config.for(self)
+        custom = @config_loader.yaml(config_file)
 
         if custom.is_a?(Hash)
           RuboCop::Config.new(custom, '').tap(&:make_excludes_absolute)

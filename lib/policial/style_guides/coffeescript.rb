@@ -5,10 +5,7 @@ module Policial
     # Public: Determine Coffeescript style guide violations per-line.
     class Coffeescript < Base
       KEY = :coffeescript
-
-      def config_file(*)
-        'coffeelint.json'
-      end
+      CONFIG_FILE = 'coffeelint.json'
 
       def violations_in_file(file)
         return [] if ignore?(file.filename)
@@ -20,11 +17,7 @@ module Policial
       private
 
       def config
-        @config ||= begin
-          JSON.parse(@repo_config.raw(self, '{}'))
-        rescue JSON::ParserError
-          {}
-        end
+        @config ||= @config_loader.json(CONFIG_FILE)
       end
 
       def ignore?(filename)

@@ -3,23 +3,24 @@ require 'spec_helper'
 describe Policial::StyleGuides::Scss do
   subject do
     described_class.new(
-      Policial::RepoConfig.new(
+      Policial::ConfigLoader.new(
         Policial::Commit.new('volmer/cerberus', 'commitsha', Octokit)
       )
     )
   end
+
   let(:custom_config) { nil }
 
-  describe '#violations_in_file' do
-    before do
-      stub_contents_request_with_content(
-        'volmer/cerberus',
-        sha: 'commitsha',
-        file: '.scss-lint.yml',
-        content: custom_config.to_yaml
-      )
-    end
+  before do
+    stub_contents_request_with_content(
+      'volmer/cerberus',
+      sha: 'commitsha',
+      file: '.scss-lint.yml',
+      content: custom_config.to_yaml
+    )
+  end
 
+  describe '#violations_in_file' do
     it 'detects offenses to the Ruby community Style Guide' do
       file = build_file('test.scss', 'p { border: none; }')
       violations = subject.violations_in_file(file)
@@ -113,12 +114,6 @@ describe Policial::StyleGuides::Scss do
     it 'ignores non .scss files' do
       file = build_file('ugly.css', 'p { content: "hi!"; }')
       expect(subject.violations_in_file(file)).to be_empty
-    end
-  end
-
-  describe '#config_file' do
-    it 'is the default SCSS Lint dotfile' do
-      expect(subject.config_file).to eq('.scss-lint.yml')
     end
   end
 

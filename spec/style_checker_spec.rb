@@ -22,12 +22,19 @@ describe Policial::StyleChecker do
       expect(violation_messages).to eq expected_violations
     end
 
-    it 'forwards options to RepoConfig' do
+    it 'forwards options to the style guides, as well as a config loader' do
       file = stub_commit_file('ruby.rb', 'puts 123')
-      pull_request = stub_pull_request(files: [file])
+      head_commit = double('Commit', file_content: '')
+      pull_request = stub_pull_request(head_commit: head_commit, files: [file])
+      config_loader = Policial::ConfigLoader.new(head_commit)
 
-      expect(Policial::RepoConfig).to receive(:new).with(
-        anything, my: :options).and_call_original
+      expect(Policial::ConfigLoader).to receive(:new).with(
+        head_commit).and_return(config_loader)
+
+      Policial::STYLE_GUIDES.each do |style_guide_class|
+        expect(style_guide_class).to receive(:new).with(
+          config_loader, my: :options).and_call_original
+      end
 
       described_class.new(pull_request, my: :options).violations
     end
