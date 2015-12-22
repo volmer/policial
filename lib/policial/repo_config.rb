@@ -16,13 +16,13 @@ module Policial
       end
     end
 
-    def raw(style_guide)
+    def raw(style_guide, default = '')
       config_file = style_guide.config_file(@options)
 
       if config_file
-        @commit.file_content(config_file) || ''
+        @commit.file_content(config_file) || default
       else
-        ''
+        default
       end
     end
 
