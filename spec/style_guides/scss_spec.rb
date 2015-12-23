@@ -89,7 +89,6 @@ describe Policial::StyleGuides::Scss do
       context 'with excluded files' do
         let(:custom_config) do
           {
-            'exclude' => ['assets/**'],
             'linters' => {
               'StringQuotes' => {
                 'exclude' => ['vendor/**', 'lib/style.scss']
@@ -99,9 +98,6 @@ describe Policial::StyleGuides::Scss do
         end
 
         it 'has no violations' do
-          file = build_file('assets/ugly.scss', 'p { content: "hi!"; }')
-          expect(subject.violations_in_file(file)).to be_empty
-
           file = build_file('vendor/test.scss', 'p { content: "hi!"; }')
           expect(subject.violations_in_file(file)).to be_empty
 
@@ -110,10 +106,46 @@ describe Policial::StyleGuides::Scss do
         end
       end
     end
+  end
 
-    it 'ignores non .scss files' do
-      file = build_file('ugly.css', 'p { content: "hi!"; }')
-      expect(subject.violations_in_file(file)).to be_empty
+  describe '#filename_pattern' do
+    it 'matches SCSS files' do
+      expect(subject.filename_pattern).to match('my_file.scss')
+      expect(subject.filename_pattern).to match('app/base.scss')
+      expect(subject.filename_pattern).not_to match('my_file.css')
+      expect(subject.filename_pattern).not_to match('my_file.scss.erb')
+    end
+  end
+
+  describe '#default_config_file' do
+    it 'is .scss-lint.yml' do
+      expect(subject.default_config_file).to eq('.scss-lint.yml')
+    end
+  end
+
+  describe '#exclude_file?' do
+    it 'is false when there is no custom config' do
+      expect(subject.exclude_file?('app/file.scss')).to be false
+    end
+
+    context 'when custom config excludes the file' do
+      let(:custom_config) do
+        { 'exclude' => ['app/file.scss'] }
+      end
+
+      it 'is true' do
+        expect(subject.exclude_file?('app/file.scss')).to be true
+      end
+    end
+
+    context 'when custom config does not exclude the file' do
+      let(:custom_config) do
+        { 'exclude' => ['app/other_file.scss'] }
+      end
+
+      it 'is true' do
+        expect(subject.exclude_file?('app/file.scss')).to be false
+      end
     end
   end
 

@@ -31,22 +31,34 @@ describe Policial::StyleChecker do
       expect(Policial::ConfigLoader).to receive(:new).with(
         head_commit).and_return(config_loader)
 
-      Policial::STYLE_GUIDES.each do |style_guide_class|
-        expect(style_guide_class).to receive(:new).with(
-          config_loader, my: :options).and_call_original
-      end
+      expect(Policial::StyleGuides::Ruby).to receive(:new).with(
+        config_loader, my: :options).and_call_original
+      expect(Policial::StyleGuides::Scss).to receive(:new).with(
+        config_loader, other: :options).and_call_original
+      expect(Policial::StyleGuides::Coffeescript).to receive(:new).with(
+        config_loader, a_few: :more_options).and_call_original
 
-      described_class.new(pull_request, my: :options).violations
+      described_class.new(
+        pull_request,
+        ruby: { my: :options },
+        scss: { other: :options },
+        coffeescript: { a_few: :more_options }
+      ).violations
     end
 
-    it 'allows disabling certain style guides via options' do
-      ruby_file = stub_commit_file('bad.rb', 'def bad( a ); a; end  ')
-      scss_file = stub_commit_file('bad.scss', 'h1 { border: none; }')
-      pull_request = stub_pull_request(files: [ruby_file, scss_file])
-      expected_violations = ['`border: 0` is preferred over `border: none`']
+    it 'skips style guides on files that they are not able to investigate' do
+      allow_any_instance_of(Policial::StyleGuides::Ruby)
+        .to receive(:investigate?).with('a.rb').and_return(false)
+      allow_any_instance_of(Policial::StyleGuides::Ruby)
+        .to receive(:investigate?).with('b.rb').and_return(true)
+
+      file_a = stub_commit_file('a.rb', '"double quotes"')
+      file_b = stub_commit_file('b.rb', ':trailing_withespace ')
+      pull_request = stub_pull_request(files: [file_a, file_b])
+      expected_violations = ['Trailing whitespace detected.']
 
       violation_messages =
-        described_class.new(pull_request, ruby: false).violations.map(&:message)
+        described_class.new(pull_request).violations.map(&:message)
 
       expect(violation_messages).to eq expected_violations
     end
