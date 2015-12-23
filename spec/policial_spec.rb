@@ -1,13 +1,18 @@
 require 'spec_helper'
 
 describe Policial do
-  describe 'STYLE_GUIDES' do
-    it 'includes Ruby' do
-      expect(Policial::STYLE_GUIDES).to include(Policial::StyleGuides::Ruby)
+  after { Policial.style_guides = Policial::DEFAULT_STYLE_GUIDES }
+
+  describe '.style_guides' do
+    it 'defaults to DEFAULT_STYLE_GUIDES' do
+      expect(Policial.style_guides).to eq(Policial::DEFAULT_STYLE_GUIDES)
     end
 
-    it 'includes SCSS' do
-      expect(Policial::STYLE_GUIDES).to include(Policial::StyleGuides::Scss)
+    it 'can be overwritten' do
+      custom = [Policial::StyleGuides::Scss, Policial::StyleGuides::Ruby]
+      Policial.style_guides = custom
+
+      expect(Policial.style_guides).to eq(custom)
     end
   end
 end

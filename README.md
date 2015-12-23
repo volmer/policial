@@ -7,9 +7,7 @@
 *Policial* is a gem that investigates pull requests and accuses style guide
 violations. It is based on thoughtbot's
 [Hound project](https://github.com/thoughtbot/hound).
-Currently it only investigates ruby code. You can setup your ruby code style
-rules by defining a `.rubocop.yml` file in you repo. Please see
-[RuboCop's README](https://github.com/bbatsov/rubocop).
+It currently supports Ruby, SCSS and Coffeescript.
 
 ## Installation
 
@@ -82,6 +80,45 @@ Or install it yourself as:
   violations.first.message
   "Prefer single-quoted strings when you don't need string interpolation or special symbols."
   ```
+
+## Ruby
+
+You can setup your Ruby code style rules with a `.rubocop.yml` file in
+your repo. Please see [RuboCop's README](https://github.com/bbatsov/rubocop).
+
+## Coffeescript
+
+You can setup your Coffeescript code style rules with a `coffeelint.json`
+file in your repo. For more information on how customize the linter rules please
+visit the [Coffeelint website](https://coffelint.org).
+
+## SCSS
+
+SCSS linting is disabled by default. To enable it, you need to install the
+[SCSS-Lint](https://github.com/brigade/scss-lint) gem:
+
+```
+gem install scss_lint
+```
+
+Or add the following to your `Gemfile` and run `bundle install`:
+
+```ruby
+gem 'scss_lint', require: false
+```
+
+The `require: false` is necessary because `scss-lint` monkey patches `Sass`.
+More info [here](https://github.com/brigade/scss-lint#installation).
+
+Now you can enable SCSS on Policial:
+
+```ruby
+Policial.style_guides << Policial::StyleGuides::Scss
+```
+
+You can setup your SCSS code style rules with a `.scss-lint.yml` file in your
+repo. For more information on how customize the linter rules please
+read [SCSS-Lint's README](https://github.com/brigade/scss-lint#configuration).
 
 ## Contributing
 
