@@ -5,11 +5,7 @@ module Policial
       KEY = :scss
 
       def violations_in_file(file)
-        require 'scss_lint'
-
         absolute_path = File.expand_path(file.filename)
-
-        return [] if ignore?(absolute_path)
 
         tempfile_from(file.filename, file.content) do |tempfile|
           runner.run([{ file: tempfile, path: absolute_path }])
@@ -18,20 +14,29 @@ module Policial
         violations(file)
       end
 
+      def exclude_file?(filename)
+        config.excluded_file?(File.expand_path(filename))
+      end
+
+      def filename_pattern
+        /.+\.scss\z/
+      end
+
+      def default_config_file
+        require 'scss_lint'
+        SCSSLint::Config::FILE_NAME
+      end
+
       private
 
       def config
+        require 'scss_lint'
         @config ||= begin
-          content = @config_loader.raw(SCSSLint::Config::FILE_NAME)
-          tempfile_from(SCSSLint::Config::FILE_NAME, content) do |temp|
+          content = @config_loader.raw(config_file)
+          tempfile_from(config_file, content) do |temp|
             SCSSLint::Config.load(temp, merge_with_default: true)
           end
         end
-      end
-
-      def ignore?(filename)
-        return true unless filename =~ /.+\.scss\z/
-        config.excluded_file?(filename)
       end
 
       def violations(file)
@@ -42,6 +47,7 @@ module Policial
       end
 
       def runner
+        require 'scss_lint'
         @runner ||= SCSSLint::Runner.new(config)
       end
 

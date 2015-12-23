@@ -17,7 +17,11 @@ module Policial
     def violations_in_checked_files
       files_to_check.flat_map do |file|
         style_guides.flat_map do |style_guide|
-          style_guide.violations_in_file(file)
+          if style_guide.investigate?(file.filename)
+            style_guide.violations_in_file(file)
+          else
+            []
+          end
         end
       end
     end
@@ -27,14 +31,9 @@ module Policial
     end
 
     def style_guides
-      style_guide_classes.map do |klass|
-        @style_guides[klass] ||= klass.new(config_loader, @options)
-      end
-    end
-
-    def style_guide_classes
-      @classes ||= Policial::STYLE_GUIDES.reject do |klass|
-        @options[klass::KEY] == false
+      Policial::STYLE_GUIDES.map do |klass|
+        @style_guides[klass] ||= klass.new(
+          config_loader, @options[klass::KEY] || {})
       end
     end
 

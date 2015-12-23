@@ -10,6 +10,40 @@ module Policial
       def violations_in_file(_file)
         fail NotImplementedError, "must implement ##{__method__}"
       end
+
+      def exclude_file?(_filename)
+        fail NotImplementedError, "must implement ##{__method__}"
+      end
+
+      def filename_pattern
+        fail NotImplementedError, "must implement ##{__method__}"
+      end
+
+      def default_config_file
+        fail NotImplementedError, "must implement ##{__method__}"
+      end
+
+      def config_file
+        if @options[:config_file].to_s.strip.empty?
+          default_config_file
+        else
+          @options[:config_file]
+        end
+      end
+
+      def investigate?(filename)
+        enabled? && matches_pattern?(filename) && !exclude_file?(filename)
+      end
+
+      private
+
+      def enabled?
+        @options[:enabled] != false
+      end
+
+      def matches_pattern?(filename)
+        !(filename =~ filename_pattern).nil?
+      end
     end
   end
 end

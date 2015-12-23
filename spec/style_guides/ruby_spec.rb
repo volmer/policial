@@ -5,23 +5,18 @@ describe Policial::StyleGuides::Ruby do
     described_class.new(
       Policial::ConfigLoader.new(
         Policial::Commit.new('volmer/cerberus', 'commitsha', Octokit)
-      ),
-      options
+      )
     )
   end
 
-  let(:options) { {} }
-
-  let(:custom_config_filename) { '.rubocop.yml' }
-
-  let(:custom_config_content) { nil }
+  let(:custom_config) { nil }
 
   before do
     stub_contents_request_with_content(
       'volmer/cerberus',
       sha: 'commitsha',
-      file: custom_config_filename,
-      content: custom_config_content.to_yaml
+      file: '.rubocop.yml',
+      content: custom_config.to_yaml
     )
   end
 
@@ -71,11 +66,9 @@ describe Policial::StyleGuides::Ruby do
     end
 
     context 'with custom configuration' do
-      let(:custom_config_content) do
+      let(:custom_config) do
         {
-          'Style/StringLiterals' => {
-            'EnforcedStyle' => 'double_quotes'
-          }
+          'Style/StringLiterals' => { 'EnforcedStyle' => 'double_quotes' }
         }
       end
 
@@ -94,11 +87,8 @@ describe Policial::StyleGuides::Ruby do
       end
 
       context 'with excluded files' do
-        let(:custom_config_content) do
+        let(:custom_config) do
           {
-            'AllCops' => {
-              'Exclude' => ['app/models/ugly.rb']
-            },
             'Style/StringLiterals' => {
               'Exclude' => ['lib/**/*', 'config/ext.rb']
             }
@@ -106,54 +96,11 @@ describe Policial::StyleGuides::Ruby do
         end
 
         it 'has no violations' do
-          file = build_file('app/models/ugly.rb', '"Awful code"')
-          expect(subject.violations_in_file(file)).to be_empty
-
           file = build_file('lib/test.rb', '"Awful code"')
           expect(subject.violations_in_file(file)).to be_empty
 
           file = build_file('config/ext.rb', '"Awful code"')
           expect(subject.violations_in_file(file)).to be_empty
-        end
-      end
-
-      context 'with a custom config file name' do
-        let(:custom_config_filename) { 'config/my_rubocop_conf.yml' }
-        let(:options) { { rubocop_config: 'config/my_rubocop_conf.yml' } }
-
-        it 'detects offenses to the custom style guide' do
-          file = build_file('test.rb', "'You do not like me'")
-          violations = subject.violations_in_file(file)
-          expect(violations.first.message).to eq(
-            'Prefer double-quoted strings unless you need single quotes to '\
-            'avoid extra backslashes for escaping.'
-          )
-        end
-      end
-
-      context 'with a nil config file name' do
-        let(:options) { { rubocop_config: nil } }
-
-        it 'defaults to .robocp.yml' do
-          file = build_file('test.rb', "'You do not like me'")
-          violations = subject.violations_in_file(file)
-          expect(violations.first.message).to eq(
-            'Prefer double-quoted strings unless you need single quotes to '\
-            'avoid extra backslashes for escaping.'
-          )
-        end
-      end
-
-      context 'with a nil config file name' do
-        let(:options) { { rubocop_config: ' ' } }
-
-        it 'detects offenses to the custom style guide' do
-          file = build_file('test.rb', "'You do not like me'")
-          violations = subject.violations_in_file(file)
-          expect(violations.first.message).to eq(
-            'Prefer double-quoted strings unless you need single quotes to '\
-            'avoid extra backslashes for escaping.'
-          )
         end
       end
     end
@@ -164,7 +111,7 @@ describe Policial::StyleGuides::Ruby do
     end
 
     context 'when custom config enables Rails cops' do
-      let(:custom_config_content) do
+      let(:custom_config) do
         { 'AllCops' => { 'RunRailsCops' => true } }
       end
 
@@ -175,7 +122,7 @@ describe Policial::StyleGuides::Ruby do
     end
 
     context 'when custom config explicitly disables Rails cops' do
-      let(:custom_config_content) do
+      let(:custom_config) do
         { 'AllCops' => { 'RunRailsCops' => false } }
       end
 
@@ -184,10 +131,45 @@ describe Policial::StyleGuides::Ruby do
         expect(subject.violations_in_file(file)).to be_empty
       end
     end
+  end
 
-    it 'ignores non .rb files' do
-      file = build_file('ugly.erb', '"double quotes"')
-      expect(subject.violations_in_file(file)).to be_empty
+  describe '#filename_pattern' do
+    it 'matches Ruby files' do
+      expect(subject.filename_pattern).to match('my_file.rb')
+      expect(subject.filename_pattern).to match('app/base.rb')
+      expect(subject.filename_pattern).not_to match('my_file.erb')
+    end
+  end
+
+  describe '#default_config_file' do
+    it 'is .rubocop.yml' do
+      expect(subject.default_config_file).to eq('.rubocop.yml')
+    end
+  end
+
+  describe '#exclude_file?' do
+    it 'is false when there is no custom config' do
+      expect(subject.exclude_file?('app/file.rb')).to be false
+    end
+
+    context 'when custom config excludes the file' do
+      let(:custom_config) do
+        { 'AllCops' => { 'Exclude' => ['app/file.rb'] } }
+      end
+
+      it 'is true' do
+        expect(subject.exclude_file?('app/file.rb')).to be true
+      end
+    end
+
+    context 'when custom config does not exclude the file' do
+      let(:custom_config) do
+        { 'AllCops' => { 'Exclude' => ['app/other_file.rb'] } }
+      end
+
+      it 'is true' do
+        expect(subject.exclude_file?('app/file.rb')).to be false
+      end
     end
   end
 

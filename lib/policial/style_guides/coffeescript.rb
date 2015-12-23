@@ -5,23 +5,28 @@ module Policial
     # Public: Determine Coffeescript style guide violations per-line.
     class Coffeescript < Base
       KEY = :coffeescript
-      CONFIG_FILE = 'coffeelint.json'
 
       def violations_in_file(file)
-        return [] if ignore?(file.filename)
-
         errors = Coffeelint.lint(file.content, config)
         violations(file, errors)
+      end
+
+      def exclude_file?(_filename)
+        false
+      end
+
+      def filename_pattern
+        /.+\.coffee\z/
+      end
+
+      def default_config_file
+        'coffeelint.json'
       end
 
       private
 
       def config
-        @config ||= @config_loader.json(CONFIG_FILE)
-      end
-
-      def ignore?(filename)
-        (filename =~ /.+\.coffee\z/).nil?
+        @config ||= @config_loader.json(config_file)
       end
 
       def violations(file, errors)

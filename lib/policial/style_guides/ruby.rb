@@ -7,25 +7,24 @@ module Policial
       KEY = :ruby
 
       def violations_in_file(file)
-        return [] if ignore?(file.filename)
         team.inspect_file(parsed_source(file)).map do |offense|
           Violation.new(file, offense.line, offense.message, offense.cop_name)
         end
       end
 
+      def exclude_file?(filename)
+        config.file_to_exclude?(filename)
+      end
+
+      def filename_pattern
+        /.+\.rb\z/
+      end
+
+      def default_config_file
+        RuboCop::ConfigLoader::DOTFILE
+      end
+
       private
-
-      def config_file
-        if @options[:rubocop_config].to_s.strip.empty?
-          RuboCop::ConfigLoader::DOTFILE
-        else
-          @options[:rubocop_config]
-        end
-      end
-
-      def ignore?(filename)
-        (filename =~ /.+\.rb\z/).nil? || config.file_to_exclude?(filename)
-      end
 
       def team
         cop_classes = RuboCop::Cop::Cop.all

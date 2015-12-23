@@ -89,6 +89,26 @@ describe Policial::StyleGuides::Coffeescript do
     end
   end
 
+  describe '#filename_pattern' do
+    it 'matches Coffeescript files' do
+      expect(subject.filename_pattern).to match('my_file.coffee')
+      expect(subject.filename_pattern).to match('app/script.coffee')
+      expect(subject.filename_pattern).not_to match('my_file.coffee.erb')
+    end
+  end
+
+  describe '#default_config_file' do
+    it 'is coffeelint.json' do
+      expect(subject.default_config_file).to eq('coffeelint.json')
+    end
+  end
+
+  describe '#exclude_file?' do
+    it 'is false' do
+      expect(subject.exclude_file?('filename')).to eq(false)
+    end
+  end
+
   def build_file(name, *lines)
     file = double('file', filename: name, content: lines.join("\n") + "\n")
     allow(file).to receive(:line_at) { |n| lines[n] }
