@@ -21,9 +21,22 @@ require 'policial/violation'
 # so you can configure GitHub credentials, enable/disable style guides
 # and more.
 module Policial
-  STYLE_GUIDES = [
+  DEFAULT_STYLE_GUIDES = [
     Policial::StyleGuides::Ruby,
-    Policial::StyleGuides::Scss,
     Policial::StyleGuides::Coffeescript
   ]
+
+  OPTIONAL_STYLE_GUIDES = [
+    Policial::StyleGuides::Scss
+  ]
+
+  module_function
+
+  def style_guides
+    @style_guides ||= DEFAULT_STYLE_GUIDES
+  end
+
+  def style_guides=(style_guides)
+    @style_guides = style_guides
+  end
 end

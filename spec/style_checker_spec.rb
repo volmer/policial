@@ -5,15 +5,15 @@ describe Policial::StyleChecker do
     it 'returns a collection of computed violations' do
       stylish_file = stub_commit_file('good.rb', 'def good; end')
       violated_file = stub_commit_file('bad.rb', 'def bad( a ); a; end  ')
-      bad_scss = stub_commit_file('bad.scss', 'h1 { border: none; }')
+      bad_coffee = stub_commit_file('bad.coffee', 'foo: =>')
       pull_request =
-        stub_pull_request(files: [stylish_file, violated_file, bad_scss])
+        stub_pull_request(files: [stylish_file, violated_file, bad_coffee])
       expected_violations = [
         'Avoid single-line method definitions.',
         'Space inside parentheses detected.',
         'Space inside parentheses detected.',
         'Trailing whitespace detected.',
-        '`border: 0` is preferred over `border: none`'
+        'Unnecessary fat arrow'
       ]
 
       violation_messages =
@@ -33,15 +33,12 @@ describe Policial::StyleChecker do
 
       expect(Policial::StyleGuides::Ruby).to receive(:new).with(
         config_loader, my: :options).and_call_original
-      expect(Policial::StyleGuides::Scss).to receive(:new).with(
-        config_loader, other: :options).and_call_original
       expect(Policial::StyleGuides::Coffeescript).to receive(:new).with(
         config_loader, a_few: :more_options).and_call_original
 
       described_class.new(
         pull_request,
         ruby: { my: :options },
-        scss: { other: :options },
         coffeescript: { a_few: :more_options }
       ).violations
     end
