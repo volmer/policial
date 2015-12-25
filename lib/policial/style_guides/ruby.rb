@@ -43,12 +43,20 @@ module Policial
       end
 
       def custom_config
-        custom = @config_loader.yaml(config_file)
+        content = @config_loader.raw(config_file)
 
-        if custom.is_a?(Hash)
-          RuboCop::Config.new(custom, '').tap(&:make_excludes_absolute)
-        else
-          RuboCop::Config.new
+        tempfile_from(config_file, content) do |tempfile|
+          RuboCop::ConfigLoader.load_file(tempfile.path)
+        end
+      end
+
+      def tempfile_from(filename, content)
+        filename = File.basename(filename)
+        Tempfile.create(File.basename(filename), Dir.pwd) do |tempfile|
+          tempfile.write(content)
+          tempfile.rewind
+
+          yield(tempfile)
         end
       end
     end

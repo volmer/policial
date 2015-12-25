@@ -103,6 +103,19 @@ describe Policial::StyleGuides::Ruby do
           expect(subject.violations_in_file(file)).to be_empty
         end
       end
+
+      context 'when custom config inherits from a remote file' do
+        let(:custom_config) do
+          { 'inherit_from' => ['http://example.com/rubocop.yml'] }
+        end
+
+        it 'fetches and uses the remote config' do
+          stub_request(:get, 'http://example.com/rubocop.yml').to_return(
+            body: { 'Style/StringLiterals' => { 'Enabled' => false } }.to_yaml)
+          file = build_file('app/models/ugly.rb', '"double quotes"')
+          expect(subject.violations_in_file(file)).to be_empty
+        end
+      end
     end
 
     it 'ignores Rails cops by default' do
