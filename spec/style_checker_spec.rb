@@ -33,7 +33,7 @@ describe Policial::StyleChecker do
 
       expect(Policial::StyleGuides::Ruby).to receive(:new).with(
         config_loader, my: :options).and_call_original
-      expect(Policial::StyleGuides::Coffeescript).to receive(:new).with(
+      expect(Policial::StyleGuides::CoffeeScript).to receive(:new).with(
         config_loader, a_few: :more_options).and_call_original
 
       described_class.new(
