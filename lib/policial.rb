@@ -23,7 +23,7 @@ require 'policial/violation'
 module Policial
   DEFAULT_STYLE_GUIDES = [
     Policial::StyleGuides::Ruby,
-    Policial::StyleGuides::Coffeescript
+    Policial::StyleGuides::CoffeeScript
   ]
 
   OPTIONAL_STYLE_GUIDES = [

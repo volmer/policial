@@ -2,8 +2,8 @@ require 'coffeelint'
 
 module Policial
   module StyleGuides
-    # Public: Determine Coffeescript style guide violations per-line.
-    class Coffeescript < Base
+    # Public: Determine CoffeeScript style guide violations per-line.
+    class CoffeeScript < Base
       KEY = :coffeescript
 
       def violations_in_file(file)

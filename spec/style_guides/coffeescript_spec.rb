@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Policial::StyleGuides::Coffeescript do
+describe Policial::StyleGuides::CoffeeScript do
   subject do
     described_class.new(
       Policial::ConfigLoader.new(
@@ -90,7 +90,7 @@ describe Policial::StyleGuides::Coffeescript do
   end
 
   describe '#filename_pattern' do
-    it 'matches Coffeescript files' do
+    it 'matches CoffeeScript files' do
       expect(subject.filename_pattern).to match('my_file.coffee')
       expect(subject.filename_pattern).to match('app/script.coffee')
       expect(subject.filename_pattern).not_to match('my_file.coffee.erb')

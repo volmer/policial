@@ -7,7 +7,7 @@
 *Policial* is a gem that investigates pull requests and accuses style guide
 violations. It is based on thoughtbot's
 [Hound project](https://github.com/thoughtbot/hound).
-It currently supports Ruby, SCSS and Coffeescript.
+It currently supports Ruby, SCSS and CoffeeScript.
 
 ## Installation
 
@@ -86,9 +86,9 @@ Or install it yourself as:
 You can setup your Ruby code style rules with a `.rubocop.yml` file in
 your repo. Please see [RuboCop's README](https://github.com/bbatsov/rubocop).
 
-## Coffeescript
+## CoffeeScript
 
-You can setup your Coffeescript code style rules with a `coffeelint.json`
+You can setup your CoffeeScript code style rules with a `coffeelint.json`
 file in your repo. For more information on how customize the linter rules please
 visit the [Coffeelint website](https://coffelint.org).
 
