@@ -67,12 +67,11 @@ describe Policial::Detective do
         expect(subject.investigate).to eq(subject.violations)
 
         messages = subject.violations.map(&:message)
+        omission_message = 'Omit the parentheses in defs when the method '\
+          "doesn't accept any arguments."
+        trailing_message = 'Trailing whitespace detected.'
 
-        expect(messages).to eq([
-          "Omit the parentheses in defs when the method doesn't accept any "\
-          'arguments.',
-          'Trailing whitespace detected.'
-        ])
+        expect(messages).to eq([omission_message, trailing_message])
       end
 
       it 'returns empty if no violations are found' do

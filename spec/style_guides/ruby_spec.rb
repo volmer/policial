@@ -125,7 +125,7 @@ describe Policial::StyleGuides::Ruby do
 
     context 'when custom config enables Rails cops' do
       let(:custom_config) do
-        { 'AllCops' => { 'RunRailsCops' => true } }
+        { 'Rails' => { 'Enabled' => true } }
       end
 
       it 'runs Rails cops' do
@@ -136,7 +136,7 @@ describe Policial::StyleGuides::Ruby do
 
     context 'when custom config explicitly disables Rails cops' do
       let(:custom_config) do
-        { 'AllCops' => { 'RunRailsCops' => false } }
+        { 'Rails' => { 'Enabled' => false } }
       end
 
       it 'ignores Rails cops' do
