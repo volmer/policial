@@ -16,6 +16,6 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_dependency 'octokit', '~> 4.2'
-  spec.add_dependency 'rubocop', '~> 0.35'
+  spec.add_dependency 'rubocop', '~> 0.36'
   spec.add_dependency 'coffeelint', '~> 1.14'
 end

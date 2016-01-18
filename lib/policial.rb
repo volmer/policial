@@ -24,11 +24,11 @@ module Policial
   DEFAULT_STYLE_GUIDES = [
     Policial::StyleGuides::Ruby,
     Policial::StyleGuides::CoffeeScript
-  ]
+  ].freeze
 
   OPTIONAL_STYLE_GUIDES = [
     Policial::StyleGuides::Scss
-  ]
+  ].freeze
 
   module_function
 

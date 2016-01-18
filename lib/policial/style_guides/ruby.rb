@@ -27,15 +27,24 @@ module Policial
       private
 
       def team
-        cop_classes = RuboCop::Cop::Cop.all
-        cop_classes.reject!(&:rails?) unless config['AllCops']['RunRailsCops']
+        cop_classes = if config['Rails']['Enabled']
+                        RuboCop::Cop::Cop.all
+                      else
+                        RuboCop::Cop::Cop.non_rails
+                      end
+
         RuboCop::Cop::Team.new(cop_classes, config)
       end
 
       def parsed_source(file)
         absolute_path =
           File.join(config.base_dir_for_path_parameters, file.filename)
-        RuboCop::ProcessedSource.new(file.content, absolute_path)
+
+        RuboCop::ProcessedSource.new(
+          file.content,
+          config['AllCops']['TargetRubyVersion'],
+          absolute_path
+        )
       end
 
       def config
