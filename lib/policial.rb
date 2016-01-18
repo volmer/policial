@@ -33,7 +33,7 @@ module Policial
   module_function
 
   def style_guides
-    @style_guides ||= DEFAULT_STYLE_GUIDES
+    @style_guides ||= DEFAULT_STYLE_GUIDES.dup
   end
 
   def style_guides=(style_guides)
