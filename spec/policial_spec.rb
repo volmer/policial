@@ -2,8 +2,8 @@ require 'spec_helper'
 
 describe Policial do
   describe '.style_guides' do
-    let!(:style_guides_initial_value) { Policial.style_guides }
-    after { Policial.style_guides = style_guides_initial_value }
+    before(:all) { @style_guides_initial_value = Policial.style_guides.dup }
+    after { Policial.style_guides = @style_guides_initial_value }
 
     it 'defaults to DEFAULT_STYLE_GUIDES' do
       expect(Policial.style_guides).to eq(Policial::DEFAULT_STYLE_GUIDES)
@@ -18,9 +18,7 @@ describe Policial do
 
     it 'can be appended' do
       Policial.style_guides << Policial::StyleGuides::Scss
-
-      expect(Policial.style_guides).to eq(Policial::DEFAULT_STYLE_GUIDES +
-        [Policial::StyleGuides::Scss])
+      expect(Policial.style_guides).to include(Policial::StyleGuides::Scss)
     end
   end
 end
