@@ -7,11 +7,13 @@ module Policial
       def violations_in_file(file)
         absolute_path = File.expand_path(file.filename)
 
+        runner = new_runner
+
         tempfile_from(file.filename, file.content) do |tempfile|
           runner.run([{ file: tempfile, path: absolute_path }])
         end
 
-        violations(file)
+        violations(runner, file)
       end
 
       def exclude_file?(filename)
@@ -39,20 +41,19 @@ module Policial
         end
       end
 
-      def violations(file)
+      def violations(runner, file)
         runner.lints.map do |lint|
           Violation.new(
             file, lint.location.line, lint.description, lint.linter.name)
         end
       end
 
-      def runner
+      def new_runner
         require 'scss_lint'
-        @runner ||= SCSSLint::Runner.new(config)
+        SCSSLint::Runner.new(config)
       end
 
       def tempfile_from(filename, content)
-        filename = File.basename(filename)
         Tempfile.create(File.basename(filename), Dir.pwd) do |tempfile|
           tempfile.write(content)
           tempfile.rewind

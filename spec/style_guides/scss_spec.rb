@@ -66,6 +66,18 @@ describe Policial::StyleGuides::Scss do
       expect(violations[2].message).to eq('Prefer single quoted strings')
     end
 
+    it 'is idempotent' do
+      file = build_file('test.scss', 'p { border: none; }')
+      first_run = subject.violations_in_file(file)
+      second_run = subject.violations_in_file(file)
+
+      expect(first_run.count).to eq second_run.count
+      expect(first_run.first.filename).to eq second_run.first.filename
+      expect(first_run.first.line_number).to eq second_run.first.line_number
+      expect(first_run.first.linter).to eq second_run.first.linter
+      expect(first_run.first.message).to eq second_run.first.message
+    end
+
     context 'with custom configuration' do
       let(:custom_config) do
         {

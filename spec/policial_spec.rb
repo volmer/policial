@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Policial do
   describe '.style_guides' do
     before(:all) { @style_guides_initial_value = Policial.style_guides.dup }
-    after { Policial.style_guides = @style_guides_initial_value }
+    after { Policial.style_guides = @style_guides_initial_value.dup }
 
     it 'defaults to DEFAULT_STYLE_GUIDES' do
       expect(Policial.style_guides).to eq(Policial::DEFAULT_STYLE_GUIDES)
