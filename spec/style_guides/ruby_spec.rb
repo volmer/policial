@@ -144,6 +144,39 @@ describe Policial::StyleGuides::Ruby do
         expect(subject.violations_in_file(file)).to be_empty
       end
     end
+
+    context 'when custom config requires external gems' do
+      let(:custom_config) do
+        { 'require' => 'rubocop-rspec' }
+      end
+
+      it 'ignores it' do
+        file = build_file('spec/my_spec.rb', '@my_var = 1')
+        expect(subject.violations_in_file(file)).to be_empty
+      end
+    end
+
+    context 'when custom config inherits from local files' do
+      let(:custom_config) do
+        { 'inherit_from' => ['.rubocop-todo.yml'] }
+      end
+
+      it 'ignores it' do
+        file = build_file('spec/my_spec.rb', '@my_var = 1')
+        expect { subject.violations_in_file(file) }.not_to raise_error
+      end
+    end
+
+    context 'when custom config inherits from a gem' do
+      let(:custom_config) do
+        { 'inherit_gem' => { 'my_gem' => '.rubocop.yml' } }
+      end
+
+      it 'ignores it' do
+        file = build_file('spec/my_spec.rb', '@my_var = 1')
+        expect { subject.violations_in_file(file) }.not_to raise_error
+      end
+    end
   end
 
   describe '#filename_pattern' do

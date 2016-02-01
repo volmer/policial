@@ -52,9 +52,10 @@ module Policial
       end
 
       def custom_config
-        content = @config_loader.raw(config_file)
+        content = @config_loader.yaml(config_file)
+        filter(content)
 
-        tempfile_from(config_file, content) do |tempfile|
+        tempfile_from(config_file, content.to_yaml) do |tempfile|
           RuboCop::ConfigLoader.load_file(tempfile.path)
         end
       end
@@ -67,6 +68,15 @@ module Policial
 
           yield(tempfile)
         end
+      end
+
+      def filter(config_hash)
+        config_hash.delete('require')
+        config_hash.delete('inherit_gem')
+        config_hash['inherit_from'] =
+          config_hash.fetch('inherit_from', []).select do |value|
+            value =~ /\A#{URI.regexp(%w(http https))}\z/
+          end
       end
     end
   end
