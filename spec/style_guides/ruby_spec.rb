@@ -167,6 +167,17 @@ describe Policial::StyleGuides::Ruby do
       end
     end
 
+    context 'when custom config inherits from a string instead of an array' do
+      let(:custom_config) do
+        { 'inherit_from' => '.rubocop-todo.yml' }
+      end
+
+      it 'ignores it' do
+        file = build_file('spec/my_spec.rb', '@my_var = 1')
+        expect { subject.violations_in_file(file) }.not_to raise_error
+      end
+    end
+
     context 'when custom config inherits from a gem' do
       let(:custom_config) do
         { 'inherit_gem' => { 'my_gem' => '.rubocop.yml' } }
