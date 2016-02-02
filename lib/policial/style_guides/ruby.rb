@@ -74,7 +74,7 @@ module Policial
         config_hash.delete('require')
         config_hash.delete('inherit_gem')
         config_hash['inherit_from'] =
-          config_hash.fetch('inherit_from', []).select do |value|
+          Array(config_hash['inherit_from']).select do |value|
             value =~ /\A#{URI.regexp(%w(http https))}\z/
           end
       end
