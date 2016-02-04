@@ -7,7 +7,9 @@ module Policial
       KEY = :ruby
 
       def violations_in_file(file)
-        team.inspect_file(parsed_source(file)).map do |offense|
+        offenses = team.inspect_file(parsed_source(file))
+
+        offenses.reject(&:disabled?).map do |offense|
           Violation.new(file, offense.line, offense.message, offense.cop_name)
         end
       end

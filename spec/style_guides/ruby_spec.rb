@@ -188,6 +188,20 @@ describe Policial::StyleGuides::Ruby do
         expect { subject.violations_in_file(file) }.not_to raise_error
       end
     end
+
+    it 'respects RuboCop comments' do
+      file = build_file(
+        'test.rb',
+        '# rubocop:disable Style/StringLiterals',
+        '"I like it!"',
+        '# rubocop:enable Style/StringLiterals'
+      )
+      expect(subject.violations_in_file(file)).to be_empty
+
+      file = build_file(
+        'test.rb', '"I like it!" # rubocop:disable Style/StringLiterals')
+      expect(subject.violations_in_file(file)).to be_empty
+    end
   end
 
   describe '#filename_pattern' do
