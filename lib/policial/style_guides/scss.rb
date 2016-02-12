@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Policial
   module StyleGuides
     # Public: Determine SCSS style guide violations per-line.

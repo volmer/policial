@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Policial
   # Public: a chunk of changed code in a commit file.
   class Patch

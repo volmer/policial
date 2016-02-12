@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Policial
   # Public: A Commit in a GitHub repo.
   class Commit

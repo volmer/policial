@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Policial
   # Public: Starting with an Octokit client and a pull request,
   # it checks all changes introduced looking for style guide violations.

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Policial
   # Public: Load and parse config files from GitHub repo.
   class ConfigLoader
