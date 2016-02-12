@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Policial
   # Public: a changed line in a commit file.
   class Line

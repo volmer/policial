@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Policial
   # Public: A GitHub Pull Request.
   class PullRequest

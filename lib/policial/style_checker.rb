@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Policial
   # Public: Filters files to reviewable subset, builds style guide based on file
   # extension and delegates to style guide for line violations.

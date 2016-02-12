@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Policial
   # Public: Hold file, line, and message. Built by style guides.
   class Violation

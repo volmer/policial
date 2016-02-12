@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Policial
   module StyleGuides
     # Public: Base to contain common style guide logic.
@@ -8,19 +10,19 @@ module Policial
       end
 
       def violations_in_file(_file)
-        fail NotImplementedError, "must implement ##{__method__}"
+        raise NotImplementedError, "must implement ##{__method__}"
       end
 
       def exclude_file?(_filename)
-        fail NotImplementedError, "must implement ##{__method__}"
+        raise NotImplementedError, "must implement ##{__method__}"
       end
 
       def filename_pattern
-        fail NotImplementedError, "must implement ##{__method__}"
+        raise NotImplementedError, "must implement ##{__method__}"
       end
 
       def default_config_file
-        fail NotImplementedError, "must implement ##{__method__}"
+        raise NotImplementedError, "must implement ##{__method__}"
       end
 
       def config_file
