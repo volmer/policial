@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+
+require 'policial'
+Policial::CLI.start(ARGV)

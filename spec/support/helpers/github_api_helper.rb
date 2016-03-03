@@ -15,6 +15,28 @@ module GitHubApiHelper
     )
   end
 
+  def stub_non_existant_pull_request_request(repo, pull_request)
+    stub_request(
+      :get,
+      url(repo, "/pulls/#{pull_request}")
+    ).with(headers: request_headers).to_return(
+      status: 404,
+      body: '',
+      headers: {}
+    )
+  end
+
+  def stub_pull_request_request_with_fixture(repo, pull_request, fixture:)
+    stub_request(
+      :get,
+      url(repo, "/pulls/#{pull_request}")
+    ).with(headers: request_headers).to_return(
+      status: 200,
+      body: File.read("spec/support/fixtures/#{fixture}.json"),
+      headers: { 'Content-Type' => 'application/json; charset=utf-8' }
+    )
+  end
+
   def stub_contents_request_with_content(repo, sha:, file:, content:)
     body = JSON.generate(
       content: Base64.encode64(content)

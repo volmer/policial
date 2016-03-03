@@ -5,6 +5,7 @@ PATH
       coffeelint (~> 1.14)
       octokit (~> 4.2)
       rubocop (~> 0.37)
+      thor (~> 0.19)
 
 GEM
   remote: https://rubygems.org/
@@ -32,7 +33,7 @@ GEM
     multipart-post (2.0.0)
     octokit (4.2.0)
       sawyer (~> 0.6.0, >= 0.5.3)
-    parser (2.3.0.5)
+    parser (2.3.0.6)
       ast (~> 2.2)
     powerpack (0.1.1)
     pry (0.10.3)
@@ -70,6 +71,7 @@ GEM
       rake (~> 10.0)
       sass (~> 3.4.15)
     slop (3.6.0)
+    thor (0.19.1)
     unicode-display_width (0.3.1)
     webmock (1.22.6)
       addressable (>= 2.3.6)

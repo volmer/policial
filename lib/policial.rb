@@ -2,6 +2,7 @@
 
 require 'octokit'
 
+require 'policial/cli'
 require 'policial/commit'
 require 'policial/commit_file'
 require 'policial/config_loader'
