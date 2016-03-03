@@ -15,6 +15,7 @@ require 'policial/style_guides/base'
 require 'policial/style_guides/ruby'
 require 'policial/style_guides/scss'
 require 'policial/style_guides/coffeescript'
+require 'policial/style_guides/javascript'
 require 'policial/unchanged_line'
 require 'policial/version'
 require 'policial/violation'
@@ -25,7 +26,8 @@ require 'policial/violation'
 module Policial
   DEFAULT_STYLE_GUIDES = [
     Policial::StyleGuides::Ruby,
-    Policial::StyleGuides::CoffeeScript
+    Policial::StyleGuides::CoffeeScript,
+    Policial::StyleGuides::Javascript
   ].freeze
 
   OPTIONAL_STYLE_GUIDES = [
