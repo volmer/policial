@@ -79,9 +79,9 @@ describe Policial::CLI do
       context 'when pull request exists' do
         before do
           stub_pull_request_request_with_fixture('volmer/policial', 3, fixture: 'pull_request_volmer_policial_3')
-          stub_pull_request_files_request('etiennebarrie/policial', 3)
+          stub_pull_request_files_request('volmer/policial', 3)
           stub_contents_request_with_fixture(
-            'etiennebarrie/policial',
+            'volmer/policial',
             sha: 'b87e46080feb3c788f8fee95bbbbef190560a98a',
             file: '.rubocop.yml',
             fixture: 'config_contents.json'
@@ -91,7 +91,7 @@ describe Policial::CLI do
         context 'has violations' do
           it 'aborts with exit status code 1' do
             stub_contents_request_with_fixture(
-              'etiennebarrie/policial',
+              'volmer/policial',
               sha: 'b87e46080feb3c788f8fee95bbbbef190560a98a',
               file: 'config/unicorn.rb',
               fixture: 'contents_with_violations.json'
@@ -108,7 +108,7 @@ describe Policial::CLI do
         context 'has no violations' do
           it 'aborts with exit status code 0' do
             stub_contents_request_with_fixture(
-              'etiennebarrie/policial',
+              'volmer/policial',
               sha: 'b87e46080feb3c788f8fee95bbbbef190560a98a',
               file: 'config/unicorn.rb',
               fixture: 'contents.json'

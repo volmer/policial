@@ -38,8 +38,9 @@ module Policial
       end
 
       detective = Policial::Detective.new(octokit)
+
       detective.brief({
-        repo: pull_request['head']['repo']['full_name'],
+        repo: pull_request['base']['repo']['full_name'],
         number: pull_request['number'],
         head_sha: pull_request['head']['sha'],
         user: pull_request['user']['login'],
