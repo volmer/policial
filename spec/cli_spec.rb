@@ -13,11 +13,14 @@ describe Policial::CLI do
       it 'aborts with exit status code 1' do
         ENV['GITHUB_ACCESS_TOKEN'] = nil
 
-        output = capture(:stderr) {
-          expect(lambda { subject.investigate('volmer/policial', 1) }).to exit_with_code(1)
-        }
+        output = capture(:stderr) do
+          expect(-> { subject.investigate('volmer/policial', 1) })
+            .to exit_with_code(1)
+        end
 
-        expect(output).to eq("You must set the GITHUB_ACCESS_TOKEN environment variable.\n")
+        expect(output).to eq(
+          "You must set the GITHUB_ACCESS_TOKEN environment variable.\n"
+        )
       end
     end
 
@@ -25,26 +28,49 @@ describe Policial::CLI do
       context 'within a git repository folder' do
         context 'that has no GitHub remote' do
           it 'aborts with exit status code 1' do
-            allow(Open3).to receive(:popen3).with('/usr/bin/env git remote -v') { [StringIO.new, StringIO.new("origin git@bitbucket.org:Yourname/firstdemotry.git (fetch)\norigin git@bitbucket.org:Yourname/firstdemotry.git (push)\n"), StringIO.new] }
+            allow(Open3).to receive(:popen3)
+              .with('/usr/bin/env git remote -v') do
+                [
+                  StringIO.new,
+                  StringIO.new(
+                    'origin git@bitbucket.org:Yourname/firstdemotry.git'\
+                    "(fetch)\norigin git@bitbucket.org:Yourname/"\
+                    "firstdemotry.git (push)\n"
+                  ),
+                  StringIO.new
+                ]
+              end
 
-            output = capture(:stderr) {
-              expect(lambda { subject.investigate(nil, 1) }).to exit_with_code(1)
-            }
+            output = capture(:stderr) do
+              expect(-> { subject.investigate(nil, 1) }).to exit_with_code(1)
+            end
 
-            expect(output).to eq("Could not detect GitHub repository for #{ENV['PWD']}\n")
+            expect(output).to eq(
+              "Could not detect GitHub repository for #{ENV['PWD']}\n"
+            )
           end
         end
 
         context 'that has a GitHub remote' do
           context 'with non-existant pull request' do
             it 'aborts with exit status code 1' do
-              allow(Open3).to receive(:popen3).with('/usr/bin/env git remote -v') { [StringIO.new, StringIO.new("origin git@github.com:volmer/policial.git (fetch)\norigin git@github.com:volmer/policial.git (push)\n"), StringIO.new] }
+              allow(Open3).to receive(:popen3)
+                .with('/usr/bin/env git remote -v') do
+                  [
+                    StringIO.new,
+                    StringIO.new(
+                      "origin git@github.com:volmer/policial.git (fetch)\n"\
+                      "origin git@github.com:volmer/policial.git (push)\n"
+                    ),
+                    StringIO.new
+                  ]
+                end
 
               stub_non_existant_pull_request_request('volmer/policial', 0)
 
-              capture(:stderr) {
-                expect(lambda { subject.investigate(nil, 0) }).to exit_with_code(1)
-              }
+              capture(:stderr) do
+                expect(-> { subject.investigate(nil, 0) }).to exit_with_code(1)
+              end
             end
           end
         end
@@ -52,13 +78,25 @@ describe Policial::CLI do
 
       context 'within a non-git repository folder' do
         it 'aborts with exit status code 1' do
-          allow(Open3).to receive(:popen3).with('/usr/bin/env git remote -v') { [StringIO.new, StringIO.new, StringIO.new("fatal: Not a git repository (or any of the parent directories): .git\n")] }
+          allow(Open3).to receive(:popen3).with('/usr/bin/env git remote -v') do
+            [
+              StringIO.new,
+              StringIO.new,
+              StringIO.new(
+                'fatal: Not a git repository'\
+                "(or any of the parent directories): .git\n"
+              )
+            ]
+          end
 
-          output = capture(:stderr) {
-            expect(lambda { subject.investigate(nil, 1) }).to exit_with_code(1)
-          }
+          output = capture(:stderr) do
+            expect(-> { subject.investigate(nil, 1) }).to exit_with_code(1)
+          end
 
-          expect(output).to eq("fatal: Not a git repository (or any of the parent directories): .git\n")
+          expect(output).to eq(
+            'fatal: Not a git repository'\
+            "(or any of the parent directories): .git\n"
+          )
         end
       end
     end
@@ -68,17 +106,22 @@ describe Policial::CLI do
         it 'aborts with exit status code 1' do
           stub_non_existant_pull_request_request('volmer/policial', 0)
 
-          output = capture(:stderr) {
-            expect(lambda { subject.investigate('volmer/policial', 0) }).to exit_with_code(1)
-          }
+          output = capture(:stderr) do
+            expect(-> { subject.investigate('volmer/policial', 0) })
+              .to exit_with_code(1)
+          end
 
-          expect(output).to eq("Could not find pull request #0 for repository volmer/policial.\n")
+          expect(output).to eq(
+            "Could not find pull request #0 for repository volmer/policial.\n"
+          )
         end
       end
 
       context 'when pull request exists' do
         before do
-          stub_pull_request_request_with_fixture('volmer/policial', 3, fixture: 'pull_request_volmer_policial_3')
+          stub_pull_request_request_with_fixture(
+            'volmer/policial', 3, fixture: 'pull_request_volmer_policial_3'
+          )
           stub_pull_request_files_request('volmer/policial', 3)
           stub_contents_request_with_fixture(
             'volmer/policial',
@@ -97,11 +140,15 @@ describe Policial::CLI do
               fixture: 'contents_with_violations.json'
             )
 
-            output = capture(:stdout) {
-              expect(lambda { subject.investigate('volmer/policial', 3) }).to exit_with_code(1)
-            }
+            output = capture(:stdout) do
+              expect(-> { subject.investigate('volmer/policial', 3) })
+                .to exit_with_code(1)
+            end
 
-            expect(output).to eq("config/unicorn.rb:1 - Omit the parentheses in defs when the method doesn't accept any arguments.\nconfig/unicorn.rb:1 - Trailing whitespace detected.\n")
+            expect(output).to eq(
+              'config/unicorn.rb:1 - Omit the parentheses in defs when the '\
+              "method doesn't accept any arguments.\nconfig/unicorn.rb:1 - "\
+              "Trailing whitespace detected.\n")
           end
         end
 
@@ -114,9 +161,10 @@ describe Policial::CLI do
               fixture: 'contents.json'
             )
 
-            output = capture(:stdout) {
-              expect(lambda { subject.investigate('volmer/policial', 3) }).to exit_with_code(0)
-            }
+            output = capture(:stdout) do
+              expect(-> { subject.investigate('volmer/policial', 3) })
+                .to exit_with_code(0)
+            end
 
             expect(output).to eq("No violations found.\n")
           end

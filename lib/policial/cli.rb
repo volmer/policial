@@ -1,9 +1,12 @@
+# frozen_string_literal: true
+
 require 'thor'
 require 'open3'
 
 module Policial
+  # Public: Command-line interface via Thor
   class CLI < Thor
-    desc "investigate PULL_REQUEST", "report violations for the given PULL_REQUEST"
+    desc 'investigate PULL_REQUEST', 'report violations for PULL_REQUEST'
     long_desc <<-LONGDESC
       `policial investigate` will report violations for the given PULL_REQUEST.
 
@@ -23,44 +26,21 @@ module Policial
       on how to create an access token for command-line use see: <https://help.github.com/articles/creating-an-access-token-for-command-line-use/>
     LONGDESC
     def investigate(repo = nil, pull_request_number)
-      abort 'You must set the GITHUB_ACCESS_TOKEN environment variable.' unless ENV['GITHUB_ACCESS_TOKEN']
+      ensure_github_access_token
 
       repo ||= detect_repo_from_pwd
 
       octokit = Octokit::Client.new(access_token: ENV['GITHUB_ACCESS_TOKEN'])
 
-      begin
-        pull_request = octokit.pull_request(repo, pull_request_number)
-      rescue Octokit::NotFound => e
-        abort "Could not find pull request ##{pull_request_number} for repository #{repo}."
-      rescue Octokit::Error => e
-        abort e.message
-      end
+      pull_request = get_pull_request(octokit, repo, pull_request_number)
 
-      detective = Policial::Detective.new(octokit)
+      violations = get_pull_request_violations(octokit, pull_request)
 
-      detective.brief({
-        repo: pull_request['base']['repo']['full_name'],
-        number: pull_request['number'],
-        head_sha: pull_request['head']['sha'],
-        user: pull_request['user']['login'],
-      })
-
-      detective.investigate
-
-      if detective.violations.empty?
-        puts "No violations found."
-        exit 0
-      end
-
-      detective.violations.each do |violation|
-        puts "#{violation.filename}:#{violation.line_number} - #{violation.message}\n"
-      end
-
-      exit 1
+      output_violations_and_exit(violations)
     end
 
     private
+
     def detect_repo_from_pwd
       _, stdout, stderr = Open3.popen3('/usr/bin/env git remote -v')
 
@@ -68,10 +48,58 @@ module Policial
         abort stderr_lines.join("\n")
       end
 
-      remotes = stdout.readlines.join("").match("github.com:([^\s]+)\.git")
-      abort "Could not detect GitHub repository for #{ENV['PWD']}" unless remotes
+      remotes = stdout.readlines.join('').match('github.com:([^\s]+)\.git')
+      unless remotes
+        abort "Could not detect GitHub repository for #{ENV['PWD']}"
+      end
 
       remotes[1]
+    end
+
+    def get_pull_request_violations(octokit, pull_request)
+      detective = Policial::Detective.new(octokit)
+
+      detective.brief(repo: pull_request['base']['repo']['full_name'],
+                      number: pull_request['number'],
+                      head_sha: pull_request['head']['sha'],
+                      user: pull_request['user']['login'])
+
+      detective.investigate
+
+      detective.violations
+    end
+
+    def get_pull_request(octokit, repo, pull_request_number)
+      begin
+        pull_request = octokit.pull_request(repo, pull_request_number)
+      rescue Octokit::NotFound
+        abort "Could not find pull request ##{pull_request_number} "\
+              "for repository #{repo}."
+      rescue Octokit::Error => e
+        abort e.message
+      end
+
+      pull_request
+    end
+
+    def ensure_github_access_token
+      unless ENV['GITHUB_ACCESS_TOKEN']
+        abort 'You must set the GITHUB_ACCESS_TOKEN environment variable.'
+      end
+    end
+
+    def output_violations_and_exit(violations)
+      if violations.empty?
+        puts 'No violations found.'
+        exit 0
+      end
+
+      violations.each do |violation|
+        puts "#{violation.filename}:#{violation.line_number} "\
+             "- #{violation.message}\n"
+      end
+
+      exit 1
     end
   end
 end
