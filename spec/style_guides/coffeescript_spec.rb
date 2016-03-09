@@ -62,11 +62,6 @@ describe Policial::StyleGuides::CoffeeScript do
       end
     end
 
-    it 'ignores non .coffee files' do
-      file = build_file('ugly.js', 'foo: -> "bar"')
-      expect(subject.violations_in_file(file)).to be_empty
-    end
-
     context 'with custom configuration' do
       let(:custom_config) do
         {

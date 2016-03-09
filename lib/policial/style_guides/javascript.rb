@@ -5,12 +5,11 @@ require 'eslintrb'
 module Policial
   module StyleGuides
     # Public: Determine Javascript style guide violations per-line.
-    class Javascript < Base
+    class JavaScript < Base
       KEY = :javascript
 
       def violations_in_file(file)
-        return violations(file, []) unless file.filename =~ filename_pattern
-        errors = Eslintrb.lint(file.content, config ||= :defaults)
+        errors = Eslintrb.lint(file.content, config)
         violations(file, errors)
       end
 
@@ -29,7 +28,10 @@ module Policial
       private
 
       def config
-        @config ||= @config_loader.json(config_file)
+        @config ||= begin
+          content = @config_loader.json(config_file)
+          content.empty? ? :defaults : content
+        end
       end
 
       def violations(file, errors)

@@ -27,7 +27,7 @@ module Policial
   DEFAULT_STYLE_GUIDES = [
     Policial::StyleGuides::Ruby,
     Policial::StyleGuides::CoffeeScript,
-    Policial::StyleGuides::Javascript
+    Policial::StyleGuides::JavaScript
   ].freeze
 
   OPTIONAL_STYLE_GUIDES = [

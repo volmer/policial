@@ -2,13 +2,11 @@
 
 require 'spec_helper'
 
-describe Policial::StyleGuides::Javascript do
+describe Policial::StyleGuides::JavaScript do
   subject do
     described_class.new(
       Policial::ConfigLoader.new(
-        Policial::Commit.new('volmer/cerberus', 'commitsha', Octokit)
-      )
-    )
+        Policial::Commit.new('volmer/cerberus', 'commitsha', Octokit)))
   end
 
   let(:custom_config) { nil }
@@ -36,31 +34,23 @@ describe Policial::StyleGuides::Javascript do
       expect(violations.count).to eq(1)
       expect(violations[0].filename).to eq('test.js')
       expect(violations[0].line_number).to eq(1)
+      expect(violations[0].linter).to eq('strict')
       expect(violations[0].message).to eq(
         "Use the function form of 'use strict'."
       )
-
     end
 
     context 'with valid file' do
       it 'has no violations' do
         file_content = [
           'function foo (bar) {',
-          '  \'use strict\';',
-          '  console.log(\'bar\')',
+          "  'use strict';",
+          "  console.log('bar')",
           '}'
         ]
         file = build_file('test.js', file_content)
-        violations = subject.violations_in_file(file)
-
-        expect(violations.count).to eq(0)
-
+        expect(subject.violations_in_file(file)).to be_empty
       end
-    end
-
-    it 'ignores non .js files' do
-      file = build_file('ugly.coffee', 'foo: => bar')
-      expect(subject.violations_in_file(file)).to be_empty
     end
 
     context 'with custom configuration' do
@@ -82,7 +72,7 @@ describe Policial::StyleGuides::Javascript do
         violations = subject.violations_in_file(file)
 
         expect(violations.count).to eq(1)
-        expect(violations[0].message).to eq('Unary operator \'++\' used.')
+        expect(violations[0].message).to eq("Unary operator '++' used.")
       end
     end
   end
