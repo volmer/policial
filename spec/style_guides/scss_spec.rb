@@ -23,7 +23,7 @@ describe Policial::StyleGuides::Scss do
   end
 
   describe '#violations_in_file' do
-    it 'detects offenses to the Ruby community Style Guide' do
+    it 'detects SCSS style guide violations' do
       file = build_file('test.scss', 'p { border: none; }')
       violations = subject.violations_in_file(file)
 
@@ -33,6 +33,20 @@ describe Policial::StyleGuides::Scss do
       expect(violations.first.linter).to eq('BorderZero')
       expect(violations.first.message).to eq(
         '`border: 0` is preferred over `border: none`'
+      )
+    end
+
+    it 'reports syntax errors' do
+      file = build_file('test.scss', 'p { border:')
+      violations = subject.violations_in_file(file)
+
+      expect(violations.count).to eq(1)
+      expect(violations.first.filename).to eq('test.scss')
+      expect(violations.first.line_number).to eq(2)
+      expect(violations.first.linter).to eq('undefined')
+      expect(violations.first.message).to eq(
+        'Syntax Error: Invalid CSS after "p { border:": '\
+        'expected expression (e.g. 1px, bold), was ""'
       )
     end
 
