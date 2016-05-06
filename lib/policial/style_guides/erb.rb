@@ -44,6 +44,7 @@ module Policial
   end
 end
 
+# Public: Runs the linters against the file.
 class ERBLint
   # https://www.w3.org/TR/html5/syntax.html#attributes
   @@attribute_name = /[^\s"'>\/=]+/ # attribute names must be non empty and can't have a certain set of special characters
