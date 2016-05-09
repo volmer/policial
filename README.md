@@ -117,8 +117,33 @@ Policial.style_guides << Policial::StyleGuides::Scss
 ```
 
 You can setup your SCSS code style rules with a `.scss-lint.yml` file in your
-repo. For more information on how customize the linter rules please
+repo. For more information on how to customize the linter rules please
 read [SCSS-Lint's README](https://github.com/brigade/scss-lint#configuration).
+
+## ERB
+
+ERB linting is disabled by default. To enable it, you need to install the
+[erb-lint](https://github.com/justinthec/erb-lint) gem:
+
+```
+gem install erb_lint
+```
+
+Or add the following to your `Gemfile` and run `bundle install`:
+
+```ruby
+gem 'erb_lint'
+```
+
+Now you can enable ERB on Policial:
+
+```ruby
+Policial.style_guides << Policial::StyleGuides::Erb
+```
+
+You can setup your ERB code style rules with a `.erb-lint.yml` file in your
+repo. For more information on how to customize the linter rules please
+read [ERB-Lint's README](https://github.com/justinthec/erb-linter#configuration).
 
 ## Contributing
 

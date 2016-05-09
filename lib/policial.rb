@@ -32,7 +32,8 @@ module Policial
   ].freeze
 
   OPTIONAL_STYLE_GUIDES = [
-    Policial::StyleGuides::Scss
+    Policial::StyleGuides::Scss,
+    Policial::StyleGuides::Erb
   ].freeze
 
   module_function
