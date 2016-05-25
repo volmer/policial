@@ -20,8 +20,8 @@ module Policial
         config.file_to_exclude?(filename)
       end
 
-      def filename_pattern
-        /.+\.rb\z/
+      def filename_patterns
+        [/.+\.rb\z/]
       end
 
       def default_config_file

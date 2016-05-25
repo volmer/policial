@@ -17,8 +17,8 @@ module Policial
         false
       end
 
-      def filename_pattern
-        /.+\.coffee\z/
+      def filename_patterns
+        [/.+\.coffee\z/]
       end
 
       def default_config_file

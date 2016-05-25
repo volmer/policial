@@ -206,11 +206,11 @@ describe Policial::StyleGuides::Ruby do
     end
   end
 
-  describe '#filename_pattern' do
+  describe '#filename_patterns' do
     it 'matches Ruby files' do
-      expect(subject.filename_pattern).to match('my_file.rb')
-      expect(subject.filename_pattern).to match('app/base.rb')
-      expect(subject.filename_pattern).not_to match('my_file.erb')
+      expect(subject.filename_patterns.first).to match('my_file.rb')
+      expect(subject.filename_patterns.first).to match('app/base.rb')
+      expect(subject.filename_patterns.first).not_to match('my_file.erb')
     end
   end
 
