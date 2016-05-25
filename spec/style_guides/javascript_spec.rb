@@ -56,7 +56,7 @@ describe Policial::StyleGuides::JavaScript do
     context 'with custom configuration' do
       let(:custom_config) do
         {
-          'rules': {
+          'rules' => {
             'no-plusplus' => 2
           }
         }
@@ -77,12 +77,12 @@ describe Policial::StyleGuides::JavaScript do
     end
   end
 
-  describe '#filename_pattern' do
+  describe '#filename_patterns' do
     it 'matches Javascript files' do
-      expect(subject.filename_pattern).to match('my_file.js')
-      expect(subject.filename_pattern).to match('app/script.js')
-      expect(subject.filename_pattern).not_to match('my_file.js.erb')
-      expect(subject.filename_pattern).not_to match('my_file.coffee')
+      expect(subject.filename_patterns.first).to match('my_file.js')
+      expect(subject.filename_patterns.first).to match('app/script.js')
+      expect(subject.filename_patterns.first).not_to match('my_file.js.erb')
+      expect(subject.filename_patterns.first).not_to match('my_file.coffee')
     end
   end
 

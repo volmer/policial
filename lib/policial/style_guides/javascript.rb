@@ -17,8 +17,8 @@ module Policial
         false
       end
 
-      def filename_pattern
-        /.+\.js\z/
+      def filename_patterns
+        [/.+\.js\z/]
       end
 
       def default_config_file

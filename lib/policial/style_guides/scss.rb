@@ -22,8 +22,8 @@ module Policial
         config.excluded_file?(File.expand_path(filename))
       end
 
-      def filename_pattern
-        /.+\.scss\z/
+      def filename_patterns
+        [/.+\.scss\z/]
       end
 
       def default_config_file

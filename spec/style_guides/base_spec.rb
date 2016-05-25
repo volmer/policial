@@ -17,9 +17,9 @@ describe Policial::StyleGuides::Base do
 
   describe '#filename_pattern' do
     it 'raises NotImplementedError' do
-      expect { subject.filename_pattern }
+      expect { subject.filename_patterns }
         .to raise_error(
-          NotImplementedError, 'must implement #filename_pattern'
+          NotImplementedError, 'must implement #filename_patterns'
         )
     end
   end
@@ -81,7 +81,7 @@ describe Policial::StyleGuides::Base do
   describe '#investigate?' do
     context 'when style guide is enabled and filename matches pattern' do
       before do
-        allow(subject).to receive(:filename_pattern).and_return(/.*\.erb/)
+        allow(subject).to receive(:filename_patterns).and_return([/.*\.erb/])
       end
 
       context 'when filename is not excluded' do
@@ -115,7 +115,7 @@ describe Policial::StyleGuides::Base do
 
       context 'when filename does not match pattern' do
         before do
-          allow(subject).to receive(:filename_pattern).and_return(/.*\.js/)
+          allow(subject).to receive(:filename_patterns).and_return([/.*\.js/])
         end
 
         it 'is false' do
@@ -126,7 +126,7 @@ describe Policial::StyleGuides::Base do
 
     context 'when filename matches pattern and it is not excluded' do
       before do
-        allow(subject).to receive(:filename_pattern).and_return(/.*\.erb/)
+        allow(subject).to receive(:filename_patterns).and_return([/.*\.erb/])
         allow(subject).to receive(
           :exclude_file?).with('app/view.erb').and_return(false)
       end

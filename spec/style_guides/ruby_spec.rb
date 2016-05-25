@@ -206,11 +206,31 @@ describe Policial::StyleGuides::Ruby do
     end
   end
 
-  describe '#filename_pattern' do
-    it 'matches Ruby files' do
-      expect(subject.filename_pattern).to match('my_file.rb')
-      expect(subject.filename_pattern).to match('app/base.rb')
-      expect(subject.filename_pattern).not_to match('my_file.erb')
+  describe '#filename_patterns' do
+    context 'when custom config has Include' do
+      let(:custom_config) do
+        { 'AllCops' => { 'Include' => ['fastlane/Fastfile'] } }
+      end
+
+      it 'includes AllCops Include in filename_patterns' do
+        patterns = [/.+\.rb\z/, %r{fastlane/Fastfile}]
+        expect(subject.filename_patterns).to match(patterns)
+      end
+
+      it 'matches Ruby files' do
+        expect(subject.filename_patterns.first).to match('my_file.rb')
+        expect(subject.filename_patterns.first).to match('app/base.rb')
+        expect(subject.filename_patterns.first).not_to match('my_file.erb')
+        expect(subject.filename_patterns.last).to match('fastlane/Fastfile')
+      end
+    end
+
+    context 'when custom config is nil' do
+      it 'matches Ruby files' do
+        expect(subject.filename_patterns.first).to match('my_file.rb')
+        expect(subject.filename_patterns.first).to match('app/base.rb')
+        expect(subject.filename_patterns.first).not_to match('my_file.erb')
+      end
     end
   end
 

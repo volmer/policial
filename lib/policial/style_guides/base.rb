@@ -17,7 +17,7 @@ module Policial
         raise NotImplementedError, "must implement ##{__method__}"
       end
 
-      def filename_pattern
+      def filename_patterns
         raise NotImplementedError, "must implement ##{__method__}"
       end
 
@@ -44,7 +44,9 @@ module Policial
       end
 
       def matches_pattern?(filename)
-        !(filename =~ filename_pattern).nil?
+        filename_patterns.any? do |filename_pattern|
+          !(filename =~ filename_pattern).nil?
+        end
       end
     end
   end
