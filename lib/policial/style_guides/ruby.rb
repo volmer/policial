@@ -21,7 +21,9 @@ module Policial
       end
 
       def filename_patterns
-        [/.+\.rb\z/]
+        all_cop_includes = config['AllCops']['Include'] || []
+        all_cop_includes = all_cop_includes.map { |a| /#{Regexp.quote(a)}/ }
+        ([/.+\.rb\z/] + all_cop_includes).flatten
       end
 
       def default_config_file

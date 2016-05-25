@@ -56,7 +56,7 @@ describe Policial::StyleGuides::JavaScript do
     context 'with custom configuration' do
       let(:custom_config) do
         {
-          'rules': {
+          'rules' => {
             'no-plusplus' => 2
           }
         }
