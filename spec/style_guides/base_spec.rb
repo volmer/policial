@@ -86,8 +86,8 @@ describe Policial::StyleGuides::Base do
 
       context 'when filename is not excluded' do
         before do
-          allow(subject).to receive(
-            :exclude_file?).with('app/view.erb').and_return(false)
+          allow(subject).to receive(:exclude_file?).with('app/view.erb')
+            .and_return(false)
         end
 
         it 'is true' do
@@ -97,8 +97,8 @@ describe Policial::StyleGuides::Base do
 
       context 'when filename is excluded' do
         before do
-          allow(subject).to receive(
-            :exclude_file?).with('app/view.erb').and_return(true)
+          allow(subject).to receive(:exclude_file?).with('app/view.erb')
+            .and_return(true)
         end
 
         it 'is false' do
@@ -109,8 +109,8 @@ describe Policial::StyleGuides::Base do
 
     context 'when style guide is enabled and filename is not excluded' do
       before do
-        allow(subject).to receive(
-          :exclude_file?).with('app/view.erb').and_return(false)
+        allow(subject).to receive(:exclude_file?).with('app/view.erb')
+          .and_return(false)
       end
 
       context 'when filename does not match pattern' do
@@ -127,8 +127,8 @@ describe Policial::StyleGuides::Base do
     context 'when filename matches pattern and it is not excluded' do
       before do
         allow(subject).to receive(:filename_patterns).and_return([/.*\.erb/])
-        allow(subject).to receive(
-          :exclude_file?).with('app/view.erb').and_return(false)
+        allow(subject).to receive(:exclude_file?).with('app/view.erb')
+          .and_return(false)
       end
 
       context 'when style guide is disabled' do

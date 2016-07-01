@@ -11,6 +11,8 @@ describe Policial::StyleChecker do
       pull_request =
         stub_pull_request(files: [stylish_file, violated_file, bad_coffee])
       expected_violations = [
+        'Missing frozen string literal comment.',
+        'Missing frozen string literal comment.',
         'Avoid single-line method definitions.',
         'Space inside parentheses detected.',
         'Space inside parentheses detected.',
@@ -30,13 +32,13 @@ describe Policial::StyleChecker do
       pull_request = stub_pull_request(head_commit: head_commit, files: [file])
       config_loader = Policial::ConfigLoader.new(head_commit)
 
-      expect(Policial::ConfigLoader).to receive(:new).with(
-        head_commit).and_return(config_loader)
+      expect(Policial::ConfigLoader).to receive(:new).with(head_commit)
+        .and_return(config_loader)
 
-      expect(Policial::StyleGuides::Ruby).to receive(:new).with(
-        config_loader, my: :options).and_call_original
-      expect(Policial::StyleGuides::CoffeeScript).to receive(:new).with(
-        config_loader, a_few: :more_options).and_call_original
+      expect(Policial::StyleGuides::Ruby).to receive(:new)
+        .with(config_loader, my: :options).and_call_original
+      expect(Policial::StyleGuides::CoffeeScript).to receive(:new)
+        .with(config_loader, a_few: :more_options).and_call_original
 
       described_class.new(
         pull_request,
@@ -54,7 +56,10 @@ describe Policial::StyleChecker do
       file_a = stub_commit_file('a.rb', '"double quotes"')
       file_b = stub_commit_file('b.rb', ':trailing_withespace ')
       pull_request = stub_pull_request(files: [file_a, file_b])
-      expected_violations = ['Trailing whitespace detected.']
+      expected_violations = [
+        'Missing frozen string literal comment.',
+        'Trailing whitespace detected.'
+      ]
 
       violation_messages =
         described_class.new(pull_request).violations.map(&:message)

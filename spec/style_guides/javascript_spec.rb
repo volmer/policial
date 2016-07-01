@@ -4,9 +4,8 @@ require 'spec_helper'
 
 describe Policial::StyleGuides::JavaScript do
   subject do
-    described_class.new(
-      Policial::ConfigLoader.new(
-        Policial::Commit.new('volmer/cerberus', 'commitsha', Octokit)))
+    commit = Policial::Commit.new('volmer/cerberus', 'commitsha', Octokit)
+    described_class.new(Policial::ConfigLoader.new(commit))
   end
 
   let(:custom_config) { nil }

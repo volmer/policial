@@ -29,7 +29,7 @@ describe Policial::StyleGuides::Ruby do
 
       expect(violations.count).to eq(1)
       expect(violations.first.filename).to eq('test.rb')
-      expect(violations.first.line_number).to eq(1)
+      expect(violations.first.line_number).to eq(2)
       expect(violations.first.linter).to eq('Style/StringLiterals')
       expect(violations.first.message).to eq(
         "Prefer single-quoted strings when you don't need string interpolation"\
@@ -47,19 +47,19 @@ describe Policial::StyleGuides::Ruby do
       expect(violations.count).to eq(3)
 
       expect(violations[0].filename).to eq('test.rb')
-      expect(violations[0].line_number).to eq(1)
+      expect(violations[0].line_number).to eq(2)
       expect(violations[0].linter).to eq('Lint/Void')
       expect(violations[0].message).to eq(
         'Literal `{first_line: :violates }` used in void context.'
       )
 
       expect(violations[1].filename).to eq('test.rb')
-      expect(violations[1].line_number).to eq(1)
+      expect(violations[1].line_number).to eq(2)
       expect(violations[1].linter).to eq('Style/SpaceInsideHashLiteralBraces')
       expect(violations[1].message).to eq('Space inside { missing.')
 
       expect(violations[2].filename).to eq('test.rb')
-      expect(violations[2].line_number).to eq(2)
+      expect(violations[2].line_number).to eq(3)
       expect(violations[2].linter).to eq('Style/StringLiterals')
       expect(violations[2].message).to eq(
         "Prefer single-quoted strings when you don't need string interpolation"\
@@ -80,7 +80,7 @@ describe Policial::StyleGuides::Ruby do
 
         expect(violations.count).to eq(1)
         expect(violations.first.filename).to eq('test.rb')
-        expect(violations.first.line_number).to eq(1)
+        expect(violations.first.line_number).to eq(2)
         expect(violations.first.linter).to eq('Style/StringLiterals')
         expect(violations.first.message).to eq(
           'Prefer double-quoted strings unless you need single quotes to '\
@@ -113,7 +113,8 @@ describe Policial::StyleGuides::Ruby do
 
         it 'fetches and uses the remote config' do
           stub_request(:get, 'http://example.com/rubocop.yml').to_return(
-            body: { 'Style/StringLiterals' => { 'Enabled' => false } }.to_yaml)
+            body: { 'Style/StringLiterals' => { 'Enabled' => false } }.to_yaml
+          )
           file = build_file('app/models/ugly.rb', '"double quotes"')
           expect(subject.violations_in_file(file)).to be_empty
         end
@@ -201,7 +202,8 @@ describe Policial::StyleGuides::Ruby do
       expect(subject.violations_in_file(file)).to be_empty
 
       file = build_file(
-        'test.rb', '"I like it!" # rubocop:disable Style/StringLiterals')
+        'test.rb', '"I like it!" # rubocop:disable Style/StringLiterals'
+      )
       expect(subject.violations_in_file(file)).to be_empty
     end
   end
@@ -267,6 +269,7 @@ describe Policial::StyleGuides::Ruby do
   end
 
   def build_file(name, *lines)
+    lines = lines.unshift('# frozen_string_literal: true')
     file = double('file', filename: name, content: lines.join("\n") + "\n")
     allow(file).to receive(:line_at) { |n| lines[n] }
     file

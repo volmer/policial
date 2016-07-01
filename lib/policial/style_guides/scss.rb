@@ -47,7 +47,8 @@ module Policial
         runner.lints.map do |lint|
           linter_name = lint.linter ? lint.linter.name : 'undefined'
           Violation.new(
-            file, lint.location.line, lint.description, linter_name)
+            file, lint.location.line, lint.description, linter_name
+          )
         end
       end
 

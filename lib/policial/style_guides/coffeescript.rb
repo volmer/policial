@@ -34,7 +34,8 @@ module Policial
       def violations(file, errors)
         errors.map do |error|
           Violation.new(
-            file, error['lineNumber'], error['message'], error['rule'])
+            file, error['lineNumber'], error['message'], error['rule']
+          )
         end
       end
     end

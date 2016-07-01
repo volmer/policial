@@ -35,7 +35,8 @@ module Policial
     def style_guides
       Policial.style_guides.map do |klass|
         @style_guides[klass] ||= klass.new(
-          config_loader, @options[klass::KEY] || {})
+          config_loader, @options[klass::KEY] || {}
+        )
       end
     end
 
