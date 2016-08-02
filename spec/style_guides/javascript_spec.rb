@@ -39,6 +39,19 @@ describe Policial::StyleGuides::JavaScript do
       )
     end
 
+    it 'reports syntax errors' do
+      file = build_file('test.js', "import React from 'react';")
+      violations = subject.violations_in_file(file)
+
+      expect(violations.count).to eq(1)
+      expect(violations.first.filename).to eq('test.js')
+      expect(violations.first.line_number).to eq(1)
+      expect(violations.first.linter).to eq('undefined')
+      expect(violations.first.message).to eq(
+        "Parsing error: The keyword 'import' is reserved"
+      )
+    end
+
     context 'with valid file' do
       it 'has no violations' do
         file_content = [

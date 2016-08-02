@@ -37,7 +37,10 @@ module Policial
       def violations(file, errors)
         errors.map do |error|
           Violation.new(
-            file, error['line'], error['message'], error['ruleId']
+            file,
+            error['line'],
+            error['message'],
+            error['ruleId'] || 'undefined'
           )
         end
       end
