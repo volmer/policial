@@ -48,7 +48,7 @@ module Policial
 
         RuboCop::ProcessedSource.new(
           file.content,
-          config['AllCops']['TargetRubyVersion'],
+          config.target_ruby_version,
           absolute_path
         )
       end

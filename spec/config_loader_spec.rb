@@ -76,6 +76,12 @@ describe Policial::ConfigLoader do
 
       expect(subject.json('policial.json')).to eq({})
     end
+
+    it 'is empty if the retrieved config file is null' do
+      content_request_returns('policial.json', 'null')
+
+      expect(subject.json('policial.json')).to eq({})
+    end
   end
 
   private

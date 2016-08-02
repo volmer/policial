@@ -12,7 +12,7 @@ module Policial
     end
 
     def json(filename)
-      JSON.parse(raw(filename))
+      JSON.parse(raw(filename)) || {}
     rescue JSON::ParserError
       {}
     end
