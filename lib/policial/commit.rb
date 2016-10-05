@@ -14,7 +14,7 @@ module Policial
     def file_content(filename)
       contents = @github_client.contents(@repo, path: filename, ref: @sha)
 
-      if contents && contents.content
+      if contents&.content
         Base64.decode64(contents.content).force_encoding('UTF-8')
       else
         ''
