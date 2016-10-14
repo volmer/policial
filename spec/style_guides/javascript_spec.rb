@@ -87,6 +87,21 @@ describe Policial::StyleGuides::JavaScript do
         expect(violations[0].message).to eq("Unary operator '++' used.")
       end
     end
+
+    context 'with invalid custom configuration' do
+      let(:custom_config) do
+        { 'parser' => 'babel-eslint' }
+      end
+
+      it 'raises a linter error' do
+        file = build_file('test.js', ['var foo = 1;'])
+
+        expect { subject.violations_in_file(file) }
+          .to raise_error(
+            Policial::LinterError, "Cannot find module 'babel-eslint'"
+          )
+      end
+    end
   end
 
   describe '#filename_patterns' do

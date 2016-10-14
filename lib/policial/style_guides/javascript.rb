@@ -36,6 +36,8 @@ module Policial
 
       def violations(file, errors)
         errors.map do |error|
+          raise LinterError, error['message'] if error['line'].to_i.zero?
+
           Violation.new(
             file,
             error['line'],
