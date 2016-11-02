@@ -90,7 +90,7 @@ your repo. Please see [RuboCop's README](https://github.com/bbatsov/rubocop).
 
 You can setup your CoffeeScript code style rules with a `coffeelint.json`
 file in your repo. For more information on how customize the linter rules please
-visit the [Coffeelint website](https://coffelint.org).
+visit the [Coffeelint website](http://coffeelint.org).
 
 ## SCSS
 
