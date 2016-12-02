@@ -26,8 +26,8 @@ describe Policial::StyleGuides::CoffeeScript do
     it 'returns one violation per lint' do
       file_content = [
         'foo: =>',
-        '  debugger',
-        '  "bar"'
+        '  "bar"',
+        'class boaConstrictor'
       ]
       file = build_file('test.coffee', file_content)
 
@@ -42,9 +42,9 @@ describe Policial::StyleGuides::CoffeeScript do
       )
 
       expect(violations[1].filename).to eq('test.coffee')
-      expect(violations[1].line_number).to eq(2)
+      expect(violations[1].line_number).to eq(3)
       expect(violations[1].message).to eq(
-        'Found debugging code'
+        'Class name should be UpperCamelCased'
       )
     end
 

@@ -73,6 +73,7 @@ describe Policial::Detective do
         expected_messages = [
           "Omit the parentheses in defs when the method doesn't accept any "\
           'arguments.',
+          'Put empty method definitions on a single line.',
           'Missing frozen string literal comment.',
           'Trailing whitespace detected.'
         ]
