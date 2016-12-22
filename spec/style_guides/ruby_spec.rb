@@ -247,6 +247,10 @@ describe Policial::StyleGuides::Ruby do
       expect(subject.exclude_file?('app/file.rb')).to be false
     end
 
+    it 'is false for .rake files by default' do
+      expect(subject.exclude_file?('lib/file.rake')).to be false
+    end
+
     context 'when custom config excludes the file' do
       let(:custom_config) do
         { 'AllCops' => { 'Exclude' => ['app/file.rb'] } }
