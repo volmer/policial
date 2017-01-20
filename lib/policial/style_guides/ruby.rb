@@ -34,7 +34,7 @@ module Policial
 
       def team
         cop_classes = if config['Rails']['Enabled']
-                        RuboCop::Cop::Cop.all
+                        RuboCop::Cop::Registry.new(RuboCop::Cop::Cop.all)
                       else
                         RuboCop::Cop::Cop.non_rails
                       end
