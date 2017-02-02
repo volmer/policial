@@ -206,6 +206,23 @@ describe Policial::StyleGuides::Ruby do
       )
       expect(subject.violations_in_file(file)).to be_empty
     end
+
+    context 'when custom config defines Cop Details' do
+      let(:custom_config) do
+        { 'Style/StringLiterals' => { 'Details' => 'Get rid of those quotes' } }
+      end
+
+      it 'uses the details in the violation message' do
+        file = build_file('test.rb', '"I am naughty"')
+
+        violations = subject.violations_in_file(file)
+
+        expect(violations.first.message).to eq(
+          "Prefer single-quoted strings when you don't need string "\
+          'interpolation or special symbols. Get rid of those quotes'
+        )
+      end
+    end
   end
 
   describe '#filename_patterns' do

@@ -12,7 +12,9 @@ module Policial
         offenses = team.inspect_file(parsed_source(file))
 
         offenses.reject(&:disabled?).map do |offense|
-          Violation.new(file, offense.line, offense.message, offense.cop_name)
+          Violation.new(
+            file, offense.line, offense.message.strip, offense.cop_name
+          )
         end
       end
 
@@ -39,7 +41,7 @@ module Policial
                         RuboCop::Cop::Cop.non_rails
                       end
 
-        RuboCop::Cop::Team.new(cop_classes, config)
+        RuboCop::Cop::Team.new(cop_classes, config, extra_details: true)
       end
 
       def parsed_source(file)
