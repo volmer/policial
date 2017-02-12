@@ -50,6 +50,24 @@ describe Policial::ConfigLoader do
 
       expect(subject.yaml('policial.yml')).to eq({})
     end
+
+    it 'allows Regexp objects' do
+      content_request_returns(
+        'policial.yml', 'WordRegex: !ruby/regexp /\A[\p{Word}\n\t]+\z/'
+      )
+
+      expect(subject.yaml('policial.yml'))
+        .to eq('WordRegex' => /\A[\p{Word}\n\t]+\z/)
+    end
+
+    it 'does not allow non-whitelisted objects' do
+      content_request_returns(
+        'policial.yml', "Commit: !ruby/class 'Policial::Commit'"
+      )
+
+      expect { subject.yaml('policial.yml') }
+        .to raise_error(Psych::DisallowedClass)
+    end
   end
 
   describe '#json' do

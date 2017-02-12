@@ -18,7 +18,7 @@ module Policial
     end
 
     def yaml(filename)
-      YAML.safe_load(raw(filename)) || {}
+      YAML.safe_load(raw(filename), [Regexp], [], false, filename) || {}
     rescue Psych::SyntaxError
       {}
     end
