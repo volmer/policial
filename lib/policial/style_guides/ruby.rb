@@ -19,11 +19,8 @@ module Policial
       end
 
       def include_file?(filename)
+        return false if config.file_to_exclude?(filename)
         File.extname(filename) == '.rb' || config.file_to_include?(filename)
-      end
-
-      def exclude_file?(filename)
-        config.file_to_exclude?(filename)
       end
 
       def default_config_file

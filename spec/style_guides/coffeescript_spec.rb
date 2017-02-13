@@ -100,12 +100,6 @@ describe Policial::StyleGuides::CoffeeScript do
     end
   end
 
-  describe '#exclude_file?' do
-    it 'is false' do
-      expect(subject.exclude_file?('filename')).to eq(false)
-    end
-  end
-
   def build_file(name, *lines)
     file = double('file', filename: name, content: lines.join("\n") + "\n")
     allow(file).to receive(:line_at) { |n| lines[n] }

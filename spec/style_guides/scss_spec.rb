@@ -143,37 +143,21 @@ describe Policial::StyleGuides::Scss do
       expect(subject.include_file?('my_file.css')).to be false
       expect(subject.include_file?('my_file.scss.erb')).to be false
     end
-  end
-
-  describe '#default_config_file' do
-    it 'is .scss-lint.yml' do
-      expect(subject.default_config_file).to eq('.scss-lint.yml')
-    end
-  end
-
-  describe '#exclude_file?' do
-    it 'is false when there is no custom config' do
-      expect(subject.exclude_file?('app/file.scss')).to be false
-    end
 
     context 'when custom config excludes the file' do
       let(:custom_config) do
         { 'exclude' => ['app/file.scss'] }
       end
 
-      it 'is true' do
-        expect(subject.exclude_file?('app/file.scss')).to be true
+      it 'is false' do
+        expect(subject.include_file?('app/file.scss')).to be false
       end
     end
+  end
 
-    context 'when custom config does not exclude the file' do
-      let(:custom_config) do
-        { 'exclude' => ['app/other_file.scss'] }
-      end
-
-      it 'is true' do
-        expect(subject.exclude_file?('app/file.scss')).to be false
-      end
+  describe '#default_config_file' do
+    it 'is .scss-lint.yml' do
+      expect(subject.default_config_file).to eq('.scss-lint.yml')
     end
   end
 

@@ -17,10 +17,6 @@ module Policial
         raise NotImplementedError, "must implement ##{__method__}"
       end
 
-      def exclude_file?(_filename)
-        raise NotImplementedError, "must implement ##{__method__}"
-      end
-
       def filename_patterns
         raise NotImplementedError, "must implement ##{__method__}"
       end
@@ -38,7 +34,7 @@ module Policial
       end
 
       def investigate?(filename)
-        enabled? && include_file?(filename) && !exclude_file?(filename)
+        enabled? && include_file?(filename)
       end
 
       private

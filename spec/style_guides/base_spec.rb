@@ -33,15 +33,6 @@ describe Policial::StyleGuides::Base do
     end
   end
 
-  describe '#exclude_file?' do
-    it 'raises NotImplementedError' do
-      expect { subject.exclude_file?('filename') }
-        .to raise_error(
-          NotImplementedError, 'must implement #exclude_file?'
-        )
-    end
-  end
-
   describe '#config_file' do
     before do
       allow(subject).to receive(:default_config_file).and_return('.default.yml')
@@ -79,67 +70,28 @@ describe Policial::StyleGuides::Base do
   end
 
   describe '#investigate?' do
-    context 'when style guide is enabled and filename matches pattern' do
-      before do
-        allow(subject).to receive(:include_file?).with('app/view.erb')
-          .and_return(true)
-      end
+    it 'is true when style guide is enabled and includes the file' do
+      allow(subject).to receive(:include_file?).with('app/view.erb')
+        .and_return(true)
 
-      context 'when filename is not excluded' do
-        before do
-          allow(subject).to receive(:exclude_file?).with('app/view.erb')
-            .and_return(false)
-        end
-
-        it 'is true' do
-          expect(subject.investigate?('app/view.erb')).to be true
-        end
-      end
-
-      context 'when filename is excluded' do
-        before do
-          allow(subject).to receive(:exclude_file?).with('app/view.erb')
-            .and_return(true)
-        end
-
-        it 'is false' do
-          expect(subject.investigate?('app/view.erb')).to be false
-        end
-      end
+      expect(subject.investigate?('app/view.erb')).to be true
     end
 
-    context 'when style guide is enabled and filename is not excluded' do
-      before do
-        allow(subject).to receive(:exclude_file?).with('app/view.erb')
-          .and_return(false)
-      end
+    it 'is true when style guide is enabled but it excludes the file' do
+      allow(subject).to receive(:include_file?).with('app/view.erb')
+        .and_return(false)
 
-      context 'when filename is not included' do
-        before do
-          allow(subject).to receive(:include_file?).with('app/view.erb')
-            .and_return(false)
-        end
-
-        it 'is false' do
-          expect(subject.investigate?('app/view.erb')).to be false
-        end
-      end
+      expect(subject.investigate?('app/view.erb')).to be false
     end
 
-    context 'when filename is included and it is not excluded' do
-      before do
+    context 'when style guide is disabled' do
+      subject { described_class.new(config_loader, enabled: false) }
+
+      it 'is false' do
         allow(subject).to receive(:include_file?).with('app/view.erb')
           .and_return(true)
-        allow(subject).to receive(:exclude_file?).with('app/view.erb')
-          .and_return(false)
-      end
 
-      context 'when style guide is disabled' do
-        subject { described_class.new(config_loader, enabled: false) }
-
-        it 'is false' do
-          expect(subject.investigate?('app/view.erb')).to be false
-        end
+        expect(subject.investigate?('app/view.erb')).to be false
       end
     end
   end
