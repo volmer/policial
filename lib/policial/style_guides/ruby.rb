@@ -18,14 +18,12 @@ module Policial
         end
       end
 
-      def exclude_file?(filename)
-        config.file_to_exclude?(filename)
+      def include_file?(filename)
+        File.extname(filename) == '.rb' || config.file_to_include?(filename)
       end
 
-      def filename_patterns
-        all_cop_includes = config['AllCops']['Include'] || []
-        all_cop_includes = all_cop_includes.map { |a| /#{Regexp.quote(a)}/ }
-        ([/.+\.rb\z/] + all_cop_includes).flatten
+      def exclude_file?(filename)
+        config.file_to_exclude?(filename)
       end
 
       def default_config_file

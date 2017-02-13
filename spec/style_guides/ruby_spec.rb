@@ -225,30 +225,30 @@ describe Policial::StyleGuides::Ruby do
     end
   end
 
-  describe '#filename_patterns' do
+  describe '#include_file?' do
+    it 'includes Ruby files' do
+      expect(subject.include_file?('app/file.rb')).to be true
+      expect(subject.include_file?('another.rb')).to be true
+    end
+
+    it 'includes Rake files' do
+      expect(subject.include_file?('lib/task.rake')).to be true
+    end
+
+    it 'does not include ERB files' do
+      expect(subject.include_file?('app/view.erb')).to be false
+    end
+
     context 'when custom config has Include' do
       let(:custom_config) do
         { 'AllCops' => { 'Include' => ['fastlane/Fastfile'] } }
       end
 
-      it 'includes AllCops Include in filename_patterns' do
-        patterns = [/.+\.rb\z/, %r{fastlane/Fastfile}]
-        expect(subject.filename_patterns).to match(patterns)
-      end
-
       it 'matches Ruby files' do
-        expect(subject.filename_patterns.first).to match('my_file.rb')
-        expect(subject.filename_patterns.first).to match('app/base.rb')
-        expect(subject.filename_patterns.first).not_to match('my_file.erb')
-        expect(subject.filename_patterns.last).to match('fastlane/Fastfile')
-      end
-    end
-
-    context 'when custom config is nil' do
-      it 'matches Ruby files' do
-        expect(subject.filename_patterns.first).to match('my_file.rb')
-        expect(subject.filename_patterns.first).to match('app/base.rb')
-        expect(subject.filename_patterns.first).not_to match('my_file.erb')
+        expect(subject.include_file?('my_file.rb')).to be true
+        expect(subject.include_file?('app/base.rb')).to be true
+        expect(subject.include_file?('my_file.erb')).to be false
+        expect(subject.include_file?('fastlane/Fastfile')).to be true
       end
     end
   end

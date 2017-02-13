@@ -13,12 +13,12 @@ module Policial
         violations(file, errors)
       end
 
-      def exclude_file?(_filename)
-        false
+      def include_file?(filename)
+        File.extname(filename) == '.coffee'
       end
 
-      def filename_patterns
-        [/.+\.coffee\z/]
+      def exclude_file?(_filename)
+        false
       end
 
       def default_config_file

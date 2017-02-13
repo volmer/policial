@@ -104,12 +104,12 @@ describe Policial::StyleGuides::JavaScript do
     end
   end
 
-  describe '#filename_patterns' do
+  describe '#include_file?' do
     it 'matches Javascript files' do
-      expect(subject.filename_patterns.first).to match('my_file.js')
-      expect(subject.filename_patterns.first).to match('app/script.js')
-      expect(subject.filename_patterns.first).not_to match('my_file.js.erb')
-      expect(subject.filename_patterns.first).not_to match('my_file.coffee')
+      expect(subject.include_file?('my_file.js')).to be true
+      expect(subject.include_file?('app/script.js')).to be true
+      expect(subject.include_file?('my_file.js.erb')).to be false
+      expect(subject.include_file?('my_file.coffee')).to be false
     end
   end
 

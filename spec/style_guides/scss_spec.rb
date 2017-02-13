@@ -136,12 +136,12 @@ describe Policial::StyleGuides::Scss do
     end
   end
 
-  describe '#filename_patterns' do
+  describe '#include_file?' do
     it 'matches SCSS files' do
-      expect(subject.filename_patterns.first).to match('my_file.scss')
-      expect(subject.filename_patterns.first).to match('app/base.scss')
-      expect(subject.filename_patterns.first).not_to match('my_file.css')
-      expect(subject.filename_patterns.first).not_to match('my_file.scss.erb')
+      expect(subject.include_file?('my_file.scss')).to be true
+      expect(subject.include_file?('app/base.scss')).to be true
+      expect(subject.include_file?('my_file.css')).to be false
+      expect(subject.include_file?('my_file.scss.erb')).to be false
     end
   end
 

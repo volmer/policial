@@ -86,11 +86,11 @@ describe Policial::StyleGuides::CoffeeScript do
     end
   end
 
-  describe '#filename_patterns' do
+  describe '#include_file?' do
     it 'matches CoffeeScript files' do
-      expect(subject.filename_patterns.first).to match('my_file.coffee')
-      expect(subject.filename_patterns.first).to match('app/script.coffee')
-      expect(subject.filename_patterns.first).not_to match('my_file.coffee.erb')
+      expect(subject.include_file?('my_file.coffee')).to be true
+      expect(subject.include_file?('app/script.coffee')).to be true
+      expect(subject.include_file?('my_file.coffee.erb')).to be false
     end
   end
 

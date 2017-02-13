@@ -13,6 +13,10 @@ module Policial
         raise NotImplementedError, "must implement ##{__method__}"
       end
 
+      def inlcude_file?(_filename)
+        raise NotImplementedError, "must implement ##{__method__}"
+      end
+
       def exclude_file?(_filename)
         raise NotImplementedError, "must implement ##{__method__}"
       end
@@ -34,19 +38,13 @@ module Policial
       end
 
       def investigate?(filename)
-        enabled? && matches_pattern?(filename) && !exclude_file?(filename)
+        enabled? && include_file?(filename) && !exclude_file?(filename)
       end
 
       private
 
       def enabled?
         @options[:enabled] != false
-      end
-
-      def matches_pattern?(filename)
-        filename_patterns.any? do |filename_pattern|
-          !(filename =~ filename_pattern).nil?
-        end
       end
     end
   end

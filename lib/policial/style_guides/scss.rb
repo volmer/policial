@@ -18,12 +18,12 @@ module Policial
         violations(runner, file)
       end
 
-      def exclude_file?(filename)
-        config.excluded_file?(File.expand_path(filename))
+      def include_file?(filename)
+        File.extname(filename) == '.scss'
       end
 
-      def filename_patterns
-        [/.+\.scss\z/]
+      def exclude_file?(filename)
+        config.excluded_file?(File.expand_path(filename))
       end
 
       def default_config_file
