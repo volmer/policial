@@ -12,15 +12,22 @@ module Policial
     end
 
     def file_content(filename)
-      contents = @github_client.contents(@repo, path: filename, ref: @sha)
+      decode(@github_client.contents(@repo, path: filename, ref: @sha))
+    rescue Octokit::NotFound
+      ''
+    rescue Octokit::Forbidden => error
+      return '' if error.errors.any? && error.errors.first[:code] == 'too_large'
+      raise error
+    end
 
-      if contents&.content
-        Base64.decode64(contents.content).force_encoding('UTF-8')
+    private
+
+    def decode(content)
+      if content&.content
+        Base64.decode64(content.content).force_encoding('UTF-8')
       else
         ''
       end
-    rescue Octokit::NotFound
-      ''
     end
   end
 end

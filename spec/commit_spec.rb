@@ -58,5 +58,15 @@ describe Policial::Commit do
         expect(subject.file_content('test.rb')).to eq('')
       end
     end
+
+    context 'when file too large error is raised' do
+      it 'returns blank string' do
+        error = Octokit::Forbidden.new(body: { errors: [code: 'too_large'] })
+
+        expect(Octokit).to receive(:contents).and_raise(error)
+
+        expect(subject.file_content('test.rb')).to eq('')
+      end
+    end
   end
 end
