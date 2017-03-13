@@ -61,6 +61,8 @@ module Policial
         tempfile_from(config_file, content.to_yaml) do |tempfile|
           RuboCop::ConfigLoader.load_file(tempfile.path)
         end
+      rescue LoadError => error
+        raise_dependency_error(error)
       end
 
       def tempfile_from(filename, content)
@@ -74,12 +76,20 @@ module Policial
       end
 
       def filter(config_hash)
-        config_hash.delete('require')
         config_hash.delete('inherit_gem')
         config_hash['inherit_from'] =
           Array(config_hash['inherit_from']).select do |value|
             value =~ /\A#{URI.regexp(%w(http https))}\z/
           end
+      end
+
+      def raise_dependency_error(error)
+        pathname = Pathname.new(error.path)
+        if pathname.absolute?
+          pathname = pathname.relative_path_from(Pathname.pwd)
+        end
+        raise ConfigDependencyError, "Your RuboCop config #{config_file} "\
+          "requires #{pathname}, but it could not be loaded."
       end
     end
   end

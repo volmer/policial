@@ -148,14 +148,48 @@ describe Policial::StyleGuides::Ruby do
       end
     end
 
-    context 'when custom config requires external gems' do
+    context 'when custom config requires a file that can be loaded' do
+      let(:custom_config) do
+        { 'require' => './spec/support/custom_cop.rb' }
+      end
+
+      it 'loads it' do
+        file = build_file('spec/my_spec.rb', '@fuck = true')
+        violation = subject.violations_in_file(file).first
+        expect(violation.linter).to eq('TestSupport/CustomCop')
+        expect(violation.message).to eq('No swearwords!')
+      end
+    end
+
+    context 'when custom config requires a file that cannot be loaded' do
+      let(:custom_config) do
+        { 'require' => './inexistent/file.rb' }
+      end
+
+      it 'raises Policial::ConfigDependencyError' do
+        file = build_file('spec/my_spec.rb', '@my_var = 1')
+        expect { subject.violations_in_file(file) }
+          .to raise_error(
+            Policial::ConfigDependencyError,
+            'Your RuboCop config .rubocop.yml requires inexistent/file.rb, '\
+            'but it could not be loaded.'
+          )
+      end
+    end
+
+    context 'when custom config requires a gem that cannot be loaded' do
       let(:custom_config) do
         { 'require' => 'rubocop-rspec' }
       end
 
-      it 'ignores it' do
+      it 'raises Policial::ConfigDependencyError' do
         file = build_file('spec/my_spec.rb', '@my_var = 1')
-        expect(subject.violations_in_file(file)).to be_empty
+        expect { subject.violations_in_file(file) }
+          .to raise_error(
+            Policial::ConfigDependencyError,
+            'Your RuboCop config .rubocop.yml requires rubocop-rspec, '\
+            'but it could not be loaded.'
+          )
       end
     end
 
