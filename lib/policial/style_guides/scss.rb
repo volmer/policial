@@ -38,6 +38,8 @@ module Policial
             SCSSLint::Config.load(temp, merge_with_default: true)
           end
         end
+      rescue SCSSLint::Exceptions::PluginGemLoadError => error
+        raise ConfigDependencyError, error.message
       end
 
       def violations(runner, file)

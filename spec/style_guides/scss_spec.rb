@@ -134,6 +134,24 @@ describe Policial::StyleGuides::Scss do
         end
       end
     end
+
+    context 'when custom config requires a gem that cannot be loaded' do
+      let(:custom_config) do
+        { 'plugin_gems' => ['missing_plugin'] }
+      end
+
+      it 'raises Policial::ConfigDependencyError' do
+        file = build_file('test.scss', "p { content: 'hi!'; }")
+        expect { subject.violations_in_file(file) }
+          .to raise_error(
+            Policial::ConfigDependencyError,
+            "Unable to load linter plugin gem 'missing_plugin'. Try running "\
+            '`gem install missing_plugin`, or adding it to your Gemfile and '\
+            'running `bundle install`. See the `plugin_gems` section of your '\
+            '.scss-lint.yml file to add/remove gem plugins.'
+          )
+      end
+    end
   end
 
   describe '#include_file?' do
