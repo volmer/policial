@@ -12,11 +12,11 @@ describe Policial::StyleChecker do
         stub_pull_request(files: [stylish_file, violated_file, bad_coffee])
       expected_violations = [
         'Missing magic comment `# frozen_string_literal: true`.',
-        'Missing magic comment `# frozen_string_literal: true`.',
-        'Avoid single-line method definitions.',
         'Space inside parentheses detected.',
         'Space inside parentheses detected.',
         'Trailing whitespace detected.',
+        'Missing magic comment `# frozen_string_literal: true`.',
+        'Avoid single-line method definitions.',
         'Unnecessary fat arrow'
       ]
 
@@ -32,7 +32,9 @@ describe Policial::StyleChecker do
       pull_request = stub_pull_request(head_commit: head_commit, files: [file])
       config_loader = Policial::ConfigLoader.new(head_commit)
 
-      expect(Policial::ConfigLoader).to receive(:new).with(head_commit)
+      expect(Policial::ConfigLoader)
+        .to receive(:new)
+        .with(head_commit)
         .and_return(config_loader)
 
       expect(Policial::StyleGuides::Ruby).to receive(:new)
@@ -57,8 +59,8 @@ describe Policial::StyleChecker do
       file_b = stub_commit_file('b.rb', ':trailing_withespace ')
       pull_request = stub_pull_request(files: [file_a, file_b])
       expected_violations = [
-        'Missing magic comment `# frozen_string_literal: true`.',
-        'Trailing whitespace detected.'
+        'Trailing whitespace detected.',
+        'Missing magic comment `# frozen_string_literal: true`.'
       ]
 
       violation_messages =

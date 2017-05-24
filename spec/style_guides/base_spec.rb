@@ -71,14 +71,18 @@ describe Policial::StyleGuides::Base do
 
   describe '#investigate?' do
     it 'is true when style guide is enabled and includes the file' do
-      allow(subject).to receive(:include_file?).with('app/view.erb')
+      allow(subject)
+        .to receive(:include_file?)
+        .with('app/view.erb')
         .and_return(true)
 
       expect(subject.investigate?('app/view.erb')).to be true
     end
 
     it 'is true when style guide is enabled but it excludes the file' do
-      allow(subject).to receive(:include_file?).with('app/view.erb')
+      allow(subject)
+        .to receive(:include_file?)
+        .with('app/view.erb')
         .and_return(false)
 
       expect(subject.investigate?('app/view.erb')).to be false
@@ -88,7 +92,9 @@ describe Policial::StyleGuides::Base do
       subject { described_class.new(config_loader, enabled: false) }
 
       it 'is false' do
-        allow(subject).to receive(:include_file?).with('app/view.erb')
+        allow(subject)
+          .to receive(:include_file?)
+          .with('app/view.erb')
           .and_return(true)
 
         expect(subject.investigate?('app/view.erb')).to be false

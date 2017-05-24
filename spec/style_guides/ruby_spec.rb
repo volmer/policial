@@ -48,15 +48,15 @@ describe Policial::StyleGuides::Ruby do
 
       expect(violations[0].filename).to eq('test.rb')
       expect(violations[0].line_number).to eq(3)
-      expect(violations[0].linter).to eq('Lint/Void')
-      expect(violations[0].message).to eq(
-        'Literal `{first_line: :violates }` used in void context.'
-      )
+      expect(violations[0].linter).to eq('Layout/SpaceInsideHashLiteralBraces')
+      expect(violations[0].message).to eq('Space inside { missing.')
 
       expect(violations[1].filename).to eq('test.rb')
       expect(violations[1].line_number).to eq(3)
-      expect(violations[1].linter).to eq('Style/SpaceInsideHashLiteralBraces')
-      expect(violations[1].message).to eq('Space inside { missing.')
+      expect(violations[1].linter).to eq('Lint/Void')
+      expect(violations[1].message).to eq(
+        'Literal `{first_line: :violates }` used in void context.'
+      )
 
       expect(violations[2].filename).to eq('test.rb')
       expect(violations[2].line_number).to eq(4)
