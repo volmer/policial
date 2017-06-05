@@ -113,7 +113,7 @@ More info [here](https://github.com/brigade/scss-lint#installation).
 Now you can enable SCSS on Policial:
 
 ```ruby
-Policial.style_guides << Policial::StyleGuides::Scss
+Policial.linters << Policial::Linters::Scss
 ```
 
 You can setup your SCSS code style rules with a `.scss-lint.yml` file in your

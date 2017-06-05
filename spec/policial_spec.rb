@@ -3,24 +3,24 @@
 require 'spec_helper'
 
 describe Policial do
-  describe '.style_guides' do
-    before(:all) { @style_guides_initial_value = Policial.style_guides.dup }
-    after { Policial.style_guides = @style_guides_initial_value.dup }
+  describe '.linters' do
+    before(:all) { @linters_initial_value = Policial.linters.dup }
+    after { Policial.linters = @linters_initial_value.dup }
 
-    it 'defaults to DEFAULT_STYLE_GUIDES' do
-      expect(Policial.style_guides).to eq(Policial::DEFAULT_STYLE_GUIDES)
+    it 'defaults to DEFAULT_LINTERS' do
+      expect(Policial.linters).to eq(Policial::DEFAULT_LINTERS)
     end
 
     it 'can be overwritten' do
-      custom = [Policial::StyleGuides::Scss, Policial::StyleGuides::Ruby]
-      Policial.style_guides = custom
+      custom = [Policial::Linters::Scss, Policial::Linters::Ruby]
+      Policial.linters = custom
 
-      expect(Policial.style_guides).to eq(custom)
+      expect(Policial.linters).to eq(custom)
     end
 
     it 'can be appended' do
-      Policial.style_guides << Policial::StyleGuides::Scss
-      expect(Policial.style_guides).to include(Policial::StyleGuides::Scss)
+      Policial.linters << Policial::Linters::Scss
+      expect(Policial.linters).to include(Policial::Linters::Scss)
     end
   end
 end

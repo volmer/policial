@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module Policial
-  module StyleGuides
-    # Public: Base to contain common style guide logic.
+  module Linters
+    # Public: Base to contain common linter logic.
     class Base
       def initialize(config_loader, options = {})
         @config_loader = config_loader

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Policial
-  module StyleGuides
+  module Linters
     # Public: Determine SCSS style guide violations per-line.
     class Scss < Base
       KEY = :scss

@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 module Policial
-  # Public: Filters files to reviewable subset, builds style guide based on file
-  # extension and delegates to style guide for line violations.
+  # Public: Filters files to reviewable subset, builds linter based on file
+  # extension and delegates to linter for line violations.
   class StyleChecker
     def initialize(pull_request, options = {})
       @pull_request = pull_request
-      @style_guides = {}
+      @linters = {}
       @options = options
     end
 
@@ -18,9 +18,9 @@ module Policial
 
     def violations_in_checked_files
       files_to_check.flat_map do |file|
-        style_guides.flat_map do |style_guide|
-          if style_guide.investigate?(file.filename)
-            style_guide.violations_in_file(file)
+        linters.flat_map do |linter|
+          if linter.investigate?(file.filename)
+            linter.violations_in_file(file)
           else
             []
           end
@@ -32,9 +32,9 @@ module Policial
       @pull_request.files.reject(&:removed?)
     end
 
-    def style_guides
-      Policial.style_guides.map do |klass|
-        @style_guides[klass] ||= klass.new(
+    def linters
+      Policial.linters.map do |klass|
+        @linters[klass] ||= klass.new(
           config_loader, @options[klass::KEY] || {}
         )
       end

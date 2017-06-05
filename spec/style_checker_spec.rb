@@ -26,7 +26,7 @@ describe Policial::StyleChecker do
       expect(violation_messages).to eq expected_violations
     end
 
-    it 'forwards options to the style guides, as well as a config loader' do
+    it 'forwards options to the linters, as well as a config loader' do
       file = stub_commit_file('ruby.rb', 'puts 123')
       head_commit = double('Commit', file_content: '')
       pull_request = stub_pull_request(head_commit: head_commit, files: [file])
@@ -37,9 +37,9 @@ describe Policial::StyleChecker do
         .with(head_commit)
         .and_return(config_loader)
 
-      expect(Policial::StyleGuides::Ruby).to receive(:new)
+      expect(Policial::Linters::Ruby).to receive(:new)
         .with(config_loader, my: :options).and_call_original
-      expect(Policial::StyleGuides::CoffeeScript).to receive(:new)
+      expect(Policial::Linters::CoffeeScript).to receive(:new)
         .with(config_loader, a_few: :more_options).and_call_original
 
       described_class.new(
@@ -49,10 +49,10 @@ describe Policial::StyleChecker do
       ).violations
     end
 
-    it 'skips style guides on files that they are not able to investigate' do
-      allow_any_instance_of(Policial::StyleGuides::Ruby)
+    it 'skips linters on files that they are not able to investigate' do
+      allow_any_instance_of(Policial::Linters::Ruby)
         .to receive(:investigate?).with('a.rb').and_return(false)
-      allow_any_instance_of(Policial::StyleGuides::Ruby)
+      allow_any_instance_of(Policial::Linters::Ruby)
         .to receive(:investigate?).with('b.rb').and_return(true)
 
       file_a = stub_commit_file('a.rb', '"double quotes"')

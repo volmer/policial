@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe Policial::StyleGuides::CoffeeScript do
+describe Policial::Linters::CoffeeScript do
   subject do
     described_class.new(
       Policial::ConfigLoader.new(
@@ -71,7 +71,7 @@ describe Policial::StyleGuides::CoffeeScript do
         }
       end
 
-      it 'detects offenses to the custom style guide' do
+      it 'detects offenses to the custom linter' do
         file_content = ['foo: =>', '  "baz"']
         file = build_file('test.coffee', file_content)
 

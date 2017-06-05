@@ -12,36 +12,36 @@ require 'policial/patch'
 require 'policial/pull_request'
 require 'policial/pull_request_event'
 require 'policial/style_checker'
-require 'policial/style_guides/base'
-require 'policial/style_guides/ruby'
-require 'policial/style_guides/scss'
-require 'policial/style_guides/coffeescript'
-require 'policial/style_guides/javascript'
+require 'policial/linters/base'
+require 'policial/linters/ruby'
+require 'policial/linters/scss'
+require 'policial/linters/coffeescript'
+require 'policial/linters/javascript'
 require 'policial/unchanged_line'
 require 'policial/version'
 require 'policial/violation'
 
 # Public: The global gem module. It exposes some module attribute accessors
-# so you can configure GitHub credentials, enable/disable style guides
+# so you can configure GitHub credentials, enable/disable linters
 # and more.
 module Policial
-  DEFAULT_STYLE_GUIDES = [
-    Policial::StyleGuides::Ruby,
-    Policial::StyleGuides::CoffeeScript,
-    Policial::StyleGuides::JavaScript
+  DEFAULT_LINTERS = [
+    Policial::Linters::Ruby,
+    Policial::Linters::CoffeeScript,
+    Policial::Linters::JavaScript
   ].freeze
 
-  OPTIONAL_STYLE_GUIDES = [
-    Policial::StyleGuides::Scss
+  OPTIONAL_LINTERS = [
+    Policial::Linters::Scss
   ].freeze
 
   module_function
 
-  def style_guides
-    @style_guides ||= DEFAULT_STYLE_GUIDES.dup
+  def linters
+    @linters ||= DEFAULT_LINTERS.dup
   end
 
-  def style_guides=(style_guides)
-    @style_guides = style_guides
+  def linters=(linters)
+    @linters = linters
   end
 end

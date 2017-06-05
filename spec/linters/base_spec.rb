@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe Policial::StyleGuides::Base do
+describe Policial::Linters::Base do
   subject { described_class.new(config_loader) }
   let(:config_loader) { Policial::ConfigLoader.new('commit') }
 
@@ -70,7 +70,7 @@ describe Policial::StyleGuides::Base do
   end
 
   describe '#investigate?' do
-    it 'is true when style guide is enabled and includes the file' do
+    it 'is true when linter is enabled and includes the file' do
       allow(subject)
         .to receive(:include_file?)
         .with('app/view.erb')
@@ -79,7 +79,7 @@ describe Policial::StyleGuides::Base do
       expect(subject.investigate?('app/view.erb')).to be true
     end
 
-    it 'is true when style guide is enabled but it excludes the file' do
+    it 'is true when linter is enabled but it excludes the file' do
       allow(subject)
         .to receive(:include_file?)
         .with('app/view.erb')
@@ -88,7 +88,7 @@ describe Policial::StyleGuides::Base do
       expect(subject.investigate?('app/view.erb')).to be false
     end
 
-    context 'when style guide is disabled' do
+    context 'when linter is disabled' do
       subject { described_class.new(config_loader, enabled: false) }
 
       it 'is false' do

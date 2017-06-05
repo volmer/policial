@@ -3,7 +3,7 @@
 require 'coffeelint'
 
 module Policial
-  module StyleGuides
+  module Linters
     # Public: Determine CoffeeScript style guide violations per-line.
     class CoffeeScript < Base
       KEY = :coffeescript

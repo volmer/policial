@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe Policial::StyleGuides::JavaScript do
+describe Policial::Linters::JavaScript do
   subject do
     commit = Policial::Commit.new('volmer/cerberus', 'commitsha', Octokit)
     described_class.new(Policial::ConfigLoader.new(commit))
@@ -74,7 +74,7 @@ describe Policial::StyleGuides::JavaScript do
         }
       end
 
-      it 'detects offenses to the custom style guide' do
+      it 'detects offenses to the custom linter' do
         file_content = [
           'var foo = 1;',
           'foo++;'

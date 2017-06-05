@@ -3,7 +3,7 @@
 require 'rubocop'
 
 module Policial
-  module StyleGuides
+  module Linters
     # Public: Determine Ruby style guide violations per-line.
     class Ruby < Base
       KEY = :ruby

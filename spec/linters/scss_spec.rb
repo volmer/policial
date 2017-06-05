@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe Policial::StyleGuides::Scss do
+describe Policial::Linters::Scss do
   subject do
     described_class.new(
       Policial::ConfigLoader.new(
@@ -103,7 +103,7 @@ describe Policial::StyleGuides::Scss do
         }
       end
 
-      it 'detects offenses to the custom style guide' do
+      it 'detects offenses to the custom linter' do
         file = build_file('test.scss', "p { content: 'hi!'; }")
         violations = subject.violations_in_file(file)
 

@@ -3,7 +3,7 @@
 require 'eslintrb'
 
 module Policial
-  module StyleGuides
+  module Linters
     # Public: Determine Javascript style guide violations per-line.
     class JavaScript < Base
       KEY = :javascript

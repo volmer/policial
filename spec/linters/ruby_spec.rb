@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe Policial::StyleGuides::Ruby do
+describe Policial::Linters::Ruby do
   subject do
     described_class.new(
       Policial::ConfigLoader.new(
@@ -74,7 +74,7 @@ describe Policial::StyleGuides::Ruby do
         }
       end
 
-      it 'detects offenses to the custom style guide' do
+      it 'detects offenses to the custom linter' do
         file = build_file('test.rb', "'You do not like me'")
         violations = subject.violations_in_file(file)
 

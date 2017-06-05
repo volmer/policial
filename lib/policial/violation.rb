@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Policial
-  # Public: Hold file, line, and message. Built by style guides.
+  # Public: Hold file, line, and message. Built by linters.
   class Violation
     attr_reader :line_number, :message, :linter
 
