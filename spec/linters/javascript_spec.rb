@@ -102,6 +102,24 @@ describe Policial::Linters::JavaScript do
           )
       end
     end
+
+    context 'when ExecJS crashes' do
+      before do
+        allow(Eslintrb)
+          .to receive(:lint)
+          .and_raise(ExecJS::ProgramError, 'boom!')
+      end
+
+      it 'raises a linter error' do
+        file = build_file('test.js', ['var foo = 1;'])
+
+        expect { subject.violations_in_file(file) }
+          .to raise_error(
+            Policial::LinterError,
+            'ESLint has crashed because of ExecJS::ProgramError: boom!'
+          )
+      end
+    end
   end
 
   describe '#include_file?' do

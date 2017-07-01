@@ -11,6 +11,9 @@ module Policial
       def violations_in_file(file)
         errors = Eslintrb.lint(file.content, config)
         violations(file, errors)
+      rescue ExecJS::Error => error
+        raise LinterError,
+              "ESLint has crashed because of #{error.class}: #{error.message}"
       end
 
       def include_file?(filename)
