@@ -16,6 +16,8 @@ module Policial
         end
 
         violations(runner, file)
+      rescue SCSSLint::Exceptions::LinterError => error
+        raise LinterError, error.message
       end
 
       def include_file?(filename)

@@ -152,6 +152,19 @@ describe Policial::Linters::Scss do
           )
       end
     end
+
+    context 'when a linter error happens' do
+      before do
+        allow_any_instance_of(SCSSLint::Runner)
+          .to receive(:run).and_raise(SCSSLint::Exceptions::LinterError, 'No!')
+      end
+
+      it 'raises Policial::ConfigDependencyError' do
+        file = build_file('test.scss', "p { content: 'hi!'; }")
+        expect { subject.violations_in_file(file) }
+          .to raise_error(Policial::LinterError, 'No!')
+      end
+    end
   end
 
   describe '#include_file?' do
