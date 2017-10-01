@@ -3,14 +3,10 @@
 require 'spec_helper'
 
 describe Policial::LimitsChecker do
-  let(:logger) { double(:logger) }
-  let(:github_client) { Octokit }
-
   subject do
     described_class.new(
       files: files,
-      github_client: github_client,
-      logger: logger
+      github_client: Octokit
     )
   end
 
@@ -22,8 +18,7 @@ describe Policial::LimitsChecker do
     let(:files) { [:file] * 30 }
 
     it 'notifies user about limit' do
-      expect(logger).to receive(:call).exactly(3).times
-      subject.call
+      expect { subject.check }.to raise_error(Policial::IncompleteResultsError)
     end
   end
 
@@ -33,8 +28,7 @@ describe Policial::LimitsChecker do
     before { allow(Octokit).to receive(:per_page).and_return(20) }
 
     it 'notifies user about limit' do
-      expect(logger).to receive(:call).exactly(3).times
-      subject.call
+      expect { subject.check }.to raise_error(Policial::IncompleteResultsError)
     end
   end
 
@@ -42,18 +36,7 @@ describe Policial::LimitsChecker do
     let(:files) { [:file] * 5 }
 
     it 'returns files on pull request' do
-      expect(logger).not_to receive(:call)
-      subject.call
-    end
-  end
-
-  context "when github provider isn't octokit" do
-    let(:github_client) { Octokit.dup }
-    let(:files) { [:file] * 31 }
-
-    it "doesn't notifies user about limit" do
-      expect(logger).not_to receive(:call)
-      subject.call
+      expect { subject.check }.to_not raise_error
     end
   end
 
@@ -63,8 +46,7 @@ describe Policial::LimitsChecker do
     before { allow(Octokit).to receive(:auto_paginate).and_return(true) }
 
     it "doesn't notifies user about limit" do
-      expect(logger).not_to receive(:call)
-      subject.call
+      expect { subject.check }.to_not raise_error
     end
   end
 end

@@ -29,7 +29,7 @@ module Policial
     private
 
     def check_files(files)
-      LimitsChecker.new(github_client: @github_client, files: files).call
+      LimitsChecker.new(github_client: @github_client, files: files).check
     end
 
     def build_commit_file(file)
