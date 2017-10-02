@@ -19,7 +19,7 @@ module Policial
         @repo, @number
       ).map do |file|
         build_commit_file(file)
-      end.tap(&method(:check_files))
+      end.tap(&method(:check_limits))
     end
 
     def head_commit
@@ -28,8 +28,8 @@ module Policial
 
     private
 
-    def check_files(files)
-      LimitsChecker.new(github_client: @github_client, files: files).check
+    def check_limits(_files)
+      LimitsChecker.new(github_client: @github_client).check
     end
 
     def build_commit_file(file)
