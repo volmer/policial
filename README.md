@@ -54,6 +54,10 @@ Or install it yourself as:
   )
   ```
 
+  _N. B._ It's important to configure
+  [auto pagination](<https://github.com/octokit/octokit.rb#auto-pagination>)
+  for your client to receive reliable results on PRs with lot of files.
+
   Or you can brief it with a
   [GitHub `pull_request` webhook](https://developer.github.com/webhooks):
 

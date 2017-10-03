@@ -3,4 +3,5 @@
 module Policial
   class LinterError < StandardError; end
   class ConfigDependencyError < StandardError; end
+  class IncompleteResultsError < StandardError; end
 end
