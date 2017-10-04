@@ -15,15 +15,6 @@ describe Policial::Linters::Base do
     end
   end
 
-  describe '#filename_pattern' do
-    it 'raises NotImplementedError' do
-      expect { subject.filename_patterns }
-        .to raise_error(
-          NotImplementedError, 'must implement #filename_patterns'
-        )
-    end
-  end
-
   describe '#default_config_file' do
     it 'raises NotImplementedError' do
       expect { subject.default_config_file }
