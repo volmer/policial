@@ -17,10 +17,6 @@ module Policial
         raise NotImplementedError, "must implement ##{__method__}"
       end
 
-      def filename_patterns
-        raise NotImplementedError, "must implement ##{__method__}"
-      end
-
       def default_config_file
         raise NotImplementedError, "must implement ##{__method__}"
       end
