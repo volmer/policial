@@ -5,7 +5,7 @@ PATH
       coffeelint (~> 1.16)
       eslintrb (~> 2.1)
       octokit (~> 4.7)
-      rubocop (~> 0.50)
+      rubocop (~> 0.51)
 
 GEM
   remote: https://rubygems.org/
@@ -18,7 +18,7 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.12.2)
-    coffeelint (1.16.0)
+    coffeelint (1.16.1)
       coffee-script
       execjs
       json
@@ -32,9 +32,9 @@ GEM
     execjs (2.7.0)
     faraday (0.13.1)
       multipart-post (>= 1.2, < 3)
-    hashdiff (0.3.6)
+    hashdiff (0.3.7)
     json (2.1.0)
-    method_source (0.8.2)
+    method_source (0.9.0)
     multi_json (1.12.2)
     multipart-post (2.0.0)
     octokit (4.7.0)
@@ -43,46 +43,44 @@ GEM
     parser (2.4.0.0)
       ast (~> 2.2)
     powerpack (0.1.1)
-    pry (0.10.4)
+    pry (0.11.2)
       coderay (~> 1.1.0)
-      method_source (~> 0.8.1)
-      slop (~> 3.4)
+      method_source (~> 0.9.0)
     public_suffix (3.0.0)
     rainbow (2.2.2)
       rake
-    rake (12.1.0)
-    rspec (3.6.0)
-      rspec-core (~> 3.6.0)
-      rspec-expectations (~> 3.6.0)
-      rspec-mocks (~> 3.6.0)
-    rspec-core (3.6.0)
-      rspec-support (~> 3.6.0)
-    rspec-expectations (3.6.0)
+    rake (12.2.1)
+    rspec (3.7.0)
+      rspec-core (~> 3.7.0)
+      rspec-expectations (~> 3.7.0)
+      rspec-mocks (~> 3.7.0)
+    rspec-core (3.7.0)
+      rspec-support (~> 3.7.0)
+    rspec-expectations (3.7.0)
       diff-lcs (>= 1.2.0, < 2.0)
-      rspec-support (~> 3.6.0)
-    rspec-mocks (3.6.0)
+      rspec-support (~> 3.7.0)
+    rspec-mocks (3.7.0)
       diff-lcs (>= 1.2.0, < 2.0)
-      rspec-support (~> 3.6.0)
-    rspec-support (3.6.0)
-    rubocop (0.50.0)
+      rspec-support (~> 3.7.0)
+    rspec-support (3.7.0)
+    rubocop (0.51.0)
       parallel (~> 1.10)
       parser (>= 2.3.3.1, < 3.0)
       powerpack (~> 0.1)
       rainbow (>= 2.2.2, < 3.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (~> 1.0, >= 1.0.1)
-    ruby-progressbar (1.8.3)
+    ruby-progressbar (1.9.0)
     safe_yaml (1.0.4)
     sass (3.4.25)
     sawyer (0.8.1)
       addressable (>= 2.3.5, < 2.6)
       faraday (~> 0.8, < 1.0)
-    scss_lint (0.54.0)
+    scss_lint (0.55.0)
       rake (>= 0.9, < 13)
       sass (~> 3.4.20)
-    slop (3.6.0)
     unicode-display_width (1.3.0)
-    webmock (3.0.1)
+    webmock (3.1.0)
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
       hashdiff
@@ -99,4 +97,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   1.15.4
+   1.16.0.pre.3
