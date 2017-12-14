@@ -43,7 +43,7 @@ describe Policial::Linters::Scss do
       expect(violations.count).to eq(1)
       expect(violations.first.filename).to eq('test.scss')
       expect(violations.first.line_number).to eq(2)
-      expect(violations.first.linter).to eq('undefined')
+      expect(violations.first.linter).to eq('Syntax')
       expect(violations.first.message).to eq(
         'Syntax Error: Invalid CSS after "p { border:": '\
         'expected expression (e.g. 1px, bold), was ""'

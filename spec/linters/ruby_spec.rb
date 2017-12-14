@@ -32,8 +32,8 @@ describe Policial::Linters::Ruby do
       expect(violations.first.line_number).to eq(3)
       expect(violations.first.linter).to eq('Style/StringLiterals')
       expect(violations.first.message).to eq(
-        "Prefer single-quoted strings when you don't need string interpolation"\
-        ' or special symbols.'
+        "Style/StringLiterals: Prefer single-quoted strings when you don't "\
+        'need string interpolation or special symbols.'
       )
     end
 
@@ -49,21 +49,23 @@ describe Policial::Linters::Ruby do
       expect(violations[0].filename).to eq('test.rb')
       expect(violations[0].line_number).to eq(3)
       expect(violations[0].linter).to eq('Layout/SpaceInsideHashLiteralBraces')
-      expect(violations[0].message).to eq('Space inside { missing.')
+      expect(violations[0].message).to eq(
+        'Layout/SpaceInsideHashLiteralBraces: Space inside { missing.'
+      )
 
       expect(violations[1].filename).to eq('test.rb')
       expect(violations[1].line_number).to eq(3)
       expect(violations[1].linter).to eq('Lint/Void')
       expect(violations[1].message).to eq(
-        'Literal `{first_line: :violates }` used in void context.'
+        'Lint/Void: Literal `{first_line: :violates }` used in void context.'
       )
 
       expect(violations[2].filename).to eq('test.rb')
       expect(violations[2].line_number).to eq(4)
       expect(violations[2].linter).to eq('Style/StringLiterals')
       expect(violations[2].message).to eq(
-        "Prefer single-quoted strings when you don't need string interpolation"\
-        ' or special symbols.'
+        "Style/StringLiterals: Prefer single-quoted strings when you don't "\
+        'need string interpolation or special symbols.'
       )
     end
 
@@ -83,8 +85,8 @@ describe Policial::Linters::Ruby do
         expect(violations.first.line_number).to eq(3)
         expect(violations.first.linter).to eq('Style/StringLiterals')
         expect(violations.first.message).to eq(
-          'Prefer double-quoted strings unless you need single quotes to '\
-          'avoid extra backslashes for escaping.'
+          'Style/StringLiterals: Prefer double-quoted strings unless you need '\
+          'single quotes to avoid extra backslashes for escaping.'
         )
       end
 
@@ -157,7 +159,7 @@ describe Policial::Linters::Ruby do
         file = build_file('spec/my_spec.rb', '@fuck = true')
         violation = subject.violations_in_file(file).first
         expect(violation.linter).to eq('TestSupport/CustomCop')
-        expect(violation.message).to eq('No swearwords!')
+        expect(violation.message).to eq('TestSupport/CustomCop: No swearwords!')
       end
     end
 
@@ -252,8 +254,9 @@ describe Policial::Linters::Ruby do
         violations = subject.violations_in_file(file)
 
         expect(violations.first.message).to eq(
-          "Prefer single-quoted strings when you don't need string "\
-          'interpolation or special symbols. Get rid of those quotes'
+          "Style/StringLiterals: Prefer single-quoted strings when you don't "\
+          'need string interpolation or special symbols. Get rid of those '\
+          'quotes'
         )
       end
     end

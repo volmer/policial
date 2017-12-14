@@ -71,11 +71,12 @@ describe Policial::Detective do
         messages = subject.violations.map(&:message)
 
         expected_messages = [
-          'Trailing whitespace detected.',
-          "Omit the parentheses in defs when the method doesn't accept any "\
-          'arguments.',
-          'Put empty method definitions on a single line.',
-          'Missing magic comment `# frozen_string_literal: true`.'
+          'Layout/TrailingWhitespace: Trailing whitespace detected.',
+          'Style/DefWithParentheses: Omit the parentheses in defs when the '\
+          "method doesn't accept any arguments.",
+          'Style/EmptyMethod: Put empty method definitions on a single line.',
+          'Style/FrozenStringLiteralComment: Missing magic comment `# '\
+          'frozen_string_literal: true`.'
         ]
 
         expect(messages).to eq(expected_messages)
