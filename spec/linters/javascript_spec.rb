@@ -32,7 +32,7 @@ describe Policial::Linters::JavaScript do
 
       expect(violations.count).to eq(1)
       expect(violations[0].filename).to eq('test.js')
-      expect(violations[0].line_number).to eq(1)
+      expect(violations[0].line_range).to eq(1..1)
       expect(violations[0].linter).to eq('strict')
       expect(violations[0].message).to eq(
         "Use the function form of 'use strict'."
@@ -45,7 +45,7 @@ describe Policial::Linters::JavaScript do
 
       expect(violations.count).to eq(1)
       expect(violations.first.filename).to eq('test.js')
-      expect(violations.first.line_number).to eq(1)
+      expect(violations.first.line_range).to eq(1..1)
       expect(violations.first.linter).to eq('undefined')
       expect(violations.first.message).to eq(
         "Parsing error: The keyword 'import' is reserved"

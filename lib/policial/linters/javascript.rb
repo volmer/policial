@@ -39,7 +39,7 @@ module Policial
 
           Violation.new(
             file,
-            error['line'],
+            Range.new(error['line'], error['line']),
             error['message'],
             error['ruleId'] || 'undefined'
           )

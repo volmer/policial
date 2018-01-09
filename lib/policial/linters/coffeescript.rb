@@ -30,7 +30,7 @@ module Policial
       def violations(file, errors)
         errors.map do |error|
           Violation.new(
-            file, error['lineNumber'], error['message'], error['rule']
+            file, Range.new(error['lineNumber'], error['lineNumber']), error['message'], error['rule']
           )
         end
       end
