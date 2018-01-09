@@ -21,7 +21,7 @@ module Policial
     end
 
     def on_changed_line?
-      lines.any? { |line| line.changed? }
+      lines.any?(&:changed?)
     end
   end
 end

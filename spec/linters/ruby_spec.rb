@@ -52,7 +52,8 @@ describe Policial::Linters::Ruby do
       expect(violations[0].line_range).to eq(4..6)
       expect(violations[0].linter).to eq('Layout/IndentHeredoc')
       expect(violations[0].message).to eq(
-        'Layout/IndentHeredoc: Use 2 spaces for indentation in a heredoc by using `<<~` instead of `<<~`.'
+        'Layout/IndentHeredoc: Use 2 spaces for indentation in a '\
+        'heredoc by using `<<~` instead of `<<~`.'
       )
     end
 
