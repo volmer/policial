@@ -29,7 +29,7 @@ describe Policial::Linters::Scss do
 
       expect(violations.count).to eq(1)
       expect(violations.first.filename).to eq('test.scss')
-      expect(violations.first.line_number).to eq(1)
+      expect(violations.first.line_range).to eq(1..1)
       expect(violations.first.linter).to eq('BorderZero')
       expect(violations.first.message).to eq(
         '`border: 0` is preferred over `border: none`'
@@ -42,7 +42,7 @@ describe Policial::Linters::Scss do
 
       expect(violations.count).to eq(1)
       expect(violations.first.filename).to eq('test.scss')
-      expect(violations.first.line_number).to eq(2)
+      expect(violations.first.line_range).to eq(2..2)
       expect(violations.first.linter).to eq('Syntax')
       expect(violations.first.message).to eq(
         'Syntax Error: Invalid CSS after "p { border:": '\
@@ -63,21 +63,21 @@ describe Policial::Linters::Scss do
       expect(violations.count).to eq(3)
 
       expect(violations[0].filename).to eq('test.scss')
-      expect(violations[0].line_number).to eq(1)
+      expect(violations[0].line_range).to eq(1..1)
       expect(violations[0].linter).to eq('BorderZero')
       expect(violations[0].message).to eq(
         '`border: 0` is preferred over `border: none`'
       )
 
       expect(violations[1].filename).to eq('test.scss')
-      expect(violations[1].line_number).to eq(2)
+      expect(violations[1].line_range).to eq(2..2)
       expect(violations[1].linter).to eq('BorderZero')
       expect(violations[1].message).to eq(
         '`border: 0` is preferred over `border: none`'
       )
 
       expect(violations[2].filename).to eq('test.scss')
-      expect(violations[2].line_number).to eq(2)
+      expect(violations[2].line_range).to eq(2..2)
       expect(violations[2].linter).to eq('StringQuotes')
       expect(violations[2].message).to eq('Prefer single quoted strings')
     end
@@ -89,7 +89,7 @@ describe Policial::Linters::Scss do
 
       expect(first_run.count).to eq second_run.count
       expect(first_run.first.filename).to eq second_run.first.filename
-      expect(first_run.first.line_number).to eq second_run.first.line_number
+      expect(first_run.first.line_range).to eq second_run.first.line_range
       expect(first_run.first.linter).to eq second_run.first.linter
       expect(first_run.first.message).to eq second_run.first.message
     end
@@ -109,7 +109,7 @@ describe Policial::Linters::Scss do
 
         expect(violations.count).to eq(1)
         expect(violations.first.filename).to eq('test.scss')
-        expect(violations.first.line_number).to eq(1)
+        expect(violations.first.line_range).to eq(1..1)
         expect(violations.first.linter).to eq('StringQuotes')
         expect(violations.first.message).to eq('Prefer double-quoted strings')
       end

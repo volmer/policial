@@ -36,13 +36,13 @@ describe Policial::Linters::CoffeeScript do
       expect(violations.count).to eq(2)
 
       expect(violations[0].filename).to eq('test.coffee')
-      expect(violations[0].line_number).to eq(1)
+      expect(violations[0].line_range).to eq(1..1)
       expect(violations[0].message).to eq(
         'Unnecessary fat arrow'
       )
 
       expect(violations[1].filename).to eq('test.coffee')
-      expect(violations[1].line_number).to eq(3)
+      expect(violations[1].line_range).to eq(3..3)
       expect(violations[1].message).to eq(
         'Class name should be UpperCamelCased'
       )

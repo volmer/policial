@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 module Policial
-  # Public: Hold file, line, and message. Built by linters.
+  # Public: Hold file, line range, and message. Built by linters.
   class Violation
-    attr_reader :line_number, :message, :linter
+    attr_reader :line_range, :message, :linter
 
-    def initialize(file, line_number, message, linter)
+    def initialize(file, line_range, message, linter)
       @file        = file
-      @line_number = line_number
+      @line_range  = line_range
       @message     = message
       @linter      = linter
     end
@@ -16,16 +16,12 @@ module Policial
       @file.filename
     end
 
-    def line
-      @line ||= @file.line_at(line_number)
-    end
-
-    def patch_position
-      line.patch_position
+    def lines
+      @lines ||= @line_range.map { |line_number| @file.line_at(line_number) }
     end
 
     def on_changed_line?
-      line.changed?
+      lines.any?(&:changed?)
     end
   end
 end
