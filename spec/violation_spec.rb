@@ -3,7 +3,9 @@
 require 'spec_helper'
 
 describe Policial::Violation do
-  let(:file_content) { [double('line', content: 'do_something', changed?: true)] }
+  let(:file_content) do
+    [double('line', content: 'do_something', changed?: true)]
+  end
   let(:file) { build_file('application.rb', *file_content) }
   let(:line_range) { 1..1 }
   let(:message) { 'There is an error.' }
@@ -33,12 +35,15 @@ describe Policial::Violation do
         double('line', content: 'if something?', changed?: false),
         double('line', content: '  say_hello', changed?: false),
         double('line', content: '  return true', changed?: false),
-        double('line', content: 'end', changed?: false),
+        double('line', content: 'end', changed?: false)
       ]
     end
     let(:line_range) { 1..2 }
     it { expect(subject.lines).to eq file_content[1..2] }
-    it { expect(subject.lines.map(&:content)).to eq ['  say_hello', '  return true'] }
+    it do
+      expect(subject.lines.map(&:content)).to eq \
+        ['  say_hello', '  return true']
+    end
   end
 
   describe '#on_changed_line?' do
@@ -48,7 +53,7 @@ describe Policial::Violation do
           double('line', content: 'if something?', changed?: false),
           double('line', content: '  say_hello', changed?: false),
           double('line', content: '  return true', changed?: true),
-          double('line', content: 'end', changed?: false),
+          double('line', content: 'end', changed?: false)
         ]
       end
       let(:line_range) { 1..3 }
@@ -61,7 +66,7 @@ describe Policial::Violation do
           double('line', content: 'if something?', changed?: false),
           double('line', content: '  say_hello', changed?: false),
           double('line', content: '  return true', changed?: false),
-          double('line', content: 'end', changed?: false),
+          double('line', content: 'end', changed?: false)
         ]
       end
       let(:line_range) { 1..3 }
@@ -72,7 +77,11 @@ describe Policial::Violation do
   private
 
   def build_file(name, *lines)
-    file = double('file', filename: name, content: lines.map(&:content).join("\n") + "\n")
+    file = double(
+      'file',
+      filename: name,
+      content: lines.map(&:content).join("\n") + "\n"
+    )
     allow(file).to receive(:line_at) { |n| lines[n] }
     file
   end
