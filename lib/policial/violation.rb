@@ -27,7 +27,9 @@ module Policial
     private
 
     def patch_lines
-      @patch_lines ||= @line_range.map { |line_number| @file.line_at(line_number) }
+      @patch_lines ||= @line_range.map do |line_number|
+        @file.line_at(line_number)
+      end
     end
   end
 end
