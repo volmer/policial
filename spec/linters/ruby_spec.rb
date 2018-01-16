@@ -3,14 +3,13 @@
 require 'spec_helper'
 
 describe Policial::Linters::Ruby do
-  subject do
+  let(:linter) do
     described_class.new(
       Policial::ConfigLoader.new(
         Policial::Commit.new('volmer/cerberus', 'commitsha', Octokit)
       )
     )
   end
-
   let(:custom_config) { nil }
 
   before do
@@ -22,7 +21,128 @@ describe Policial::Linters::Ruby do
     )
   end
 
+  describe '#autocorrect' do
+    let(:file) { build_file('test.rb', *lines) }
+    let(:violations) { linter.violations_in_file(file) }
+    subject do
+      linter
+        .autocorrect(file)
+        .sub("# frozen_string_literal: true\n\n", '')
+        .sub(/\n\z/, '')
+    end
+
+    context 'when line has changed' do
+      let(:lines) { [build_line('"I am naughty"', changed: true)] }
+
+      it { expect(subject).to eq "'I am naughty'" }
+    end
+
+    context 'when line has not changed' do
+      let(:lines) { [build_line('"I am naughty"', changed: false)] }
+
+      it { expect(subject).to eq '"I am naughty"' }
+    end
+
+    context 'when a line in the violation range has changed' do
+      let(:lines) do
+        [
+          build_line('<<~BLOCK', changed: false),
+          build_line('    foo', changed: false),
+          build_line('    bar', changed: true),
+          build_line('BLOCK', changed: false)
+        ]
+      end
+
+      it { expect(violations.size).to eq(1) }
+      it { expect(subject).to eq <<~EXPECTED.strip }
+        <<~BLOCK
+          foo
+          bar
+        BLOCK
+      EXPECTED
+    end
+
+    context 'when multiple offenses are detected but '\
+        'some are on unchanged lines' do
+      let(:lines) do
+        [
+          build_line('', changed: false),
+          build_line('<<~BLOCK', changed: false),
+          build_line('    foo', changed: false),
+          build_line('    bar', changed: true),
+          build_line('BLOCK', changed: false),
+          build_line('', changed: false)
+        ]
+      end
+
+      it { expect(violations.size).to eq(3) }
+      it do
+        expect(violations.map(&:linter)).to \
+          eq(['Layout/EmptyLines', 'Layout/IndentHeredoc',
+              'Layout/TrailingBlankLines'])
+      end
+      it { expect(subject).to eq <<~EXPECTED }
+
+        <<~BLOCK
+          foo
+          bar
+        BLOCK
+      EXPECTED
+    end
+
+    context 'when a correction loop occurs' do
+      let(:lines) { [build_line('"I am naughty"', changed: true)] }
+
+      before do
+        naughty = file.content
+        nice = naughty.sub('naughty', 'nice')
+
+        allow(RuboCop::Cop::Corrector)
+          .to receive(:new)
+          .and_return(
+            # rubocop's Team object also creates
+            # a corrector for each correction loop
+            double('corrector', corrections: [], rewrite: nice),
+            double('corrector', corrections: [], rewrite: nice),
+            double('corrector', corrections: [], rewrite: naughty),
+            double('corrector', corrections: [], rewrite: naughty)
+          )
+      end
+
+      it 'raises an error' do
+        expect { subject }.to raise_error(
+          Policial::Linters::Ruby::InfiniteCorrectionLoop,
+          'Detected correction loop for test.rb'
+        )
+      end
+    end
+
+    context 'when correction is not finished after many loops' do
+      let(:lines) { [build_line('"I am naughty"', changed: true)] }
+
+      before do
+        allow(RuboCop::Cop::Corrector)
+          .to receive(:new)
+          .and_return(
+            *Array.new(400) do |n|
+              content = file.content.sub('naughty', 'z' * n)
+              double('corrector', corrections: [], rewrite: content)
+            end
+          )
+      end
+
+      it 'raises an error' do
+        expect { subject }.to raise_error(
+          Policial::Linters::Ruby::InfiniteCorrectionLoop,
+          'Stopping after 201 iterations for test.rb'
+        )
+      end
+    end
+  end
+
   describe '#violations_in_file' do
+    subject { linter }
+
     it 'detects offenses to the Ruby community Style Guide' do
       file = build_file('test.rb', '"I am naughty"')
       violations = subject.violations_in_file(file)
@@ -40,11 +160,11 @@ describe Policial::Linters::Ruby do
     it 'detects violations spanning multiple lines' do
       file_content = [
         '<<~BLOCK',
-        '  foo',
-        ' bar',
+        '    foo',
+        '    bar',
         'BLOCK'
       ]
-      file = build_file('test.rb', file_content)
+      file = build_file('test.rb', *file_content)
 
       violations = subject.violations_in_file(file)
 
@@ -60,7 +180,7 @@ describe Policial::Linters::Ruby do
     it 'returns one violation per offense' do
       file_content =
         ['{first_line: :violates }', '"second too!".to_sym', "'third ok'"]
-      file = build_file('test.rb', file_content)
+      file = build_file('test.rb', *file_content)
 
       violations = subject.violations_in_file(file)
 
@@ -283,6 +403,8 @@ describe Policial::Linters::Ruby do
   end
 
   describe '#include_file?' do
+    subject { linter }
+
     it 'includes Ruby files' do
       expect(subject.include_file?('app/file.rb')).to be true
       expect(subject.include_file?('another.rb')).to be true
@@ -321,6 +443,8 @@ describe Policial::Linters::Ruby do
   end
 
   describe '#default_config_file' do
+    subject { linter }
+
     it 'is .rubocop.yml' do
       expect(subject.default_config_file).to eq('.rubocop.yml')
     end
@@ -328,8 +452,17 @@ describe Policial::Linters::Ruby do
 
   def build_file(name, *lines)
     lines = lines.unshift('# frozen_string_literal: true', '')
-    file = double('file', filename: name, content: lines.join("\n") + "\n")
-    allow(file).to receive(:line_at) { |n| lines[n] }
+    lines.map! { |line| line.is_a?(String) ? build_line(line) : line }
+    file = double(
+      'file',
+      filename: name,
+      content: lines.map(&:content).join("\n") + "\n"
+    )
+    allow(file).to receive(:line_at) { |n| lines[n - 1] }
     file
+  end
+
+  def build_line(content, changed: false)
+    double('line', content: content, changed?: changed)
   end
 end
