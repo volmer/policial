@@ -17,11 +17,17 @@ module Policial
     end
 
     def lines
-      @lines ||= @line_range.map { |line_number| @file.line_at(line_number) }
+      @lines ||= @file.content.split("\n", -1)[@line_range]
     end
 
     def on_changed_line?
-      lines.any?(&:changed?)
+      patch_lines.any?(&:changed?)
+    end
+
+    private
+
+    def patch_lines
+      @patch_lines ||= @line_range.map { |line_number| @file.line_at(line_number) }
     end
   end
 end
