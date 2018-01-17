@@ -39,9 +39,8 @@ describe Policial::Violation do
       ]
     end
     let(:line_range) { 1..2 }
-    it { expect(subject.lines).to eq file_content[1..2] }
     it do
-      expect(subject.lines.map(&:content)).to eq \
+      expect(subject.lines).to eq \
         ['  say_hello', '  return true']
     end
   end
