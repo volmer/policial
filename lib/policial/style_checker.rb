@@ -14,6 +14,10 @@ module Policial
       @violations ||= violations_in_checked_files.select(&:on_changed_line?)
     end
 
+    def corrections
+      @corrections ||= corrections_in_checked_files
+    end
+
     private
 
     def violations_in_checked_files
@@ -21,6 +25,18 @@ module Policial
         linters.flat_map do |linter|
           if linter.investigate?(file.filename)
             linter.violations_in_file(file)
+          else
+            []
+          end
+        end
+      end
+    end
+
+    def corrections_in_checked_files
+      files_to_check.flat_map do |file|
+        linters.flat_map do |linter|
+          if linter.investigate?(file.filename) && linter.class.supports_autocorrect?
+            linter.autocorrect(file)
           else
             []
           end
