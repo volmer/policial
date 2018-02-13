@@ -26,7 +26,7 @@ describe Policial::Linters::Ruby do
     let(:violations) { linter.violations_in_file(file) }
     subject do
       linter
-        .autocorrect(file)
+        .autocorrect(file).content
         .sub("# frozen_string_literal: true\n\n", '')
         .sub(/\n\z/, '')
     end
