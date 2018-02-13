@@ -34,7 +34,7 @@ module Policial
           source = parsed_source(file, content: new_content)
         end
 
-        CorrectedFile.new(file, source.raw_source)
+        CorrectedFile.new(file, source.raw_source) unless source.raw_source == file.content
       end
 
       def include_file?(filename)

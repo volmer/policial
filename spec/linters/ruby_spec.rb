@@ -24,23 +24,35 @@ describe Policial::Linters::Ruby do
   describe '#autocorrect' do
     let(:file) { build_file('test.rb', *lines) }
     let(:violations) { linter.violations_in_file(file) }
+    let(:corrected_file) { linter.autocorrect(file) }
     subject do
-      linter
-        .autocorrect(file).content
-        .sub("# frozen_string_literal: true\n\n", '')
-        .sub(/\n\z/, '')
+      corrected_file
+    end
+    let(:stripped_content) do
+      corrected_file
+        &.content
+        &.sub("# frozen_string_literal: true\n\n", '')
+        &.sub(/\n\z/, '')
+    end
+
+    context 'returns a corrected file' do
+      let(:lines) { [build_line('"I am naughty"', changed: true)] }
+
+      it { expect(corrected_file.class).to be Policial::CorrectedFile }
     end
 
     context 'when line has changed' do
       let(:lines) { [build_line('"I am naughty"', changed: true)] }
 
-      it { expect(subject).to eq "'I am naughty'" }
+      it { expect(stripped_content).to eq "'I am naughty'" }
     end
 
     context 'when line has not changed' do
       let(:lines) { [build_line('"I am naughty"', changed: false)] }
 
-      it { expect(subject).to eq '"I am naughty"' }
+      it 'returns nil' do
+        expect(corrected_file).to be nil
+      end
     end
 
     context 'when a line in the violation range has changed' do
@@ -54,7 +66,7 @@ describe Policial::Linters::Ruby do
       end
 
       it { expect(violations.size).to eq(1) }
-      it { expect(subject).to eq <<~EXPECTED.strip }
+      it { expect(stripped_content).to eq <<~EXPECTED.strip }
         <<~BLOCK
           foo
           bar
@@ -84,7 +96,7 @@ describe Policial::Linters::Ruby do
             'Layout/TrailingBlankLines'
           ])
       end
-      it { expect(subject).to eq <<~EXPECTED }
+      it { expect(stripped_content).to eq <<~EXPECTED }
 
         <<~BLOCK
           foo
@@ -92,7 +104,7 @@ describe Policial::Linters::Ruby do
         BLOCK
       EXPECTED
       it 'violations on changed lines are gone when linting corrected file' do
-        file = build_file('test.rb', *subject.split("\n", -1))
+        file = build_file('test.rb', *stripped_content.split("\n", -1))
         violations = linter.violations_in_file(file)
         expect(violations.map(&:linter)).to \
           eq([
