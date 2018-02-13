@@ -78,8 +78,11 @@ describe Policial::Linters::Ruby do
       it { expect(violations.size).to eq(3) }
       it do
         expect(violations.map(&:linter)).to \
-          eq(['Layout/EmptyLines', 'Layout/IndentHeredoc',
-              'Layout/TrailingBlankLines'])
+          eq([
+            'Layout/EmptyLines',
+            'Layout/IndentHeredoc',
+            'Layout/TrailingBlankLines'
+          ])
       end
       it { expect(subject).to eq <<~EXPECTED }
 
@@ -88,6 +91,15 @@ describe Policial::Linters::Ruby do
           bar
         BLOCK
       EXPECTED
+      it 'violations on changed lines are gone when linting corrected file' do
+        file = build_file('test.rb', *subject.split("\n", -1))
+        violations = linter.violations_in_file(file)
+        expect(violations.map(&:linter)).to \
+          eq([
+            'Layout/EmptyLines',
+            'Layout/TrailingBlankLines'
+          ])
+      end
     end
 
     context 'when a correction loop occurs' do
