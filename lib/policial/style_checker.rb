@@ -15,7 +15,7 @@ module Policial
     end
 
     def corrections
-      @corrections ||= corrections_in_checked_files
+      @corrections ||= corrections_in_checked_files.compact
     end
 
     private
