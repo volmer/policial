@@ -7,7 +7,7 @@ module Policial
     attr_accessor :violations, :corrections
     attr_reader :github_client, :pull_request
 
-    def initialize(github_client = nil, options = {})
+    def initialize(github_client = nil)
       @options = options
       @github_client = github_client || Octokit
     end
@@ -20,18 +20,17 @@ module Policial
       )
     end
 
-    def investigate
+    def investigate(options = {})
       return unless pull_request
-      @corrections ||= style_checker.corrections
-      @violations ||= style_checker.violations
-      true
+      @violations ||= StyleChecker.new(pull_request, options).violations
+    end
+
+    def correct(options = {})
+      return unless pull_request
+      @corrections ||= StyleCorrector.new(pull_request, options).corrections
     end
 
     private
-
-    def style_checker
-      @style_checker ||= StyleChecker.new(pull_request, @options)
-    end
 
     def extract_attributes(event_or_attributes)
       if event_or_attributes.is_a?(PullRequestEvent)
