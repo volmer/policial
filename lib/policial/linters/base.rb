@@ -33,6 +33,12 @@ module Policial
         enabled? && include_file?(filename)
       end
 
+      class << self
+        def supports_autocorrect?
+          method_defined?(:autocorrect)
+        end
+      end
+
       private
 
       def enabled?

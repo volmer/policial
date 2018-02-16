@@ -17,11 +17,14 @@ module Policial
     end
 
     def lines
-      @lines ||= @file.content.split("\n", -1)[@line_range]
+      @lines ||= begin
+        range = Range.new(@line_range.min - 1, @line_range.max - 1)
+        @file.content.split("\n", -1)[range]
+      end
     end
 
     def on_changed_line?
-      patch_lines.any?(&:changed?)
+      patch_lines.compact.any?(&:changed?)
     end
 
     private
