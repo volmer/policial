@@ -4,8 +4,8 @@ module Policial
   # Public: Filters files to reviewable subset, builds linter based on file
   # extension and delegates to linter for corrections.
   class StyleCorrector < StyleOperation
-    def corrections
-      @corrections ||= corrections_in_checked_files.compact
+    def corrected_files
+      @corrected_files ||= corrections_in_checked_files.compact
     end
 
     private

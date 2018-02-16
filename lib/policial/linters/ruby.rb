@@ -60,12 +60,14 @@ module Policial
             processed_sources << source.checksum
           end
 
-          if (iterations += 1) > RuboCop::Runner::MAX_ITERATIONS
+          iterations += 1
+          if iterations > RuboCop::Runner::MAX_ITERATIONS
             raise InfiniteCorrectionLoop,
                   "Stopping after #{iterations} iterations for #{file.filename}"
           end
 
-          break unless (source = yield)
+          source = yield
+          break unless source
         end
       end
 
