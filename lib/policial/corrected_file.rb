@@ -13,5 +13,9 @@ module Policial
     def filename
       @file.filename
     end
+
+    def uncorrected_content
+      @file.content
+    end
   end
 end

@@ -16,7 +16,7 @@ describe Policial::StyleCorrector do
         [
           stub_commit_file('good.rb',
                            "# frozen_string_literal: true\n\ndef good; end"),
-          stub_commit_file('bad.rb', 'def bad( a ); a; end  '),
+          stub_commit_file('bad.rb', "def bad( a ); a; end  "),
           stub_commit_file('bad.coffee', 'foo: =>')
         ]
       end
@@ -32,6 +32,7 @@ describe Policial::StyleCorrector do
           a
         end
       FILE
+      it { expect(subject[0].uncorrected_content).to eq "def bad( a ); a; end  \n" }
     end
 
     context 'forwards options to the linters, as well as a config loader' do
