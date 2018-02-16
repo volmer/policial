@@ -91,10 +91,10 @@ describe Policial::Linters::Ruby do
       it do
         expect(violations.map(&:linter)).to \
           eq([
-            'Layout/EmptyLines',
-            'Layout/IndentHeredoc',
-            'Layout/TrailingBlankLines'
-          ])
+               'Layout/EmptyLines',
+               'Layout/IndentHeredoc',
+               'Layout/TrailingBlankLines'
+             ])
       end
       it { expect(stripped_content).to eq <<~EXPECTED }
 
@@ -108,9 +108,9 @@ describe Policial::Linters::Ruby do
         violations = linter.violations_in_file(file)
         expect(violations.map(&:linter)).to \
           eq([
-            'Layout/EmptyLines',
-            'Layout/TrailingBlankLines'
-          ])
+               'Layout/EmptyLines',
+               'Layout/TrailingBlankLines'
+             ])
       end
     end
 

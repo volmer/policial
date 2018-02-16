@@ -13,7 +13,8 @@ module Policial
     def corrections_in_checked_files
       files_to_check.flat_map do |file|
         linters.flat_map do |linter|
-          if linter.investigate?(file.filename) && linter.class.supports_autocorrect?
+          if linter.investigate?(file.filename) &&
+             linter.class.supports_autocorrect?
             linter.autocorrect(file)
           else
             []

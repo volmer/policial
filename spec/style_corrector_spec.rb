@@ -4,7 +4,9 @@ require 'spec_helper'
 
 describe Policial::StyleCorrector do
   let(:head_commit) { double('Commit', file_content: '') }
-  let(:pull_request) { stub_pull_request(head_commit: head_commit, files: files) }
+  let(:pull_request) do
+    stub_pull_request(head_commit: head_commit, files: files)
+  end
   let(:options) { {} }
   subject { described_class.new(pull_request, options).corrected_files }
 
@@ -12,16 +14,17 @@ describe Policial::StyleCorrector do
     context 'returns a an array of corrected files' do
       let(:files) do
         [
-          stub_commit_file('good.rb', "# frozen_string_literal: true\n\ndef good; end"),
+          stub_commit_file('good.rb',
+                           "# frozen_string_literal: true\n\ndef good; end"),
           stub_commit_file('bad.rb', 'def bad( a ); a; end  '),
-          stub_commit_file('bad.coffee', 'foo: =>'),
+          stub_commit_file('bad.coffee', 'foo: =>')
         ]
       end
 
       it do
         expect(subject.map(&:class)).to eq [Policial::CorrectedFile]
       end
-      it { expect(subject[0].filename).to eq "bad.rb" }
+      it { expect(subject[0].filename).to eq 'bad.rb' }
       it { expect(subject[0].content).to eq <<~FILE }
         # frozen_string_literal: true
 
@@ -63,7 +66,7 @@ describe Policial::StyleCorrector do
       let(:files) do
         [
           stub_commit_file('a.rb', '"double quotes"'),
-          stub_commit_file('b.rb', ':trailing_withespace '),
+          stub_commit_file('b.rb', ':trailing_withespace ')
         ]
       end
 

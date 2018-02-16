@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module Policial
+  # Private: parent class of StyleChecker and StyleCorrector
   class StyleOperation
     def initialize(pull_request, options = {})
       @options = options
