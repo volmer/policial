@@ -2,7 +2,8 @@
 
 module Policial
   class StyleOperation
-    def initialize(pull_request)
+    def initialize(pull_request, options = {})
+      @options = options
       @pull_request = pull_request
       @linters = {}
     end

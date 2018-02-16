@@ -58,7 +58,7 @@ describe Policial::Detective do
         subject.brief(pull_request_event)
       end
 
-      it 'finds all violations present in the pull request' do
+      it 'finds and returns all violations present in the pull request' do
         stub_contents_request_with_fixture(
           'volmer/cerberus',
           sha: '498b81cd038f8a3ac02f035a8537b7ddcff38a81',
@@ -66,7 +66,7 @@ describe Policial::Detective do
           fixture: 'contents_with_violations.json'
         )
 
-        expect(subject.investigate).to eq(true)
+        expect(subject.investigate).to eq(subject.violations)
 
         messages = subject.violations.map(&:message)
 
@@ -90,13 +90,10 @@ describe Policial::Detective do
           fixture: 'contents.json'
         )
 
-        expect(subject.investigate).to eq true
-        expect(subject.violations).to be_empty
+        expect(subject.investigate).to be_empty
       end
 
       context 'when detective is built with options' do
-        subject { described_class.new(nil, my: :option) }
-
         before do
           stub_contents_request_with_fixture(
             'volmer/cerberus',
@@ -111,7 +108,7 @@ describe Policial::Detective do
             anything, my: :option
           ).and_call_original
 
-          subject.investigate
+          subject.investigate(my: :option)
         end
       end
     end

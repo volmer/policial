@@ -8,7 +8,6 @@ module Policial
     attr_reader :github_client, :pull_request
 
     def initialize(github_client = nil)
-      @options = options
       @github_client = github_client || Octokit
     end
 
