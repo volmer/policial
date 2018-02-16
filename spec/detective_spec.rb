@@ -44,6 +44,37 @@ describe Policial::Detective do
     end
   end
 
+  describe '#correct' do
+    context 'when detective is briefed about a pull request' do
+      before do
+        stub_pull_request_files_request('volmer/cerberus', 2)
+        stub_contents_request_with_fixture(
+          'volmer/cerberus',
+          sha: '498b81cd038f8a3ac02f035a8537b7ddcff38a81',
+          file: '.rubocop.yml',
+          fixture: 'config_contents.json'
+        )
+
+        subject.brief(pull_request_event)
+      end
+
+      it 'corrects all files that can be corrected' do
+        stub_contents_request_with_fixture(
+          'volmer/cerberus',
+          sha: '498b81cd038f8a3ac02f035a8537b7ddcff38a81',
+          file: 'config/unicorn.rb',
+          fixture: 'contents_with_violations.json'
+        )
+
+        expect(subject.correct).to eq(subject.corrected_files)
+
+        corrected_files = subject.corrected_files
+        expect(corrected_files.size).to eq(1)
+        expect(corrected_files.map(&:class)).to eq([Policial::CorrectedFile])
+      end
+    end
+  end
+
   describe '#investigate' do
     context 'when detective is briefed about a pull request' do
       before do

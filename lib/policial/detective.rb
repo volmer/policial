@@ -4,7 +4,7 @@ module Policial
   # Public: Starting with an Octokit client and a pull request,
   # it checks all changes introduced looking for style guide violations.
   class Detective
-    attr_accessor :violations, :corrections
+    attr_accessor :violations, :corrected_files
     attr_reader :github_client, :pull_request
 
     def initialize(github_client = nil)
@@ -26,7 +26,7 @@ module Policial
 
     def correct(options = {})
       return unless pull_request
-      @corrections ||= StyleCorrector.new(pull_request, options).corrections
+      @corrected_files ||= StyleCorrector.new(pull_request, options).corrected_files
     end
 
     private
