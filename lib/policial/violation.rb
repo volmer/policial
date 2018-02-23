@@ -24,7 +24,7 @@ module Policial
     end
 
     def on_changed_line?
-      patch_lines.any?(&:changed?)
+      patch_lines.compact.any?(&:changed?)
     end
 
     private
