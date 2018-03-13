@@ -10,6 +10,10 @@ module Policial
       @commit = commit
     end
 
+    def sha
+      @file.sha
+    end
+
     def filename
       @file.filename
     end
