@@ -17,5 +17,9 @@ module Policial
     def uncorrected_content
       @file.content
     end
+
+    def sha
+      @file.sha
+    end
   end
 end
