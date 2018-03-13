@@ -8,6 +8,7 @@ describe Policial::PullRequest do
       repo: 'volmer/cerberus',
       number:  45,
       head_sha: 'commitsha',
+      head_ref: 'my-branch',
       user: 'volmerius',
       github_client: Octokit
     )

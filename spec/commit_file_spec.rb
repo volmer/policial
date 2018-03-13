@@ -61,8 +61,16 @@ describe Policial::CommitFile do
     end
   end
 
+  describe '#sha' do
+    it 'returns the github file sha' do
+      commit_file = commit_file(status: 'modified')
+
+      expect(commit_file.sha).to eq 'abc289171'
+    end
+  end
+
   def commit_file(options = {})
-    file = double(:file, { patch: '', filename: 'test.rb' }.merge(options))
+    file = double(:file, { patch: '', sha: 'abc289171', filename: 'test.rb' }.merge(options))
     commit = double(
       :commit,
       repo_name: 'test/test',
