@@ -39,9 +39,10 @@ describe Policial::Violation do
       ]
     end
     let(:line_range) { 1..2 }
+
     it do
       expect(subject.lines).to eq \
-        ['  say_hello', '  return true']
+        ['if something?', '  say_hello']
     end
   end
 

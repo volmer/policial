@@ -20,6 +20,7 @@ describe Policial::PullRequestEvent do
       expect(attributes[:head_sha]).to eq(
         '498b81cd038f8a3ac02f035a8537b7ddcff38a81'
       )
+      expect(attributes[:head_ref]).to eq('another-test')
       expect(attributes[:user]).to eq('volmerius')
     end
 
