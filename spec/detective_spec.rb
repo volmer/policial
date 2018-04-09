@@ -66,9 +66,9 @@ describe Policial::Detective do
           fixture: 'contents_with_violations.json'
         )
 
-        expect(subject.investigate).to eq(subject.violations)
+        violations = subject.investigate
 
-        messages = subject.violations.map(&:message)
+        messages = violations.map(&:message)
 
         expected_messages = [
           'Layout/TrailingWhitespace: Trailing whitespace detected.',

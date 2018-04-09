@@ -6,7 +6,7 @@ describe Policial::StyleChecker do
   describe '#violations' do
     it 'returns a collection of computed violations' do
       stylish_file = stub_commit_file('good.rb', 'def good; end')
-      violated_file = stub_commit_file('bad.rb', 'def bad( a ); a; end  ')
+      violated_file = stub_commit_file('bad.rb', 'def bad( args ); args; end  ')
       bad_coffee = stub_commit_file('bad.coffee', 'foo: =>')
       pull_request =
         stub_pull_request(files: [stylish_file, violated_file, bad_coffee])

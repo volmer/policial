@@ -69,16 +69,8 @@ Or install it yourself as:
 3. Now you can run the investigation:
 
   ```ruby
-  # Let's investigate this pull request...
-  detective.investigate
-
-  # Want to know the violations found?
-  detective.violations
-  ```
-
-4. Want to know the violations found?
-  ```ruby
-  violations = detective.violations
+  # Let's investigate this pull request and get a list of violations:
+  violations = detective.investigate
   # => [#<Policial::Violation:0x007ff0b5abad30 @filename="lib/test.rb", @line_number=1, ...>]
 
   violations.first.message
