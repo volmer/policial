@@ -7,7 +7,7 @@ require 'policial/version'
 Gem::Specification.new do |spec|
   spec.name          = 'policial'
   spec.version       = Policial::VERSION
-  spec.authors       = ['Volmer Soares']
+  spec.authors       = ['Volmer Campos Soares']
   spec.email         = ['rubygems@radicaos.com']
   spec.summary       = 'Review pull requests for style guide violations'
   spec.description   = 'Review pull requests for style guide violations.'
