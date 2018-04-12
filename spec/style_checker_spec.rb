@@ -3,6 +3,10 @@
 require 'spec_helper'
 
 describe Policial::StyleChecker do
+  let(:ruby_linter) { Policial::Linters::Ruby.new }
+  let(:coffeescript_linter) { Policial::Linters::CoffeeScript.new }
+  let(:linters) { [ruby_linter, coffeescript_linter] }
+
   describe '#violations' do
     it 'returns a collection of computed violations' do
       stylish_file = stub_commit_file('good.rb', 'def good; end')
@@ -22,13 +26,14 @@ describe Policial::StyleChecker do
         'Unnecessary fat arrow'
       ]
 
-      violation_messages =
-        described_class.new(pull_request).violations.map(&:message)
+      violation_messages = described_class.new(
+        pull_request, linters: linters
+      ).violations.map(&:message)
 
       expect(violation_messages).to eq expected_violations
     end
 
-    it 'forwards options to the linters, as well as a config loader' do
+    it 'forwards a config loader to linters' do
       file = stub_commit_file('ruby.rb', 'puts 123')
       head_commit = double('Commit', file_content: '')
       pull_request = stub_pull_request(head_commit: head_commit, files: [file])
@@ -39,37 +44,12 @@ describe Policial::StyleChecker do
         .with(head_commit)
         .and_return(config_loader)
 
-      expect(Policial::Linters::Ruby).to receive(:new)
-        .with(config_loader, my: :options).and_call_original
-      expect(Policial::Linters::CoffeeScript).to receive(:new)
-        .with(config_loader, a_few: :more_options).and_call_original
+      expect(ruby_linter).to receive(:violations)
+        .with(file, config_loader).and_call_original
+      expect(coffeescript_linter).to receive(:violations)
+        .with(file, config_loader).and_call_original
 
-      described_class.new(
-        pull_request,
-        ruby: { my: :options },
-        coffeescript: { a_few: :more_options }
-      ).violations
-    end
-
-    it 'skips linters on files that they are not able to investigate' do
-      allow_any_instance_of(Policial::Linters::Ruby)
-        .to receive(:investigate?).with('a.rb').and_return(false)
-      allow_any_instance_of(Policial::Linters::Ruby)
-        .to receive(:investigate?).with('b.rb').and_return(true)
-
-      file_a = stub_commit_file('a.rb', '"double quotes"')
-      file_b = stub_commit_file('b.rb', ':trailing_withespace ')
-      pull_request = stub_pull_request(files: [file_a, file_b])
-      expected_violations = [
-        'Layout/TrailingWhitespace: Trailing whitespace detected.',
-        'Style/FrozenStringLiteralComment: Missing magic comment `# '\
-        'frozen_string_literal: true`.'
-      ]
-
-      violation_messages =
-        described_class.new(pull_request).violations.map(&:message)
-
-      expect(violation_messages).to eq expected_violations
+      described_class.new(pull_request, linters: linters).violations
     end
 
     private

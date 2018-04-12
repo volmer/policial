@@ -66,11 +66,11 @@ Or install it yourself as:
   detective.brief(event)
   ```
 
-3. Now you can run the investigation:
+3. Now you can run the investigation using the linters you want:
 
   ```ruby
   # Let's investigate this pull request and get a list of violations:
-  violations = detective.investigate
+  violations = detective.investigate(linters: [Policial::Linters::Ruby.new])
   # => [#<Policial::Violation:0x007ff0b5abad30 @filename="lib/test.rb", @line_number=1, ...>]
 
   violations.first.message
@@ -106,10 +106,10 @@ gem 'scss_lint', require: false
 The `require: false` is necessary because `scss-lint` monkey patches `Sass`.
 More info [here](https://github.com/brigade/scss-lint#installation).
 
-Now you can enable SCSS on Policial:
+Now you can use the Scss linter when calling `Detective#investigate`:
 
 ```ruby
-Policial.linters << Policial::Linters::Scss
+violations = detective.investigate(linters: [Policial::Linters::Scss.new])
 ```
 
 You can setup your SCSS code style rules with a `.scss-lint.yml` file in your

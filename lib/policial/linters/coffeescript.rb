@@ -5,29 +5,28 @@ require 'coffeelint'
 module Policial
   module Linters
     # Public: Determine CoffeeScript style guide violations per-line.
-    class CoffeeScript < Base
-      KEY = :coffeescript
-
-      def violations_in_file(file)
-        errors = Coffeelint.lint(file.content, config)
-        violations(file, errors)
+    class CoffeeScript
+      def initialize(config_file: 'coffeelint.json')
+        @config_file = config_file
       end
+
+      def violations(file, config_loader)
+        return [] unless include_file?(file.filename)
+        errors = Coffeelint.lint(file.content, config(config_loader))
+        errors_to_violations(errors, file)
+      end
+
+      private
 
       def include_file?(filename)
         File.extname(filename) == '.coffee'
       end
 
-      def default_config_file
-        'coffeelint.json'
+      def config(config_loader)
+        @config ||= config_loader.json(@config_file)
       end
 
-      private
-
-      def config
-        @config ||= @config_loader.json(config_file)
-      end
-
-      def violations(file, errors)
+      def errors_to_violations(errors, file)
         errors.map do |error|
           Violation.new(
             file,

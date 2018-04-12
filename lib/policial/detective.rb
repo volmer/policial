@@ -18,9 +18,9 @@ module Policial
       )
     end
 
-    def investigate(options = {})
+    def investigate(linters:)
       return unless pull_request
-      StyleChecker.new(pull_request, options).violations
+      StyleChecker.new(pull_request, linters: linters).violations
     end
 
     private

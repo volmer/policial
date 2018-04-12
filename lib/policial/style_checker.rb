@@ -4,10 +4,9 @@ module Policial
   # Public: Filters files to reviewable subset, builds linter based on file
   # extension and delegates to linter for line violations.
   class StyleChecker
-    def initialize(pull_request, options = {})
+    def initialize(pull_request, linters:)
       @pull_request = pull_request
-      @linters = {}
-      @options = options
+      @linters = linters
     end
 
     def violations
@@ -18,26 +17,12 @@ module Policial
 
     def violations_in_checked_files
       files_to_check.flat_map do |file|
-        linters.flat_map do |linter|
-          if linter.investigate?(file.filename)
-            linter.violations_in_file(file)
-          else
-            []
-          end
-        end
+        @linters.flat_map { |linter| linter.violations(file, config_loader) }
       end
     end
 
     def files_to_check
       @pull_request.files.reject(&:removed?)
-    end
-
-    def linters
-      Policial.linters.map do |klass|
-        @linters[klass] ||= klass.new(
-          config_loader, @options[klass::KEY] || {}
-        )
-      end
     end
 
     def config_loader

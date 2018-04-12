@@ -3,15 +3,15 @@
 require 'spec_helper'
 
 describe Policial::Linters::CoffeeScript do
-  subject do
-    described_class.new(
-      Policial::ConfigLoader.new(
-        Policial::Commit.new('volmer/cerberus', 'commitsha', Octokit)
-      )
-    )
-  end
+  subject { described_class.new }
 
   let(:custom_config) { nil }
+
+  let(:config_loader) do
+    Policial::ConfigLoader.new(
+      Policial::Commit.new('volmer/cerberus', 'commitsha', Octokit)
+    )
+  end
 
   before do
     stub_contents_request_with_content(
@@ -22,7 +22,7 @@ describe Policial::Linters::CoffeeScript do
     )
   end
 
-  describe '#violations_in_file' do
+  describe '#violations' do
     it 'returns one violation per lint' do
       file_content = [
         'foo: =>',
@@ -31,7 +31,7 @@ describe Policial::Linters::CoffeeScript do
       ]
       file = build_file('test.coffee', file_content)
 
-      violations = subject.violations_in_file(file)
+      violations = subject.violations(file, config_loader)
 
       expect(violations.count).to eq(2)
 
@@ -56,7 +56,7 @@ describe Policial::Linters::CoffeeScript do
           '  \'bar\''
         ]
         file = build_file('test.coffee', file_content)
-        violations = subject.violations_in_file(file)
+        violations = subject.violations(file, config_loader)
 
         expect(violations.count).to eq(0)
       end
@@ -75,7 +75,7 @@ describe Policial::Linters::CoffeeScript do
         file_content = ['foo: =>', '  "baz"']
         file = build_file('test.coffee', file_content)
 
-        violations = subject.violations_in_file(file)
+        violations = subject.violations(file, config_loader)
 
         expect(violations.count).to eq(2)
         expect(violations[0].message).to eq('Unnecessary fat arrow')
@@ -84,19 +84,42 @@ describe Policial::Linters::CoffeeScript do
         )
       end
     end
-  end
 
-  describe '#include_file?' do
-    it 'matches CoffeeScript files' do
-      expect(subject.include_file?('my_file.coffee')).to be true
-      expect(subject.include_file?('app/script.coffee')).to be true
-      expect(subject.include_file?('my_file.coffee.erb')).to be false
+    it 'ignores non .coffee files' do
+      file = build_file('my_file.coffee.erb', '<html>', '</html>')
+
+      expect(
+        subject.violations(file, config_loader)
+      ).to be_empty
     end
-  end
 
-  describe '#default_config_file' do
-    it 'is coffeelint.json' do
-      expect(subject.default_config_file).to eq('coffeelint.json')
+    context 'with custom config file name' do
+      subject { described_class.new(config_file: 'my_custom_coffeelint.json') }
+
+      before do
+        stub_contents_request_with_content(
+          'volmer/cerberus',
+          sha: 'commitsha',
+          file: 'my_custom_coffeelint.json',
+          content: {
+            'no_unnecessary_double_quotes' => {
+              'level' => 'error'
+            }
+          }.to_json
+        )
+      end
+
+      it 'detects offenses based on custom file' do
+        file = build_file('test.coffee', 'foo: =>', '  "baz"')
+
+        violations = subject.violations(file, config_loader)
+
+        expect(violations.count).to eq(2)
+        expect(violations[0].message).to eq('Unnecessary fat arrow')
+        expect(violations[1].message).to eq(
+          'Unnecessary double quotes are forbidden'
+        )
+      end
     end
   end
 

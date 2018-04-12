@@ -3,12 +3,15 @@
 require 'spec_helper'
 
 describe Policial::Linters::JavaScript do
-  subject do
-    commit = Policial::Commit.new('volmer/cerberus', 'commitsha', Octokit)
-    described_class.new(Policial::ConfigLoader.new(commit))
-  end
+  subject { described_class.new }
 
   let(:custom_config) { nil }
+
+  let(:config_loader) do
+    Policial::ConfigLoader.new(
+      Policial::Commit.new('volmer/cerberus', 'commitsha', Octokit)
+    )
+  end
 
   before do
     stub_contents_request_with_content(
@@ -28,7 +31,7 @@ describe Policial::Linters::JavaScript do
       ]
       file = build_file('test.js', file_content)
 
-      violations = subject.violations_in_file(file)
+      violations = subject.violations(file, config_loader)
 
       expect(violations.count).to eq(1)
       expect(violations[0].filename).to eq('test.js')
@@ -41,7 +44,7 @@ describe Policial::Linters::JavaScript do
 
     it 'reports syntax errors' do
       file = build_file('test.js', "import React from 'react';")
-      violations = subject.violations_in_file(file)
+      violations = subject.violations(file, config_loader)
 
       expect(violations.count).to eq(1)
       expect(violations.first.filename).to eq('test.js')
@@ -61,7 +64,7 @@ describe Policial::Linters::JavaScript do
           '}'
         ]
         file = build_file('test.js', file_content)
-        expect(subject.violations_in_file(file)).to be_empty
+        expect(subject.violations(file, config_loader)).to be_empty
       end
     end
 
@@ -81,7 +84,7 @@ describe Policial::Linters::JavaScript do
         ]
         file = build_file('test.js', file_content)
 
-        violations = subject.violations_in_file(file)
+        violations = subject.violations(file, config_loader)
 
         expect(violations.count).to eq(1)
         expect(violations[0].message).to eq("Unary operator '++' used.")
@@ -96,7 +99,7 @@ describe Policial::Linters::JavaScript do
       it 'raises a linter error' do
         file = build_file('test.js', ['var foo = 1;'])
 
-        expect { subject.violations_in_file(file) }
+        expect { subject.violations(file, config_loader) }
           .to raise_error(
             Policial::LinterError, "Cannot find module 'babel-eslint'"
           )
@@ -113,27 +116,47 @@ describe Policial::Linters::JavaScript do
       it 'raises a linter error' do
         file = build_file('test.js', ['var foo = 1;'])
 
-        expect { subject.violations_in_file(file) }
+        expect { subject.violations(file, config_loader) }
           .to raise_error(
             Policial::LinterError,
             'ESLint has crashed because of ExecJS::ProgramError: boom!'
           )
       end
     end
-  end
 
-  describe '#include_file?' do
-    it 'matches Javascript files' do
-      expect(subject.include_file?('my_file.js')).to be true
-      expect(subject.include_file?('app/script.js')).to be true
-      expect(subject.include_file?('my_file.js.erb')).to be false
-      expect(subject.include_file?('my_file.coffee')).to be false
+    it 'ignores non JavaScript files' do
+      file = build_file('my_file.coffee', 'var foo = 1;')
+      expect(subject.violations(file, config_loader)).to be_empty
     end
-  end
 
-  describe '#default_config_file' do
-    it 'is .eslint.rc.json' do
-      expect(subject.default_config_file).to eq('.eslintrc.json')
+    context 'with custom config file name' do
+      subject { described_class.new(config_file: 'custom_config.json') }
+
+      before do
+        stub_contents_request_with_content(
+          'volmer/cerberus',
+          sha: 'commitsha',
+          file: 'custom_config.json',
+          content: {
+            'rules' => {
+              'no-plusplus' => 2
+            }
+          }.to_json
+        )
+      end
+
+      it 'detects offenses' do
+        file_content = [
+          'var foo = 1;',
+          'foo++;'
+        ]
+        file = build_file('test.js', file_content)
+
+        violations = subject.violations(file, config_loader)
+
+        expect(violations.count).to eq(1)
+        expect(violations[0].message).to eq("Unary operator '++' used.")
+      end
     end
   end
 

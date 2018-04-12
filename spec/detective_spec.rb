@@ -11,6 +11,10 @@ describe Policial::Detective do
     )
   end
 
+  let(:linters) do
+    [Policial::Linters::Ruby.new, Policial::Linters::CoffeeScript.new]
+  end
+
   describe '#brief' do
     it 'creates a pull request based on the given pull request event' do
       subject.brief(pull_request_event)
@@ -66,7 +70,7 @@ describe Policial::Detective do
           fixture: 'contents_with_violations.json'
         )
 
-        violations = subject.investigate
+        violations = subject.investigate(linters: linters)
 
         messages = violations.map(&:message)
 
@@ -90,10 +94,10 @@ describe Policial::Detective do
           fixture: 'contents.json'
         )
 
-        expect(subject.investigate).to be_empty
+        expect(subject.investigate(linters: linters)).to be_empty
       end
 
-      it 'forwards any given options to StyleChecker' do
+      it 'forwards given linters to StyleChecker' do
         stub_contents_request_with_fixture(
           'volmer/cerberus',
           sha: '498b81cd038f8a3ac02f035a8537b7ddcff38a81',
@@ -102,16 +106,16 @@ describe Policial::Detective do
         )
 
         expect(Policial::StyleChecker).to receive(:new).with(
-          anything, my: :option
+          anything, linters: linters
         ).and_call_original
 
-        subject.investigate(my: :option)
+        subject.investigate(linters: linters)
       end
     end
 
     context 'when detective is not briefed about a pull request' do
       it 'is nil' do
-        expect(subject.investigate).to be_nil
+        expect(subject.investigate(linters: linters)).to be_nil
       end
     end
   end

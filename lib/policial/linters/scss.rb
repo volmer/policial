@@ -1,42 +1,42 @@
 # frozen_string_literal: true
 
+require 'scss_lint'
+
 module Policial
   module Linters
     # Public: Determine SCSS style guide violations per-line.
-    class Scss < Base
-      KEY = :scss
+    class Scss
+      def initialize(config_file: SCSSLint::Config::FILE_NAME)
+        @config_file = config_file
+      end
 
-      def violations_in_file(file)
+      def violations(file, config_loader)
+        return [] unless include_file?(file.filename, config_loader)
+
         absolute_path = File.expand_path(file.filename)
 
-        runner = new_runner
+        runner = new_runner(config_loader)
 
         tempfile_from(file.filename, file.content) do |tempfile|
           runner.run([{ file: tempfile, path: absolute_path }])
         end
 
-        violations(runner, file)
+        lints_to_violations(runner, file)
       rescue SCSSLint::Exceptions::LinterError => error
         raise LinterError, error.message
       end
 
-      def include_file?(filename)
-        File.extname(filename) == '.scss' &&
-          !config.excluded_file?(File.expand_path(filename))
-      end
-
-      def default_config_file
-        require 'scss_lint'
-        SCSSLint::Config::FILE_NAME
-      end
-
       private
 
-      def config
-        require 'scss_lint'
+      def include_file?(filename, config_loader)
+        File.extname(filename) == '.scss' &&
+          !config(config_loader).excluded_file?(File.expand_path(filename))
+      end
+
+      def config(config_loader)
         @config ||= begin
-          content = @config_loader.raw(config_file)
-          tempfile_from(config_file, content) do |temp|
+          content = config_loader.raw(@config_file)
+          tempfile_from(@config_file, content) do |temp|
             SCSSLint::Config.load(temp, merge_with_default: true)
           end
         end
@@ -44,7 +44,7 @@ module Policial
         raise ConfigDependencyError, error.message
       end
 
-      def violations(runner, file)
+      def lints_to_violations(runner, file)
         runner.lints.map do |lint|
           linter_name = lint.linter&.name || 'undefined'
           Violation.new(
@@ -56,9 +56,8 @@ module Policial
         end
       end
 
-      def new_runner
-        require 'scss_lint'
-        SCSSLint::Runner.new(config)
+      def new_runner(config_loader)
+        SCSSLint::Runner.new(config(config_loader))
       end
 
       def tempfile_from(filename, content)

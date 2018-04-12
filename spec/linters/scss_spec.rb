@@ -3,15 +3,15 @@
 require 'spec_helper'
 
 describe Policial::Linters::Scss do
-  subject do
-    described_class.new(
-      Policial::ConfigLoader.new(
-        Policial::Commit.new('volmer/cerberus', 'commitsha', Octokit)
-      )
-    )
-  end
+  subject { described_class.new }
 
   let(:custom_config) { nil }
+
+  let(:config_loader) do
+    Policial::ConfigLoader.new(
+      Policial::Commit.new('volmer/cerberus', 'commitsha', Octokit)
+    )
+  end
 
   before do
     stub_contents_request_with_content(
@@ -25,7 +25,7 @@ describe Policial::Linters::Scss do
   describe '#violations_in_file' do
     it 'detects SCSS style guide violations' do
       file = build_file('test.scss', 'p { border: none; }')
-      violations = subject.violations_in_file(file)
+      violations = subject.violations(file, config_loader)
 
       expect(violations.count).to eq(1)
       expect(violations.first.filename).to eq('test.scss')
@@ -38,7 +38,7 @@ describe Policial::Linters::Scss do
 
     it 'reports syntax errors' do
       file = build_file('test.scss', 'p { border:')
-      violations = subject.violations_in_file(file)
+      violations = subject.violations(file, config_loader)
 
       expect(violations.count).to eq(1)
       expect(violations.first.filename).to eq('test.scss')
@@ -58,7 +58,7 @@ describe Policial::Linters::Scss do
       ]
       file = build_file('test.scss', file_content)
 
-      violations = subject.violations_in_file(file)
+      violations = subject.violations(file, config_loader)
 
       expect(violations.count).to eq(3)
 
@@ -84,8 +84,8 @@ describe Policial::Linters::Scss do
 
     it 'is idempotent' do
       file = build_file('test.scss', 'p { border: none; }')
-      first_run = subject.violations_in_file(file)
-      second_run = subject.violations_in_file(file)
+      first_run = subject.violations(file, config_loader)
+      second_run = subject.violations(file, config_loader)
 
       expect(first_run.count).to eq second_run.count
       expect(first_run.first.filename).to eq second_run.first.filename
@@ -105,7 +105,7 @@ describe Policial::Linters::Scss do
 
       it 'detects offenses to the custom linter' do
         file = build_file('test.scss', "p { content: 'hi!'; }")
-        violations = subject.violations_in_file(file)
+        violations = subject.violations(file, config_loader)
 
         expect(violations.count).to eq(1)
         expect(violations.first.filename).to eq('test.scss')
@@ -127,10 +127,10 @@ describe Policial::Linters::Scss do
 
         it 'has no violations' do
           file = build_file('vendor/test.scss', 'p { content: "hi!"; }')
-          expect(subject.violations_in_file(file)).to be_empty
+          expect(subject.violations(file, config_loader)).to be_empty
 
           file = build_file('lib/style.scss', 'p { content: "hi!"; }')
-          expect(subject.violations_in_file(file)).to be_empty
+          expect(subject.violations(file, config_loader)).to be_empty
         end
       end
     end
@@ -142,7 +142,7 @@ describe Policial::Linters::Scss do
 
       it 'raises Policial::ConfigDependencyError' do
         file = build_file('test.scss', "p { content: 'hi!'; }")
-        expect { subject.violations_in_file(file) }
+        expect { subject.violations(file, config_loader) }
           .to raise_error(
             Policial::ConfigDependencyError,
             "Unable to load linter plugin gem 'missing_plugin'. Try running "\
@@ -161,34 +161,53 @@ describe Policial::Linters::Scss do
 
       it 'raises Policial::ConfigDependencyError' do
         file = build_file('test.scss', "p { content: 'hi!'; }")
-        expect { subject.violations_in_file(file) }
+        expect { subject.violations(file, config_loader) }
           .to raise_error(Policial::LinterError, 'No!')
       end
     end
-  end
 
-  describe '#include_file?' do
-    it 'matches SCSS files' do
-      expect(subject.include_file?('my_file.scss')).to be true
-      expect(subject.include_file?('app/base.scss')).to be true
-      expect(subject.include_file?('my_file.css')).to be false
-      expect(subject.include_file?('my_file.scss.erb')).to be false
+    it 'ignores non SCSS files' do
+      file = build_file('my_file.css', 'p { border: none; }')
+      expect(subject.violations(file, config_loader)).to be_empty
     end
 
-    context 'when custom config excludes the file' do
+    context 'when custom config excludes a file' do
       let(:custom_config) do
         { 'exclude' => ['app/file.scss'] }
       end
 
-      it 'is false' do
-        expect(subject.include_file?('app/file.scss')).to be false
+      it 'ignores the file' do
+        file = build_file('app/file.scss', 'p { border: none; }')
+        expect(subject.violations(file, config_loader)).to be_empty
       end
     end
-  end
 
-  describe '#default_config_file' do
-    it 'is .scss-lint.yml' do
-      expect(subject.default_config_file).to eq('.scss-lint.yml')
+    context 'with custom config file name' do
+      subject { described_class.new(config_file: 'custom_scss.yml') }
+
+      before do
+        stub_contents_request_with_content(
+          'volmer/cerberus',
+          sha: 'commitsha',
+          file: 'custom_scss.yml',
+          content:  {
+            'linters' => {
+              'StringQuotes' => { 'style' => 'double_quotes' }
+            }
+          }.to_yaml
+        )
+      end
+
+      it 'detects offenses to the custom config' do
+        file = build_file('test.scss', "p { content: 'hi!'; }")
+        violations = subject.violations(file, config_loader)
+
+        expect(violations.count).to eq(1)
+        expect(violations.first.filename).to eq('test.scss')
+        expect(violations.first.line_range).to eq(1..1)
+        expect(violations.first.linter).to eq('StringQuotes')
+        expect(violations.first.message).to eq('Prefer double-quoted strings')
+      end
     end
   end
 

@@ -5,35 +5,35 @@ require 'eslintrb'
 module Policial
   module Linters
     # Public: Determine Javascript style guide violations per-line.
-    class JavaScript < Base
-      KEY = :javascript
+    class JavaScript
+      def initialize(config_file: '.eslintrc.json')
+        @config_file = config_file
+      end
 
-      def violations_in_file(file)
-        errors = Eslintrb.lint(file.content, config)
-        violations(file, errors)
+      def violations(file, config_loader)
+        return [] unless include_file?(file.filename)
+
+        errors = Eslintrb.lint(file.content, config(config_loader))
+        errors_to_violations(errors, file)
       rescue ExecJS::Error => error
         raise LinterError,
               "ESLint has crashed because of #{error.class}: #{error.message}"
       end
 
+      private
+
       def include_file?(filename)
         File.extname(filename) == '.js'
       end
 
-      def default_config_file
-        '.eslintrc.json'
-      end
-
-      private
-
-      def config
+      def config(config_loader)
         @config ||= begin
-          content = @config_loader.json(config_file)
+          content = config_loader.json(@config_file)
           content.empty? ? :defaults : content
         end
       end
 
-      def violations(file, errors)
+      def errors_to_violations(errors, file)
         errors.map do |error|
           raise LinterError, error['message'] if error['line'].to_i.zero?
 
