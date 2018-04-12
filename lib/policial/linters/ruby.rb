@@ -10,55 +10,57 @@ module Policial
         @config_file = config_file
       end
 
-      def violations(file, config_loader)
-        return [] unless include_file?(file.filename, config_loader)
+      def violations(file, commit)
+        return [] unless include_file?(file.filename, commit)
         offenses =
-          team(config_loader).inspect_file(parsed_source(file, config_loader))
+          team(commit).inspect_file(parsed_source(file, commit))
 
         offenses_to_violations(offenses, file)
       end
 
       private
 
-      def include_file?(filename, config_loader)
-        return false if config(config_loader).file_to_exclude?(filename)
+      def include_file?(filename, commit)
+        return false if config(commit).file_to_exclude?(filename)
         File.extname(filename) == '.rb' ||
-          config(config_loader).file_to_include?(filename)
+          config(commit).file_to_include?(filename)
       end
 
-      def team(config_loader)
+      def team(commit)
         cop_classes =
-          if config(config_loader)['Rails']['Enabled']
+          if config(commit)['Rails']['Enabled']
             RuboCop::Cop::Registry.new(RuboCop::Cop::Cop.all)
           else
             RuboCop::Cop::Cop.non_rails
           end
 
         RuboCop::Cop::Team.new(
-          cop_classes, config(config_loader), extra_details: true
+          cop_classes, config(commit), extra_details: true
         )
       end
 
-      def parsed_source(file, config_loader)
+      def parsed_source(file, commit)
         absolute_path = File.join(
-          config(config_loader).base_dir_for_path_parameters, file.filename
+          config(commit).base_dir_for_path_parameters, file.filename
         )
 
         RuboCop::ProcessedSource.new(
           file.content,
-          config(config_loader).target_ruby_version,
+          config(commit).target_ruby_version,
           absolute_path
         )
       end
 
-      def config(config_loader)
+      def config(commit)
         @config ||= RuboCop::ConfigLoader.merge_with_default(
-          custom_config(config_loader), ''
+          custom_config(commit), ''
         )
       end
 
-      def custom_config(config_loader)
-        content = config_loader.yaml(@config_file)
+      def custom_config(commit)
+        content = YAML.safe_load(
+          commit.file_content(@config_file), [Regexp], [], false, @config_file
+        ) || {}
         filter(content)
 
         tempfile_from(@config_file, content.to_yaml) do |tempfile|

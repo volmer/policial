@@ -10,10 +10,10 @@ module Policial
         @config_file = config_file
       end
 
-      def violations(file, config_loader)
+      def violations(file, commit)
         return [] unless include_file?(file.filename)
 
-        errors = Eslintrb.lint(file.content, config(config_loader))
+        errors = Eslintrb.lint(file.content, config(commit))
         errors_to_violations(errors, file)
       rescue ExecJS::Error => error
         raise LinterError,
@@ -26,11 +26,14 @@ module Policial
         File.extname(filename) == '.js'
       end
 
-      def config(config_loader)
+      def config(commit)
         @config ||= begin
-          content = config_loader.json(@config_file)
-          content.empty? ? :defaults : content
+          JSON.parse(commit.file_content(@config_file)) || {}
+        rescue JSON::ParserError
+          {}
         end
+
+        @config.empty? ? :defaults : @config
       end
 
       def errors_to_violations(errors, file)

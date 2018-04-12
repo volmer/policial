@@ -7,11 +7,7 @@ describe Policial::Linters::CoffeeScript do
 
   let(:custom_config) { nil }
 
-  let(:config_loader) do
-    Policial::ConfigLoader.new(
-      Policial::Commit.new('volmer/cerberus', 'commitsha', Octokit)
-    )
-  end
+  let(:commit) { Policial::Commit.new('volmer/cerberus', 'commitsha', Octokit) }
 
   before do
     stub_contents_request_with_content(
@@ -31,7 +27,7 @@ describe Policial::Linters::CoffeeScript do
       ]
       file = build_file('test.coffee', file_content)
 
-      violations = subject.violations(file, config_loader)
+      violations = subject.violations(file, commit)
 
       expect(violations.count).to eq(2)
 
@@ -56,7 +52,7 @@ describe Policial::Linters::CoffeeScript do
           '  \'bar\''
         ]
         file = build_file('test.coffee', file_content)
-        violations = subject.violations(file, config_loader)
+        violations = subject.violations(file, commit)
 
         expect(violations.count).to eq(0)
       end
@@ -75,7 +71,7 @@ describe Policial::Linters::CoffeeScript do
         file_content = ['foo: =>', '  "baz"']
         file = build_file('test.coffee', file_content)
 
-        violations = subject.violations(file, config_loader)
+        violations = subject.violations(file, commit)
 
         expect(violations.count).to eq(2)
         expect(violations[0].message).to eq('Unnecessary fat arrow')
@@ -89,7 +85,7 @@ describe Policial::Linters::CoffeeScript do
       file = build_file('my_file.coffee.erb', '<html>', '</html>')
 
       expect(
-        subject.violations(file, config_loader)
+        subject.violations(file, commit)
       ).to be_empty
     end
 
@@ -112,7 +108,7 @@ describe Policial::Linters::CoffeeScript do
       it 'detects offenses based on custom file' do
         file = build_file('test.coffee', 'foo: =>', '  "baz"')
 
-        violations = subject.violations(file, config_loader)
+        violations = subject.violations(file, commit)
 
         expect(violations.count).to eq(2)
         expect(violations[0].message).to eq('Unnecessary fat arrow')

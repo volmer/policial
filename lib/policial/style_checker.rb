@@ -17,16 +17,14 @@ module Policial
 
     def violations_in_checked_files
       files_to_check.flat_map do |file|
-        @linters.flat_map { |linter| linter.violations(file, config_loader) }
+        @linters.flat_map do |linter|
+          linter.violations(file, @pull_request.head_commit)
+        end
       end
     end
 
     def files_to_check
       @pull_request.files.reject(&:removed?)
-    end
-
-    def config_loader
-      @config_loader ||= ConfigLoader.new(@pull_request.head_commit)
     end
   end
 end

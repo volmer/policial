@@ -7,11 +7,7 @@ describe Policial::Linters::JavaScript do
 
   let(:custom_config) { nil }
 
-  let(:config_loader) do
-    Policial::ConfigLoader.new(
-      Policial::Commit.new('volmer/cerberus', 'commitsha', Octokit)
-    )
-  end
+  let(:commit) { Policial::Commit.new('volmer/cerberus', 'commitsha', Octokit) }
 
   before do
     stub_contents_request_with_content(
@@ -31,7 +27,7 @@ describe Policial::Linters::JavaScript do
       ]
       file = build_file('test.js', file_content)
 
-      violations = subject.violations(file, config_loader)
+      violations = subject.violations(file, commit)
 
       expect(violations.count).to eq(1)
       expect(violations[0].filename).to eq('test.js')
@@ -44,7 +40,7 @@ describe Policial::Linters::JavaScript do
 
     it 'reports syntax errors' do
       file = build_file('test.js', "import React from 'react';")
-      violations = subject.violations(file, config_loader)
+      violations = subject.violations(file, commit)
 
       expect(violations.count).to eq(1)
       expect(violations.first.filename).to eq('test.js')
@@ -64,7 +60,7 @@ describe Policial::Linters::JavaScript do
           '}'
         ]
         file = build_file('test.js', file_content)
-        expect(subject.violations(file, config_loader)).to be_empty
+        expect(subject.violations(file, commit)).to be_empty
       end
     end
 
@@ -84,7 +80,7 @@ describe Policial::Linters::JavaScript do
         ]
         file = build_file('test.js', file_content)
 
-        violations = subject.violations(file, config_loader)
+        violations = subject.violations(file, commit)
 
         expect(violations.count).to eq(1)
         expect(violations[0].message).to eq("Unary operator '++' used.")
@@ -99,7 +95,7 @@ describe Policial::Linters::JavaScript do
       it 'raises a linter error' do
         file = build_file('test.js', ['var foo = 1;'])
 
-        expect { subject.violations(file, config_loader) }
+        expect { subject.violations(file, commit) }
           .to raise_error(
             Policial::LinterError, "Cannot find module 'babel-eslint'"
           )
@@ -116,7 +112,7 @@ describe Policial::Linters::JavaScript do
       it 'raises a linter error' do
         file = build_file('test.js', ['var foo = 1;'])
 
-        expect { subject.violations(file, config_loader) }
+        expect { subject.violations(file, commit) }
           .to raise_error(
             Policial::LinterError,
             'ESLint has crashed because of ExecJS::ProgramError: boom!'
@@ -126,7 +122,7 @@ describe Policial::Linters::JavaScript do
 
     it 'ignores non JavaScript files' do
       file = build_file('my_file.coffee', 'var foo = 1;')
-      expect(subject.violations(file, config_loader)).to be_empty
+      expect(subject.violations(file, commit)).to be_empty
     end
 
     context 'with custom config file name' do
@@ -152,7 +148,7 @@ describe Policial::Linters::JavaScript do
         ]
         file = build_file('test.js', file_content)
 
-        violations = subject.violations(file, config_loader)
+        violations = subject.violations(file, commit)
 
         expect(violations.count).to eq(1)
         expect(violations[0].message).to eq("Unary operator '++' used.")

@@ -7,11 +7,7 @@ describe Policial::Linters::Ruby do
 
   let(:custom_config) { nil }
 
-  let(:config_loader) do
-    Policial::ConfigLoader.new(
-      Policial::Commit.new('volmer/cerberus', 'commitsha', Octokit)
-    )
-  end
+  let(:commit) { Policial::Commit.new('volmer/cerberus', 'commitsha', Octokit) }
 
   before do
     stub_contents_request_with_content(
@@ -25,7 +21,7 @@ describe Policial::Linters::Ruby do
   describe '#violations_in_file' do
     it 'detects offenses to the Ruby community Style Guide' do
       file = build_file('test.rb', '"I am naughty"')
-      violations = subject.violations(file, config_loader)
+      violations = subject.violations(file, commit)
 
       expect(violations.count).to eq(1)
       expect(violations.first.filename).to eq('test.rb')
@@ -46,7 +42,7 @@ describe Policial::Linters::Ruby do
       ]
       file = build_file('test.rb', file_content)
 
-      violations = subject.violations(file, config_loader)
+      violations = subject.violations(file, commit)
 
       expect(violations.count).to eq(1)
       expect(violations[0].line_range).to eq(4..6)
@@ -61,7 +57,7 @@ describe Policial::Linters::Ruby do
         ['{first_line: :violates }', '"second too!".to_sym', "'third ok'"]
       file = build_file('test.rb', file_content)
 
-      violations = subject.violations(file, config_loader)
+      violations = subject.violations(file, commit)
 
       expect(violations.count).to eq(3)
 
@@ -97,7 +93,7 @@ describe Policial::Linters::Ruby do
 
       it 'detects offenses to the custom linter' do
         file = build_file('test.rb', "'You do not like me'")
-        violations = subject.violations(file, config_loader)
+        violations = subject.violations(file, commit)
 
         expect(violations.count).to eq(1)
         expect(violations.first.filename).to eq('test.rb')
@@ -120,10 +116,10 @@ describe Policial::Linters::Ruby do
 
         it 'has no violations' do
           file = build_file('lib/test.rb', '"Awful code"')
-          expect(subject.violations(file, config_loader)).to be_empty
+          expect(subject.violations(file, commit)).to be_empty
 
           file = build_file('config/ext.rb', '"Awful code"')
-          expect(subject.violations(file, config_loader)).to be_empty
+          expect(subject.violations(file, commit)).to be_empty
         end
       end
 
@@ -137,14 +133,14 @@ describe Policial::Linters::Ruby do
             body: { 'Style/StringLiterals' => { 'Enabled' => false } }.to_yaml
           )
           file = build_file('app/models/ugly.rb', '"double quotes"')
-          expect(subject.violations(file, config_loader)).to be_empty
+          expect(subject.violations(file, commit)).to be_empty
         end
       end
     end
 
     it 'ignores Rails cops by default' do
       file = build_file('app/models/ugly.rb', "puts 'my logs'")
-      expect(subject.violations(file, config_loader)).to be_empty
+      expect(subject.violations(file, commit)).to be_empty
     end
 
     context 'when custom config enables Rails cops' do
@@ -154,7 +150,7 @@ describe Policial::Linters::Ruby do
 
       it 'runs Rails cops' do
         file = build_file('app/models/ugly.rb', "puts 'my logs'")
-        expect(subject.violations(file, config_loader)).not_to be_empty
+        expect(subject.violations(file, commit)).not_to be_empty
       end
     end
 
@@ -165,7 +161,7 @@ describe Policial::Linters::Ruby do
 
       it 'ignores Rails cops' do
         file = build_file('app/models/ugly.rb', "puts 'my logs'")
-        expect(subject.violations(file, config_loader)).to be_empty
+        expect(subject.violations(file, commit)).to be_empty
       end
     end
 
@@ -176,7 +172,7 @@ describe Policial::Linters::Ruby do
 
       it 'loads it' do
         file = build_file('spec/my_spec.rb', '@fuck = true')
-        violation = subject.violations(file, config_loader).first
+        violation = subject.violations(file, commit).first
         expect(violation.linter).to eq('TestSupport/CustomCop')
         expect(violation.message).to eq('TestSupport/CustomCop: No swearwords!')
       end
@@ -189,7 +185,7 @@ describe Policial::Linters::Ruby do
 
       it 'raises Policial::ConfigDependencyError' do
         file = build_file('spec/my_spec.rb', '@my_var = 1')
-        expect { subject.violations(file, config_loader) }
+        expect { subject.violations(file, commit) }
           .to raise_error(
             Policial::ConfigDependencyError,
             'Your RuboCop config .rubocop.yml requires inexistent/file.rb, '\
@@ -205,7 +201,7 @@ describe Policial::Linters::Ruby do
 
       it 'raises Policial::ConfigDependencyError' do
         file = build_file('spec/my_spec.rb', '@my_var = 1')
-        expect { subject.violations(file, config_loader) }
+        expect { subject.violations(file, commit) }
           .to raise_error(
             Policial::ConfigDependencyError,
             'Your RuboCop config .rubocop.yml requires rubocop-rspec, '\
@@ -221,7 +217,7 @@ describe Policial::Linters::Ruby do
 
       it 'ignores it' do
         file = build_file('spec/my_spec.rb', '@my_var = 1')
-        expect { subject.violations(file, config_loader) }.not_to raise_error
+        expect { subject.violations(file, commit) }.not_to raise_error
       end
     end
 
@@ -232,7 +228,7 @@ describe Policial::Linters::Ruby do
 
       it 'ignores it' do
         file = build_file('spec/my_spec.rb', '@my_var = 1')
-        expect { subject.violations(file, config_loader) }.not_to raise_error
+        expect { subject.violations(file, commit) }.not_to raise_error
       end
     end
 
@@ -243,7 +239,7 @@ describe Policial::Linters::Ruby do
 
       it 'ignores it' do
         file = build_file('spec/my_spec.rb', '@my_var = 1')
-        expect { subject.violations(file, config_loader) }.not_to raise_error
+        expect { subject.violations(file, commit) }.not_to raise_error
       end
     end
 
@@ -254,12 +250,12 @@ describe Policial::Linters::Ruby do
         '"I like it!"',
         '# rubocop:enable Style/StringLiterals'
       )
-      expect(subject.violations(file, config_loader)).to be_empty
+      expect(subject.violations(file, commit)).to be_empty
 
       file = build_file(
         'test.rb', '"I like it!" # rubocop:disable Style/StringLiterals'
       )
-      expect(subject.violations(file, config_loader)).to be_empty
+      expect(subject.violations(file, commit)).to be_empty
     end
 
     context 'when custom config defines Cop Details' do
@@ -270,7 +266,7 @@ describe Policial::Linters::Ruby do
       it 'uses the details in the violation message' do
         file = build_file('test.rb', '"I am naughty"')
 
-        violations = subject.violations(file, config_loader)
+        violations = subject.violations(file, commit)
 
         expect(violations.first.message).to eq(
           "Style/StringLiterals: Prefer single-quoted strings when you don't "\
@@ -282,7 +278,7 @@ describe Policial::Linters::Ruby do
 
     it 'inspects Rake files' do
       file = build_file('lib/task.rake', '"I am naughty"')
-      violations = subject.violations(file, config_loader)
+      violations = subject.violations(file, commit)
 
       expect(violations.count).to eq(1)
       expect(violations.first.filename).to eq('lib/task.rake')
@@ -296,7 +292,7 @@ describe Policial::Linters::Ruby do
 
     it 'does not inspect ERB files' do
       file = build_file('app/view.erb', '<%= "I am naughty" %>')
-      expect(subject.violations(file, config_loader)).to be_empty
+      expect(subject.violations(file, commit)).to be_empty
     end
 
     context 'when custom config has Include' do
@@ -306,7 +302,7 @@ describe Policial::Linters::Ruby do
 
       it 'inspect the proper files' do
         file = build_file('fastlane/Fastfile', '"I am naughty"')
-        violations = subject.violations(file, config_loader)
+        violations = subject.violations(file, commit)
 
         expect(violations.count).to eq(1)
         expect(violations.first.filename).to eq('fastlane/Fastfile')
@@ -326,7 +322,7 @@ describe Policial::Linters::Ruby do
 
       it 'skips the file' do
         file = build_file('app/file.rb', '"I am naughty"')
-        expect(subject.violations(file, config_loader)).to be_empty
+        expect(subject.violations(file, commit)).to be_empty
       end
     end
 
@@ -346,7 +342,7 @@ describe Policial::Linters::Ruby do
 
       it 'detects offenses to the custom linter' do
         file = build_file('test.rb', "'You do not like me'")
-        violations = subject.violations(file, config_loader)
+        violations = subject.violations(file, commit)
 
         expect(violations.count).to eq(1)
         expect(violations.first.filename).to eq('test.rb')

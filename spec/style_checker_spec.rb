@@ -33,21 +33,15 @@ describe Policial::StyleChecker do
       expect(violation_messages).to eq expected_violations
     end
 
-    it 'forwards a config loader to linters' do
+    it 'forwards a commit to linters' do
       file = stub_commit_file('ruby.rb', 'puts 123')
-      head_commit = double('Commit', file_content: '')
-      pull_request = stub_pull_request(head_commit: head_commit, files: [file])
-      config_loader = Policial::ConfigLoader.new(head_commit)
-
-      expect(Policial::ConfigLoader)
-        .to receive(:new)
-        .with(head_commit)
-        .and_return(config_loader)
+      commit = double('Commit', file_content: '')
+      pull_request = stub_pull_request(head_commit: commit, files: [file])
 
       expect(ruby_linter).to receive(:violations)
-        .with(file, config_loader).and_call_original
+        .with(file, commit).and_call_original
       expect(coffeescript_linter).to receive(:violations)
-        .with(file, config_loader).and_call_original
+        .with(file, commit).and_call_original
 
       described_class.new(pull_request, linters: linters).violations
     end

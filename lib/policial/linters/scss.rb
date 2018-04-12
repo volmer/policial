@@ -10,12 +10,12 @@ module Policial
         @config_file = config_file
       end
 
-      def violations(file, config_loader)
-        return [] unless include_file?(file.filename, config_loader)
+      def violations(file, commit)
+        return [] unless include_file?(file.filename, commit)
 
         absolute_path = File.expand_path(file.filename)
 
-        runner = new_runner(config_loader)
+        runner = new_runner(commit)
 
         tempfile_from(file.filename, file.content) do |tempfile|
           runner.run([{ file: tempfile, path: absolute_path }])
@@ -28,14 +28,14 @@ module Policial
 
       private
 
-      def include_file?(filename, config_loader)
+      def include_file?(filename, commit)
         File.extname(filename) == '.scss' &&
-          !config(config_loader).excluded_file?(File.expand_path(filename))
+          !config(commit).excluded_file?(File.expand_path(filename))
       end
 
-      def config(config_loader)
+      def config(commit)
         @config ||= begin
-          content = config_loader.raw(@config_file)
+          content = commit.file_content(@config_file)
           tempfile_from(@config_file, content) do |temp|
             SCSSLint::Config.load(temp, merge_with_default: true)
           end
@@ -56,8 +56,8 @@ module Policial
         end
       end
 
-      def new_runner(config_loader)
-        SCSSLint::Runner.new(config(config_loader))
+      def new_runner(commit)
+        SCSSLint::Runner.new(config(commit))
       end
 
       def tempfile_from(filename, content)

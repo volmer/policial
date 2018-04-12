@@ -10,9 +10,9 @@ module Policial
         @config_file = config_file
       end
 
-      def violations(file, config_loader)
+      def violations(file, commit)
         return [] unless include_file?(file.filename)
-        errors = Coffeelint.lint(file.content, config(config_loader))
+        errors = Coffeelint.lint(file.content, config(commit))
         errors_to_violations(errors, file)
       end
 
@@ -22,8 +22,12 @@ module Policial
         File.extname(filename) == '.coffee'
       end
 
-      def config(config_loader)
-        @config ||= config_loader.json(@config_file)
+      def config(commit)
+        @config ||= begin
+          JSON.parse(commit.file_content(@config_file)) || {}
+        rescue JSON::ParserError
+          {}
+        end
       end
 
       def errors_to_violations(errors, file)
