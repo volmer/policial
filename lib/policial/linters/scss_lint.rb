@@ -5,8 +5,8 @@ require 'scss_lint'
 module Policial
   module Linters
     # Public: Determine SCSS style guide violations per-line.
-    class Scss
-      def initialize(config_file: SCSSLint::Config::FILE_NAME)
+    class SCSSLint
+      def initialize(config_file: ::SCSSLint::Config::FILE_NAME)
         @config_file = config_file
       end
 
@@ -22,7 +22,7 @@ module Policial
         end
 
         lints_to_violations(runner, file)
-      rescue SCSSLint::Exceptions::LinterError => error
+      rescue ::SCSSLint::Exceptions::LinterError => error
         raise LinterError, error.message
       end
 
@@ -37,10 +37,10 @@ module Policial
         @config ||= begin
           content = commit.file_content(@config_file)
           tempfile_from(@config_file, content) do |temp|
-            SCSSLint::Config.load(temp, merge_with_default: true)
+            ::SCSSLint::Config.load(temp, merge_with_default: true)
           end
         end
-      rescue SCSSLint::Exceptions::PluginGemLoadError => error
+      rescue ::SCSSLint::Exceptions::PluginGemLoadError => error
         raise ConfigDependencyError, error.message
       end
 
@@ -57,7 +57,7 @@ module Policial
       end
 
       def new_runner(commit)
-        SCSSLint::Runner.new(config(commit))
+        ::SCSSLint::Runner.new(config(commit))
       end
 
       def tempfile_from(filename, content)

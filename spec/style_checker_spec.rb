@@ -3,8 +3,8 @@
 require 'spec_helper'
 
 describe Policial::StyleChecker do
-  let(:ruby_linter) { Policial::Linters::Ruby.new }
-  let(:coffeescript_linter) { Policial::Linters::CoffeeScript.new }
+  let(:ruby_linter) { Policial::Linters::RuboCop.new }
+  let(:coffeescript_linter) { Policial::Linters::CoffeeLint.new }
   let(:linters) { [ruby_linter, coffeescript_linter] }
 
   describe '#violations' do

@@ -12,7 +12,7 @@ describe Policial::Detective do
   end
 
   let(:linters) do
-    [Policial::Linters::Ruby.new, Policial::Linters::CoffeeScript.new]
+    [Policial::Linters::RuboCop.new, Policial::Linters::CoffeeLint.new]
   end
 
   describe '#brief' do

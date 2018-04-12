@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe Policial::Linters::Ruby do
+describe Policial::Linters::RuboCop do
   subject { described_class.new }
 
   let(:custom_config) { nil }
@@ -19,7 +19,7 @@ describe Policial::Linters::Ruby do
   end
 
   describe '#violations_in_file' do
-    it 'detects offenses to the Ruby community Style Guide' do
+    it 'detects offenses to the RuboCop default Style Guide' do
       file = build_file('test.rb', '"I am naughty"')
       violations = subject.violations(file, commit)
 

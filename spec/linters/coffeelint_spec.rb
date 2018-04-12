@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe Policial::Linters::CoffeeScript do
+describe Policial::Linters::CoffeeLint do
   subject { described_class.new }
 
   let(:custom_config) { nil }

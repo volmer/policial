@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe Policial::Linters::JavaScript do
+describe Policial::Linters::ESLint do
   subject { described_class.new }
 
   let(:custom_config) { nil }

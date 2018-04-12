@@ -7,7 +7,7 @@
 *Policial* is a gem that investigates pull requests and accuses style guide
 violations. It is based on thoughtbot's
 [Hound project](https://github.com/thoughtbot/hound).
-It currently supports Ruby, SCSS and CoffeeScript.
+It currently supports RuboCop, SCSS and CoffeeLint.
 
 ## Installation
 
@@ -70,21 +70,21 @@ Or install it yourself as:
 
   ```ruby
   # Let's investigate this pull request and get a list of violations:
-  violations = detective.investigate(linters: [Policial::Linters::Ruby.new])
+  violations = detective.investigate(linters: [Policial::Linters::RuboCop.new])
   # => [#<Policial::Violation:0x007ff0b5abad30 @filename="lib/test.rb", @line_number=1, ...>]
 
   violations.first.message
   "Prefer single-quoted strings when you don't need string interpolation or special symbols."
   ```
 
-## Ruby
+## RuboCop
 
-You can setup your Ruby code style rules with a `.rubocop.yml` file in
+You can setup your RuboCop code style rules with a `.rubocop.yml` file in
 your repo. Please see [RuboCop's README](https://github.com/bbatsov/rubocop).
 
-## CoffeeScript
+## CoffeeLint
 
-You can setup your CoffeeScript code style rules with a `coffeelint.json`
+You can setup your CoffeeLint code style rules with a `coffeelint.json`
 file in your repo. For more information on how customize the linter rules please
 visit the [Coffeelint website](http://coffeelint.org).
 
@@ -106,10 +106,10 @@ gem 'scss_lint', require: false
 The `require: false` is necessary because `scss-lint` monkey patches `Sass`.
 More info [here](https://github.com/brigade/scss-lint#installation).
 
-Now you can use the Scss linter when calling `Detective#investigate`:
+Now you can use the SCSSLint linter when calling `Detective#investigate`:
 
 ```ruby
-violations = detective.investigate(linters: [Policial::Linters::Scss.new])
+violations = detective.investigate(linters: [Policial::Linters::SCSSLint.new])
 ```
 
 You can setup your SCSS code style rules with a `.scss-lint.yml` file in your

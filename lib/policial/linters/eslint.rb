@@ -1,25 +1,29 @@
 # frozen_string_literal: true
 
-require 'coffeelint'
+require 'eslintrb'
 
 module Policial
   module Linters
-    # Public: Determine CoffeeScript style guide violations per-line.
-    class CoffeeScript
-      def initialize(config_file: 'coffeelint.json')
+    # Public: Determine Javascript style guide violations per-line.
+    class ESLint
+      def initialize(config_file: '.eslintrc.json')
         @config_file = config_file
       end
 
       def violations(file, commit)
         return [] unless include_file?(file.filename)
-        errors = Coffeelint.lint(file.content, config(commit))
+
+        errors = Eslintrb.lint(file.content, config(commit))
         errors_to_violations(errors, file)
+      rescue ExecJS::Error => error
+        raise LinterError,
+              "ESLint has crashed because of #{error.class}: #{error.message}"
       end
 
       private
 
       def include_file?(filename)
-        File.extname(filename) == '.coffee'
+        File.extname(filename) == '.js'
       end
 
       def config(commit)
@@ -28,15 +32,19 @@ module Policial
         rescue JSON::ParserError
           {}
         end
+
+        @config.empty? ? :defaults : @config
       end
 
       def errors_to_violations(errors, file)
         errors.map do |error|
+          raise LinterError, error['message'] if error['line'].to_i.zero?
+
           Violation.new(
             file,
-            Range.new(error['lineNumber'], error['lineNumber']),
+            Range.new(error['line'], error['line']),
             error['message'],
-            error['rule']
+            error['ruleId'] || 'undefined'
           )
         end
       end

@@ -4,9 +4,9 @@ require 'rubocop'
 
 module Policial
   module Linters
-    # Public: Determine Ruby style guide violations per-line.
-    class Ruby
-      def initialize(config_file: RuboCop::ConfigLoader::DOTFILE)
+    # Public: Determine RuboCop style guide violations per-line.
+    class RuboCop
+      def initialize(config_file: ::RuboCop::ConfigLoader::DOTFILE)
         @config_file = config_file
       end
 
@@ -29,12 +29,12 @@ module Policial
       def team(commit)
         cop_classes =
           if config(commit)['Rails']['Enabled']
-            RuboCop::Cop::Registry.new(RuboCop::Cop::Cop.all)
+            ::RuboCop::Cop::Registry.new(::RuboCop::Cop::Cop.all)
           else
-            RuboCop::Cop::Cop.non_rails
+            ::RuboCop::Cop::Cop.non_rails
           end
 
-        RuboCop::Cop::Team.new(
+        ::RuboCop::Cop::Team.new(
           cop_classes, config(commit), extra_details: true
         )
       end
@@ -44,7 +44,7 @@ module Policial
           config(commit).base_dir_for_path_parameters, file.filename
         )
 
-        RuboCop::ProcessedSource.new(
+        ::RuboCop::ProcessedSource.new(
           file.content,
           config(commit).target_ruby_version,
           absolute_path
@@ -52,7 +52,7 @@ module Policial
       end
 
       def config(commit)
-        @config ||= RuboCop::ConfigLoader.merge_with_default(
+        @config ||= ::RuboCop::ConfigLoader.merge_with_default(
           custom_config(commit), ''
         )
       end
@@ -64,7 +64,7 @@ module Policial
         filter(content)
 
         tempfile_from(@config_file, content.to_yaml) do |tempfile|
-          RuboCop::ConfigLoader.load_file(tempfile.path)
+          ::RuboCop::ConfigLoader.load_file(tempfile.path)
         end
       rescue LoadError => error
         raise_dependency_error(error)

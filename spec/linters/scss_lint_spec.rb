@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe Policial::Linters::Scss do
+describe Policial::Linters::SCSSLint do
   subject { described_class.new }
 
   let(:custom_config) { nil }
