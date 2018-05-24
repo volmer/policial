@@ -23,7 +23,13 @@ describe Policial::CorrectedFile do
   end
 
   def commit_file(_options = {})
-    file = double(:file, patch: '', sha: 'abc289171', filename: 'test.rb', status: 'modified')
+    default_options = {
+      patch: '',
+      sha: 'abc289171',
+      filename: 'test.rb',
+      status: 'modified'
+    }
+    file = double(:file, default_options)
     commit = double(
       :commit,
       repo_name: 'test/test',

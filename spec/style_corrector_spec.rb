@@ -32,7 +32,9 @@ describe Policial::StyleCorrector do
           a
         end
       FILE
-      it { expect(subject[0].uncorrected_content).to eq "def bad( a ); a; end  \n" }
+      it {
+        expect(subject[0].uncorrected_content).to eq "def bad( a ); a; end  \n"
+      }
     end
 
     context 'forwards options to the linters, as well as a config loader' do
