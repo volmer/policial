@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'octokit'
 require 'webmock/rspec'
 
 # Private: Helpers to stub GitHub calls.
@@ -33,10 +34,10 @@ module GitHubApiHelper
 
   def request_headers
     {
-      'Accept'          => 'application/vnd.github.v3+json',
+      'Accept'          => Octokit::Default::MEDIA_TYPE,
       'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
       'Content-Type'    => 'application/json',
-      'User-Agent'      => 'Octokit Ruby Gem 4.8.0'
+      'User-Agent'      => Octokit::Default::USER_AGENT
     }
   end
 

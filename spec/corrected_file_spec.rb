@@ -22,8 +22,14 @@ describe Policial::CorrectedFile do
     it { expect(subject.sha).to eq 'abc289171' }
   end
 
-  def commit_file(options = {})
-    file = double(:file, { patch: '', sha: 'abc289171', filename: 'test.rb', status: 'modified' })
+  def commit_file(_options = {})
+    default_options = {
+      patch: '',
+      sha: 'abc289171',
+      filename: 'test.rb',
+      status: 'modified'
+    }
+    file = double(:file, default_options)
     commit = double(
       :commit,
       repo_name: 'test/test',

@@ -26,7 +26,8 @@ module Policial
 
     def correct(options = {})
       return unless pull_request
-      @corrected_files ||= StyleCorrector.new(pull_request, options).corrected_files
+      @corrected_files ||= StyleCorrector.new(pull_request, options)
+                                         .corrected_files
     end
 
     private

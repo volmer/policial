@@ -70,7 +70,8 @@ describe Policial::CommitFile do
   end
 
   def commit_file(options = {})
-    file = double(:file, { patch: '', sha: 'abc289171', filename: 'test.rb' }.merge(options))
+    default_options = { patch: '', sha: 'abc289171', filename: 'test.rb' }
+    file = double(:file, default_options.merge(options))
     commit = double(
       :commit,
       repo_name: 'test/test',
