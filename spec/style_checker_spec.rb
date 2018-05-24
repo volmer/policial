@@ -16,6 +16,8 @@ describe Policial::StyleChecker do
         'Layout/SpaceInsideParens: Space inside parentheses detected.',
         'Layout/SpaceInsideParens: Space inside parentheses detected.',
         'Layout/TrailingWhitespace: Trailing whitespace detected.',
+        'Naming/UncommunicativeMethodParamName: '\
+        'Method parameter must be at least 3 characters long.',
         'Style/FrozenStringLiteralComment: Missing magic comment `# '\
         'frozen_string_literal: true`.',
         'Style/SingleLineMethods: Avoid single-line method definitions.',
