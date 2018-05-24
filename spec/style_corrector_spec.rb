@@ -16,7 +16,7 @@ describe Policial::StyleCorrector do
         [
           stub_commit_file('good.rb',
                            "# frozen_string_literal: true\n\ndef good; end"),
-          stub_commit_file('bad.rb', "def bad( a ); a; end  "),
+          stub_commit_file('bad.rb', 'def bad( a ); a; end  '),
           stub_commit_file('bad.coffee', 'foo: =>')
         ]
       end
