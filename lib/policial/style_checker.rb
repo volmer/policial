@@ -9,8 +9,14 @@ module Policial
       @linters = linters
     end
 
-    def violations
-      @violations ||= violations_in_checked_files.select(&:on_changed_line?)
+    def investigate
+      violations = violations_in_checked_files.select(&:on_changed_line?)
+
+      InvestigationResult.new(
+        pull_request: @pull_request,
+        linters: @linters,
+        violations: violations
+      )
     end
 
     private

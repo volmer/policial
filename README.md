@@ -69,10 +69,11 @@ Or install it yourself as:
 
   ```ruby
   # Let's investigate this pull request and get a list of violations:
-  violations = detective.investigate(linters: [Policial::Linters::RuboCop.new])
+  result = detective.investigate(linters: [Policial::Linters::RuboCop.new])
+  result.violations
   # => [#<Policial::Violation:0x007ff0b5abad30 @filename="lib/test.rb", @line_number=1, ...>]
 
-  violations.first.message
+  result.violations.first.message
   "Prefer single-quoted strings when you don't need string interpolation or special symbols."
   ```
 

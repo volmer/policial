@@ -20,7 +20,7 @@ module Policial
 
     def investigate(linters:)
       return unless pull_request
-      StyleChecker.new(pull_request, linters: linters).violations
+      StyleChecker.new(pull_request, linters: linters).investigate
     end
 
     private

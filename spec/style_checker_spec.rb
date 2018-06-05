@@ -7,7 +7,7 @@ describe Policial::StyleChecker do
   let(:coffeescript_linter) { Policial::Linters::CoffeeLint.new }
   let(:linters) { [ruby_linter, coffeescript_linter] }
 
-  describe '#violations' do
+  describe '#investigate' do
     it 'returns a collection of computed violations' do
       stylish_file = stub_commit_file('good.rb', 'def good; end')
       violated_file = stub_commit_file('bad.rb', 'def bad( args ); args; end  ')
@@ -26,11 +26,9 @@ describe Policial::StyleChecker do
         'Unnecessary fat arrow'
       ]
 
-      violation_messages = described_class.new(
-        pull_request, linters: linters
-      ).violations.map(&:message)
+      result = described_class.new(pull_request, linters: linters).investigate
 
-      expect(violation_messages).to eq expected_violations
+      expect(result.violations.map(&:message)).to eq expected_violations
     end
 
     it 'forwards a commit to linters' do
@@ -43,7 +41,7 @@ describe Policial::StyleChecker do
       expect(coffeescript_linter).to receive(:violations)
         .with(file, commit).and_call_original
 
-      described_class.new(pull_request, linters: linters).violations
+      described_class.new(pull_request, linters: linters).investigate
     end
 
     private

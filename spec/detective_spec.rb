@@ -70,7 +70,7 @@ describe Policial::Detective do
           fixture: 'contents_with_violations.json'
         )
 
-        violations = subject.investigate(linters: linters)
+        violations = subject.investigate(linters: linters).violations
 
         messages = violations.map(&:message)
 
@@ -94,7 +94,7 @@ describe Policial::Detective do
           fixture: 'contents.json'
         )
 
-        expect(subject.investigate(linters: linters)).to be_empty
+        expect(subject.investigate(linters: linters).violations).to be_empty
       end
 
       it 'forwards given linters to StyleChecker' do
