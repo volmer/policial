@@ -9,6 +9,7 @@ module Policial
         def initialize(file, config)
           @file = file
           @config = config
+          @options = { extra_details: true, stdin: '' }
         end
 
         private
@@ -21,10 +22,9 @@ module Policial
               ::RuboCop::Cop::Cop.non_rails
             end
 
-          ::RuboCop::Cop::Team.new(
-            cop_classes, @config,
-            extra_details: true, auto_correct: auto_correct, stdin: ''
-          )
+          @options[:auto_correct] = auto_correct
+
+          ::RuboCop::Cop::Team.new(cop_classes, @config, @options)
         end
 
         def parsed_source(filename, content)

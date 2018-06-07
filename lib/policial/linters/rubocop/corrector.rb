@@ -14,11 +14,7 @@ module Policial
 
             team.inspect_file(source)
             break unless team.updated_source_file?
-
-            new_content = autocorrect_all_cops(source.buffer, team)
-            break if new_content == source.raw_source
-
-            source = parsed_source(@file.filename, new_content)
+            source = parsed_source(@file.filename, @options[:stdin])
           end
 
           source.raw_source
@@ -49,30 +45,6 @@ module Policial
           raise InfiniteCorrectionLoop if @sources.include?(checksum)
 
           @sources << checksum
-        end
-
-        def autocorrect_all_cops(buffer, team)
-          corrector = ::RuboCop::Cop::Corrector.new(buffer)
-
-          collate_corrections(corrector, team)
-
-          if !corrector.corrections.empty?
-            corrector.rewrite
-          else
-            buffer.source
-          end
-        end
-
-        def collate_corrections(corrector, team)
-          skips = Set.new
-
-          team.cops.select(&:autocorrect?).each do |cop|
-            next if cop.corrections.empty?
-            next if skips.include?(cop.class)
-
-            corrector.corrections.concat(cop.corrections)
-            skips.merge(cop.class.autocorrect_incompatible_with)
-          end
         end
       end
     end
