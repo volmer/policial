@@ -5,7 +5,7 @@ PATH
       coffeelint (~> 1.16)
       eslintrb (~> 2.1)
       octokit (~> 4.9)
-      rubocop (~> 0.56)
+      rubocop (~> 0.57)
 
 GEM
   remote: https://rubygems.org/
@@ -34,6 +34,7 @@ GEM
       multipart-post (>= 1.2, < 3)
     ffi (1.9.25)
     hashdiff (0.3.7)
+    jaro_winkler (1.5.1)
     json (2.1.0)
     method_source (0.9.0)
     multi_json (1.13.1)
@@ -66,7 +67,8 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.7.0)
     rspec-support (3.7.1)
-    rubocop (0.56.0)
+    rubocop (0.57.1)
+      jaro_winkler (~> 1.5.1)
       parallel (~> 1.10)
       parser (>= 2.5)
       powerpack (~> 0.1)
