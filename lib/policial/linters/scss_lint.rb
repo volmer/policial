@@ -26,6 +26,8 @@ module Policial
         raise LinterError, error.message
       end
 
+      def correct(file, commit); end
+
       private
 
       def include_file?(filename, commit)

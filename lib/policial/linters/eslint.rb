@@ -20,6 +20,8 @@ module Policial
               "ESLint has crashed because of #{error.class}: #{error.message}"
       end
 
+      def correct(file, commit); end
+
       private
 
       def include_file?(filename)

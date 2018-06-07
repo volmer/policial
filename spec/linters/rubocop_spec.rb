@@ -356,6 +356,13 @@ describe Policial::Linters::RuboCop do
     end
   end
 
+  describe '#correct' do
+    it 'returns the file content with violations properly corrected' do
+      file = build_file('test.rb', 'puts(:foo,)')
+      expect(subject.correct(file, commit)).to include('puts(:foo)')
+    end
+  end
+
   def build_file(name, *lines)
     lines = lines.unshift('# frozen_string_literal: true', '')
     file = double('file', filename: name, content: lines.join("\n") + "\n")

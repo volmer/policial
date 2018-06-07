@@ -156,6 +156,13 @@ describe Policial::Linters::ESLint do
     end
   end
 
+  describe '#correct' do
+    it 'is nil' do
+      file = build_file('test.js', 'foo')
+      expect(subject.correct(file, commit)).to be nil
+    end
+  end
+
   def build_file(name, *lines)
     file = double('file', filename: name, content: lines.join("\n") + "\n")
     allow(file).to receive(:line_at) { |n| lines[n] }

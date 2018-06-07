@@ -12,10 +12,14 @@ module Policial
 
       def violations(file, commit)
         return [] unless include_file?(file.filename, commit)
-        offenses =
-          team(commit).inspect_file(parsed_source(file, commit))
+        investigator = Investigator.new(file, config(commit))
+        investigator.investigate
+      end
 
-        offenses_to_violations(offenses, file)
+      def correct(file, commit)
+        return unless include_file?(file.filename, commit)
+        corrector = Corrector.new(file, config(commit))
+        corrector.correct
       end
 
       private
@@ -24,31 +28,6 @@ module Policial
         return false if config(commit).file_to_exclude?(filename)
         File.extname(filename) == '.rb' ||
           config(commit).file_to_include?(filename)
-      end
-
-      def team(commit)
-        cop_classes =
-          if config(commit)['Rails']['Enabled']
-            ::RuboCop::Cop::Registry.new(::RuboCop::Cop::Cop.all)
-          else
-            ::RuboCop::Cop::Cop.non_rails
-          end
-
-        ::RuboCop::Cop::Team.new(
-          cop_classes, config(commit), extra_details: true
-        )
-      end
-
-      def parsed_source(file, commit)
-        absolute_path = File.join(
-          config(commit).base_dir_for_path_parameters, file.filename
-        )
-
-        ::RuboCop::ProcessedSource.new(
-          file.content,
-          config(commit).target_ruby_version,
-          absolute_path
-        )
       end
 
       def config(commit)
@@ -95,17 +74,6 @@ module Policial
         end
         raise ConfigDependencyError, "Your RuboCop config #{@config_file} "\
           "requires #{pathname}, but it could not be loaded."
-      end
-
-      def offenses_to_violations(offenses, file)
-        offenses.reject(&:disabled?).map do |offense|
-          Violation.new(
-            file,
-            Range.new(offense.location.first_line, offense.location.last_line),
-            offense.message.strip,
-            offense.cop_name
-          )
-        end
       end
     end
   end

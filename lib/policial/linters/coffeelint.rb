@@ -16,6 +16,8 @@ module Policial
         errors_to_violations(errors, file)
       end
 
+      def correct(file, commit); end
+
       private
 
       def include_file?(filename)
