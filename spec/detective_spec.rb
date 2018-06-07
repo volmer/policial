@@ -29,8 +29,7 @@ describe Policial::Detective do
         repo: 'volmer/policial',
         number: 666,
         user: 'rafaelfranca',
-        head_sha: '123abc',
-        head_ref: 'my-branch'
+        head: { sha: '123abc', ref: 'my-branch' }
       )
 
       expect(subject.pull_request.repo).to eq('volmer/policial')

@@ -17,10 +17,10 @@ describe Policial::PullRequestEvent do
 
       expect(attributes[:number]).to eq(2)
       expect(attributes[:repo]).to eq('volmer/cerberus')
-      expect(attributes[:head_sha]).to eq(
-        '498b81cd038f8a3ac02f035a8537b7ddcff38a81'
+      expect(attributes[:head]).to eq(
+        sha: '498b81cd038f8a3ac02f035a8537b7ddcff38a81',
+        branch: 'another-test'
       )
-      expect(attributes[:head_ref]).to eq('another-test')
       expect(attributes[:user]).to eq('volmerius')
     end
 

@@ -7,7 +7,9 @@ describe Policial::Linters::ESLint do
 
   let(:custom_config) { nil }
 
-  let(:commit) { Policial::Commit.new('volmer/cerberus', 'commitsha', Octokit) }
+  let(:commit) do
+    Policial::Commit.new('volmer/cerberus', 'commitsha', 'my-branch', Octokit)
+  end
 
   before do
     stub_contents_request_with_content(

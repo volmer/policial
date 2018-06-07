@@ -4,7 +4,9 @@ require 'spec_helper'
 require 'tempfile'
 
 describe Policial::Commit do
-  subject { described_class.new('volmer/cerberus', 'commitsha', Octokit) }
+  subject do
+    described_class.new('volmer/cerberus', 'commitsha', 'my-branch', Octokit)
+  end
 
   describe '#file_content' do
     let(:content) { '' }

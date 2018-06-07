@@ -6,11 +6,10 @@ module Policial
     attr_reader :repo, :number, :user
     attr_accessor :github_client
 
-    def initialize(repo:, number:, head_sha:, head_ref:, github_client:, user: nil)
+    def initialize(repo:, number:, head:, github_client:, user: nil)
       @repo = repo
       @number = number
-      @head_sha = head_sha
-      @head_ref = head_ref
+      @head = head
       @user = user
       @github_client = github_client
     end
@@ -24,7 +23,8 @@ module Policial
     end
 
     def head_commit
-      @head_commit ||= Commit.new(@repo, @head_sha, @github_client)
+      @head_commit ||=
+        Commit.new(@repo, @head[:sha], @head[:branch], @github_client)
     end
 
     private

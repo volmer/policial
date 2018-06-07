@@ -7,8 +7,7 @@ describe Policial::PullRequest do
     described_class.new(
       repo: 'volmer/cerberus',
       number:  45,
-      head_sha: 'commitsha',
-      head_ref: 'my-branch',
+      head: { sha: 'commitsha', ref: 'my-branch' },
       user: 'volmerius',
       github_client: Octokit
     )

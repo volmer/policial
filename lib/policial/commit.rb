@@ -3,11 +3,12 @@
 module Policial
   # Public: A Commit in a GitHub repo.
   class Commit
-    attr_reader :repo, :sha
+    attr_reader :repo, :sha, :branch
 
-    def initialize(repo, sha, github_client)
+    def initialize(repo, sha, branch, github_client)
       @repo = repo
       @sha  = sha
+      @branch = branch
       @github_client = github_client
     end
 

@@ -15,8 +15,7 @@ module Policial
       {
         repo: @payload['repository']['full_name'],
         number: @payload['number'],
-        head_sha: @payload['pull_request']['head']['sha'],
-        head_ref: @payload['pull_request']['head']['ref'],
+        head: head,
         user: @payload['pull_request']['user']['login']
       }
     rescue NoMethodError
@@ -27,6 +26,15 @@ module Policial
       !pull_request_attributes.nil? && (
         @payload['action'] == 'opened' || @payload['action'] == 'synchronize'
       )
+    end
+
+    private
+
+    def head
+      {
+        sha: @payload['pull_request']['head']['sha'],
+        branch: @payload['pull_request']['head']['ref']
+      }
     end
   end
 end
