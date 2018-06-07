@@ -4,15 +4,15 @@ module Policial
   module Linters
     # Public: Determine RuboCop style guide violations per-line.
     class RuboCop
-      # Public: Determine RuboCop style guide violations per-line.
+      # Public: Base class for common interactions with RuboCop's API.
       class Operation
+        attr_reader :options
+
         def initialize(file, config)
           @file = file
           @config = config
           @options = { extra_details: true, stdin: '' }
         end
-
-        private
 
         def build_team(auto_correct: false)
           cop_classes =

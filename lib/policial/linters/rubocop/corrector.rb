@@ -4,7 +4,7 @@ module Policial
   module Linters
     # Public: Determine RuboCop style guide violations per-line.
     class RuboCop
-      # Public: Determine RuboCop style guide violations per-line.
+      # Public: Corrects code style violations using RuboCop.
       class Corrector < Operation
         def correct
           source = parsed_source(@file.filename, @file.content)
@@ -16,6 +16,8 @@ module Policial
             break unless team.updated_source_file?
             source = parsed_source(@file.filename, @options[:stdin])
           end
+
+          return if @file.content == source.raw_source
 
           source.raw_source
         end

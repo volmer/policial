@@ -4,7 +4,7 @@ module Policial
   module Linters
     # Public: Determine RuboCop style guide violations per-line.
     class RuboCop
-      # Public: Determine RuboCop style guide violations per-line.
+      # Public: Detects code style violations using RuboCop.
       class Investigator < Operation
         def investigate
           team = build_team
