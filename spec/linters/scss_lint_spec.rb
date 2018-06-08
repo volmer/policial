@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
+require 'policial/linters/scss_lint'
 
 describe Policial::Linters::SCSSLint do
   subject { described_class.new }

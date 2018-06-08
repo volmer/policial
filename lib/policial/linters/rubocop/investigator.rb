@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'policial/linters/rubocop/operation'
+
 module Policial
   module Linters
     # Public: Determine RuboCop style guide violations per-line.

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
+require 'policial/linters/eslint'
 
 describe Policial::Linters::ESLint do
   subject { described_class.new }

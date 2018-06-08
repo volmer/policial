@@ -1,16 +1,15 @@
 # frozen_string_literal: true
 
-require 'scss_lint'
-
 module Policial
   module Linters
     # Public: Determine SCSS style guide violations per-line.
     class SCSSLint
-      def initialize(config_file: ::SCSSLint::Config::FILE_NAME)
+      def initialize(config_file: '.scss-lint.yml')
         @config_file = config_file
       end
 
       def violations(file, commit)
+        require 'scss_lint'
         return [] unless include_file?(file.filename, commit)
 
         absolute_path = File.expand_path(file.filename)
@@ -36,6 +35,7 @@ module Policial
       end
 
       def config(commit)
+        require 'scss_lint'
         @config ||= begin
           content = commit.file_content(@config_file)
           tempfile_from(@config_file, content) do |temp|
@@ -59,6 +59,7 @@ module Policial
       end
 
       def new_runner(commit)
+        require 'scss_lint'
         ::SCSSLint::Runner.new(config(commit))
       end
 
