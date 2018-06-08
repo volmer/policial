@@ -31,6 +31,30 @@ describe Policial::StyleChecker do
       expect(result.violations.map(&:message)).to eq expected_violations
     end
 
+    it 'returns a collection of corrected files' do
+      stylish_file = stub_commit_file('good.rb', 'def good; end')
+      violated_file = stub_commit_file('bad.rb', 'def bad( args ); args; end  ')
+      bad_coffee = stub_commit_file('bad.coffee', 'foo: =>')
+      pull_request =
+        stub_pull_request(files: [stylish_file, violated_file, bad_coffee])
+
+      result = described_class.new(pull_request, linters: linters).investigate
+
+      expect(result.corrected_files.count).to eq 2
+
+      expect(result.corrected_files.first.filename).to eq('good.rb')
+      expect(result.corrected_files.first.content).to eq(
+        "# frozen_string_literal: true\n\ndef good; end\n"
+      )
+      expect(result.corrected_files.first.original).to eq(stylish_file)
+
+      expect(result.corrected_files.last.filename).to eq('bad.rb')
+      expect(result.corrected_files.last.content).to eq(
+        "# frozen_string_literal: true\n\ndef bad(args)\n  args\nend\n"
+      )
+      expect(result.corrected_files.last.original).to eq(violated_file)
+    end
+
     it 'forwards a commit to linters' do
       file = stub_commit_file('ruby.rb', 'puts 123')
       commit = double('Commit', file_content: '')

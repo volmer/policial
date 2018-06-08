@@ -31,13 +31,19 @@ module Policial
     def corrected_files
       files_to_check.flat_map do |file|
         @linters.flat_map do |linter|
-          linter.correct(file, @pull_request.head_commit)
+          new_content = linter.correct(file, @pull_request.head_commit)
+          build_corrected_file(file, new_content)
         end
       end
     end
 
     def files_to_check
       @pull_request.files.reject(&:removed?)
+    end
+
+    def build_corrected_file(file, new_content)
+      return unless new_content
+      CorrectedFile.new(file, new_content)
     end
   end
 end

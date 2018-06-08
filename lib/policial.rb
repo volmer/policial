@@ -4,6 +4,7 @@ require 'octokit'
 
 require 'policial/commit'
 require 'policial/commit_file'
+require 'policial/corrected_file'
 require 'policial/detective'
 require 'policial/errors'
 require 'policial/investigation_result'

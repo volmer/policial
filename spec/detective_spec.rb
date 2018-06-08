@@ -111,6 +111,26 @@ describe Policial::Detective do
 
         subject.investigate(linters: linters)
       end
+
+      it 'returns corrected versions of the pull request files' do
+        stub_contents_request_with_fixture(
+          'volmer/cerberus',
+          sha: '498b81cd038f8a3ac02f035a8537b7ddcff38a81',
+          file: 'config/unicorn.rb',
+          fixture: 'contents_with_violations.json'
+        )
+
+        corrected_files = subject.investigate(linters: linters).corrected_files
+
+        expect(corrected_files.count).to eq(1)
+        expect(corrected_files.first.filename).to eq('config/unicorn.rb')
+        expect(corrected_files.first.content).to eq(
+          "# frozen_string_literal: true\n\ndef some_method; end\n"
+        )
+        expect(corrected_files.first.original.content).to eq(
+          "def some_method()  \nend\n"
+        )
+      end
     end
 
     context 'when detective is not briefed about a pull request' do
