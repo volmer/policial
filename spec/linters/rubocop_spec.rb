@@ -369,7 +369,9 @@ describe Policial::Linters::RuboCop do
   def build_file(name, *lines)
     lines = lines.unshift('# frozen_string_literal: true', '')
     file = double('file', filename: name, content: lines.join("\n") + "\n")
-    allow(file).to receive(:line_at) { |n| lines[n] }
+    allow(file).to receive(:line_at) do |n|
+      Policial::Line.new(n, lines[n - 1], n - 1)
+    end
     file
   end
 end

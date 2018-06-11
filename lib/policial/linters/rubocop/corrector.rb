@@ -10,21 +10,28 @@ module Policial
       class Corrector < Operation
         def correct
           source = parsed_source(@file.filename, @file.content)
+          content = corrected_content(source)
+          return if content == @file.content
+          content
+        end
 
+        private
+
+        def corrected_content(source)
           iterate_until_no_changes(source) do
             team = build_team(auto_correct: true)
 
             team.inspect_file(source)
-            break unless team.updated_source_file?
-            source = parsed_source(@file.filename, @options[:stdin])
+
+            corrector = build_corrector(source, team)
+
+            break if corrector.corrections.empty?
+            new_content = corrector.rewrite
+            break if new_content == source.raw_source
+            source = parsed_source(@file.filename, new_content)
           end
-
-          return if @file.content == source.raw_source
-
           source.raw_source
         end
-
-        private
 
         def iterate_until_no_changes(source)
           @sources = []
@@ -49,6 +56,25 @@ module Policial
           raise InfiniteCorrectionLoop if @sources.include?(checksum)
 
           @sources << checksum
+        end
+
+        def build_corrector(source, team)
+          corrector = ::RuboCop::Cop::Corrector.new(source.buffer)
+          skips = Set.new
+          team.cops.each do |cop|
+            next if cop.corrections.empty? || skips.include?(cop.class)
+
+            corrections_on_changed_lines(cop, corrector)
+            skips.merge(cop.class.autocorrect_incompatible_with)
+          end
+          corrector
+        end
+
+        def corrections_on_changed_lines(cop, corrector)
+          cop.offenses.select(&:corrected?).each_with_index do |offense, index|
+            next unless build_violation(offense).on_changed_line?
+            corrector.corrections << cop.corrections[index]
+          end
         end
       end
     end

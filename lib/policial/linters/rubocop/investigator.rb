@@ -20,14 +20,7 @@ module Policial
 
         def offenses_to_violations(offenses)
           offenses.reject(&:disabled?).map do |offense|
-            Violation.new(
-              @file,
-              Range.new(
-                offense.location.first_line, offense.location.last_line
-              ),
-              offense.message.strip,
-              offense.cop_name
-            )
+            build_violation(offense)
           end
         end
       end

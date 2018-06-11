@@ -38,6 +38,17 @@ module Policial
             absolute_path
           )
         end
+
+        def build_violation(offense)
+          Violation.new(
+            @file,
+            Range.new(
+              offense.location.first_line, offense.location.last_line
+            ),
+            offense.message.strip,
+            offense.cop_name
+          )
+        end
       end
     end
   end
