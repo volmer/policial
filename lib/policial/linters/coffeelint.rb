@@ -12,6 +12,7 @@ module Policial
 
       def violations(file, commit)
         return [] unless include_file?(file.filename)
+
         errors = ::Coffeelint.lint(file.content, config(commit))
         errors_to_violations(errors, file)
       end
@@ -25,11 +26,11 @@ module Policial
       end
 
       def config(commit)
-        @config ||= begin
-          JSON.parse(commit.file_content(@config_file)) || {}
-        rescue JSON::ParserError
-          {}
-        end
+        return @config if @config
+
+        @config = JSON.parse(commit.file_content(@config_file)) || {}
+      rescue JSON::ParserError
+        {}
       end
 
       def errors_to_violations(errors, file)

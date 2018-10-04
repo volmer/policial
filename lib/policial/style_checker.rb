@@ -43,6 +43,7 @@ module Policial
 
     def build_corrected_file(file, new_content)
       return unless new_content
+
       CorrectedFile.new(file, new_content)
     end
   end

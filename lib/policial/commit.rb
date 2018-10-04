@@ -18,6 +18,7 @@ module Policial
       ''
     rescue Octokit::Forbidden => error
       return '' if error.errors.any? && error.errors.first[:code] == 'too_large'
+
       raise error
     end
 

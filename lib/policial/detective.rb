@@ -13,6 +13,7 @@ module Policial
     def brief(event_or_attributes)
       pull_request_attributes = extract_attributes(event_or_attributes)
       return unless pull_request_attributes
+
       @pull_request = PullRequest.new(
         pull_request_attributes.merge(github_client: @github_client)
       )
@@ -20,6 +21,7 @@ module Policial
 
     def investigate(linters:)
       return unless pull_request
+
       StyleChecker.new(pull_request, linters: linters).investigate
     end
 

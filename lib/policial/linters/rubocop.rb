@@ -14,12 +14,14 @@ module Policial
 
       def violations(file, commit)
         return [] unless include_file?(file.filename, commit)
+
         investigator = Investigator.new(file, config(commit))
         investigator.investigate
       end
 
       def correct(file, commit)
         return unless include_file?(file.filename, commit)
+
         corrector = Corrector.new(file, config(commit))
         corrector.correct
       end
@@ -28,6 +30,7 @@ module Policial
 
       def include_file?(filename, commit)
         return false if config(commit).file_to_exclude?(filename)
+
         File.extname(filename) == '.rb' ||
           config(commit).file_to_include?(filename)
       end

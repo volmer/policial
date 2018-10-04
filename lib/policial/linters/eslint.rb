@@ -29,13 +29,10 @@ module Policial
       end
 
       def config(commit)
-        @config ||= begin
-          JSON.parse(commit.file_content(@config_file)) || {}
-        rescue JSON::ParserError
-          {}
-        end
-
+        @config ||= JSON.parse(commit.file_content(@config_file)) || {}
         @config.empty? ? :defaults : @config
+      rescue JSON::ParserError
+        :defaults
       end
 
       def errors_to_violations(errors, file)

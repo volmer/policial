@@ -12,6 +12,7 @@ module Policial
           source = parsed_source(@file.filename, @file.content)
           content = corrected_content(source)
           return if content == @file.content
+
           content
         end
 
@@ -26,8 +27,10 @@ module Policial
             corrector = build_corrector(source, team)
 
             break if corrector.corrections.empty?
+
             new_content = corrector.rewrite
             break if new_content == source.raw_source
+
             source = parsed_source(@file.filename, new_content)
           end
           source.raw_source
@@ -73,6 +76,7 @@ module Policial
         def corrections_on_changed_lines(cop, corrector)
           cop.offenses.select(&:corrected?).each_with_index do |offense, index|
             next unless build_violation(offense).on_changed_line?
+
             corrector.corrections << cop.corrections[index]
           end
         end
