@@ -63,6 +63,18 @@ describe Policial::Linters::RuboCop::Corrector do
       end
     end
 
+    context 'when RuboCop causes a SystemStackError' do
+      before do
+        allow_any_instance_of(::RuboCop::Cop::Team)
+          .to receive(:inspect_file).and_raise(SystemStackError)
+      end
+
+      it 'raises an infinite correction loop error' do
+        expect { subject.correct }
+          .to raise_error(Policial::InfiniteCorrectionLoop)
+      end
+    end
+
     def build_file(name, *lines)
       file = double('file', filename: name, content: lines.join("\n"))
       allow(file).to receive(:line_at) do |n|

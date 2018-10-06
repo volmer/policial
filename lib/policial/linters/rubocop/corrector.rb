@@ -22,7 +22,7 @@ module Policial
           iterate_until_no_changes(source) do
             team = build_team(auto_correct: true)
 
-            team.inspect_file(source)
+            inspect_file(team, source)
 
             corrector = build_corrector(source, team)
 
@@ -79,6 +79,12 @@ module Policial
 
             corrector.corrections << cop.corrections[index]
           end
+        end
+
+        def inspect_file(team, source)
+          team.inspect_file(source)
+        rescue SystemStackError
+          raise InfiniteCorrectionLoop
         end
       end
     end
