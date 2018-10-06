@@ -42,9 +42,7 @@ module Policial
       end
 
       def custom_config(commit)
-        content = YAML.safe_load(
-          commit.file_content(@config_file), [Regexp], [], false, @config_file
-        ) || {}
+        content = load_yaml(commit)
         filter(content)
 
         tempfile_from(@config_file, content.to_yaml) do |tempfile|
@@ -79,6 +77,14 @@ module Policial
         end
         raise ConfigDependencyError, "Your RuboCop config #{@config_file} "\
           "requires #{pathname}, but it could not be loaded."
+      end
+
+      def load_yaml(commit)
+        YAML.safe_load(
+          commit.file_content(@config_file), [Regexp], [], false, @config_file
+        ) || {}
+      rescue Psych::SyntaxError => error
+        raise InvalidConfigError, error.message
       end
     end
   end

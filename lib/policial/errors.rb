@@ -1,8 +1,13 @@
 # frozen_string_literal: true
 
 module Policial
-  class LinterError < StandardError; end
-  class ConfigDependencyError < StandardError; end
-  class IncompleteResultsError < StandardError; end
-  class InfiniteCorrectionLoop < StandardError; end
+  class Error < StandardError; end
+
+  class LinterError < Error; end
+  class IncompleteResultsError < Error; end
+  class InfiniteCorrectionLoop < Error; end
+
+  class ConfigError < Error; end
+  class ConfigDependencyError < ConfigError; end
+  class InvalidConfigError < ConfigError; end
 end

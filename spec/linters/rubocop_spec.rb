@@ -7,6 +7,7 @@ describe Policial::Linters::RuboCop do
   subject { described_class.new }
 
   let(:custom_config) { nil }
+  let(:custom_config_string) { custom_config.to_yaml }
 
   let(:commit) do
     Policial::Commit.new('volmer/cerberus', 'commitsha', 'my-branch', Octokit)
@@ -17,7 +18,7 @@ describe Policial::Linters::RuboCop do
       'volmer/cerberus',
       sha: 'commitsha',
       file: '.rubocop.yml',
-      content: custom_config.to_yaml
+      content: custom_config_string
     )
   end
 
@@ -326,6 +327,21 @@ describe Policial::Linters::RuboCop do
       it 'skips the file' do
         file = build_file('app/file.rb', '"I am naughty"')
         expect(subject.violations(file, commit)).to be_empty
+      end
+    end
+
+    context 'when custom config is not a valid YML' do
+      let(:custom_config_string) do
+        "Documentation:\n\tEnabled: false"
+      end
+
+      it 'raises Policial::InvalidConfigError' do
+        file = build_file('spec/my_spec.rb', '@my_var = 1')
+        expect { subject.violations(file, commit) }
+          .to raise_error(
+            Policial::InvalidConfigError,
+            /\(\.rubocop\.yml\): found character that cannot start any token/
+          )
       end
     end
 
