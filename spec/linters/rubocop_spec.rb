@@ -215,24 +215,57 @@ describe Policial::Linters::RuboCop do
     end
 
     context 'when custom config inherits from local files' do
-      let(:custom_config) do
-        { 'inherit_from' => ['.rubocop-todo.yml'] }
+      let(:inherited_file_name) { '.rubocop-todo.yml' }
+      let(:inherited_file_raw_url) do
+        'https://raw.github.url/volmer/cerberus/commitsha/.rubocop-todo.yml'
+      end
+      let(:inherited_file_content) do
+        { 'Lint/NumberConversion' => { 'Enabled' => true } }
       end
 
-      it 'ignores it' do
-        file = build_file('spec/my_spec.rb', '@my_var = 1')
-        expect { subject.violations(file, commit) }.not_to raise_error
-      end
-    end
-
-    context 'when custom config inherits from a string instead of an array' do
-      let(:custom_config) do
-        { 'inherit_from' => '.rubocop-todo.yml' }
+      before do
+        stub_contents_request_with_download_url(
+          'volmer/cerberus',
+          sha: 'commitsha',
+          file: inherited_file_name,
+          download_url: inherited_file_raw_url
+        )
       end
 
-      it 'ignores it' do
-        file = build_file('spec/my_spec.rb', '@my_var = 1')
-        expect { subject.violations(file, commit) }.not_to raise_error
+      context 'when the inherit_from is an array of files' do
+        let(:custom_config) do
+          { 'inherit_from' => [inherited_file_name] }
+        end
+
+        it 'fetches the remote config from the remote repository' do
+          stub_request(:get, inherited_file_raw_url).to_return(
+            body: inherited_file_content.to_yaml
+          )
+
+          file = build_file('spec/my_spec.rb', "'10'.to_i")
+          violations = subject.violations(file, commit)
+
+          expect(violations.count).to eq(1)
+          expect(violations.first.linter).to eq('Lint/NumberConversion')
+        end
+      end
+
+      context 'when custom config inherits from a string instead of an array' do
+        let(:custom_config) do
+          { 'inherit_from' => inherited_file_name }
+        end
+
+        it 'fetches the remote config from the remote repository' do
+          stub_request(:get, inherited_file_raw_url).to_return(
+            body: inherited_file_content.to_yaml
+          )
+
+          file = build_file('spec/my_spec.rb', "'10'.to_i")
+          violations = subject.violations(file, commit)
+
+          expect(violations.count).to eq(1)
+          expect(violations.first.linter).to eq('Lint/NumberConversion')
+        end
       end
     end
 

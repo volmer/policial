@@ -8,6 +8,43 @@ describe Policial::Commit do
     described_class.new('volmer/cerberus', 'commitsha', 'my-branch', Octokit)
   end
 
+  describe '#file_download_url' do
+    let(:download_url) { 'an-url' }
+
+    before do
+      stub_contents_request_with_download_url(
+        'volmer/cerberus',
+        sha: 'commitsha',
+        file: 'test.rb',
+        download_url: download_url
+      )
+    end
+
+    context 'when content is returned from GitHub' do
+      it 'returns the download_url' do
+        expect(subject.file_download_url('test.rb')).to eq('an-url')
+      end
+    end
+
+    context 'when error occurs when fetching from GitHub' do
+      it 'returns nil' do
+        expect(Octokit).to receive(:contents).and_raise(Octokit::NotFound)
+
+        expect(subject.file_download_url('test.rb')).to eq('')
+      end
+    end
+
+    context 'when file too large error is raised' do
+      it 'returns nil' do
+        error = Octokit::Forbidden.new(body: { errors: [code: 'too_large'] })
+
+        expect(Octokit).to receive(:contents).and_raise(error)
+
+        expect(subject.file_download_url('test.rb')).to eq('')
+      end
+    end
+  end
+
   describe '#file_content' do
     let(:content) { '' }
 
