@@ -23,6 +23,14 @@ module GitHubApiHelper
     stub_contents_request(repo, sha, file, body)
   end
 
+  def stub_contents_request_with_download_url(repo, sha:, file:, download_url:)
+    body = JSON.generate(
+      download_url: download_url
+    )
+
+    stub_contents_request(repo, sha, file, body)
+  end
+
   def stub_contents_request_with_fixture(repo, sha:, file:, fixture:)
     body = File.read("spec/support/fixtures/#{fixture}")
 

@@ -43,7 +43,7 @@ module Policial
 
       def custom_config(commit)
         content = load_yaml(commit)
-        filter(content)
+        filter(content, commit)
 
         tempfile_from(@config_file, content.to_yaml) do |tempfile|
           ::RuboCop::ConfigLoader.load_file(tempfile.path)
@@ -62,12 +62,16 @@ module Policial
         end
       end
 
-      def filter(config_hash)
+      def filter(config_hash, commit)
         config_hash.delete('inherit_gem')
         config_hash['inherit_from'] =
-          Array(config_hash['inherit_from']).select do |value|
-            value =~ /\A#{URI.regexp(%w[http https])}\z/
-          end
+          Array(config_hash['inherit_from']).map do |value|
+            if value.match?(/\A#{URI.regexp(%w[http https])}\z/)
+              value
+            else
+              commit.file_download_url(value)
+            end
+          end.reject(&:empty?)
       end
 
       def raise_dependency_error(error)

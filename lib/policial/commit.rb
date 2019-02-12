@@ -13,16 +13,33 @@ module Policial
     end
 
     def file_content(filename)
-      decode(@github_client.contents(@repo, path: filename, ref: @sha))
+      with_octokit_error_handling do
+        decode(file_content_response(filename))
+      end
+    end
+
+    def file_download_url(filename)
+      with_octokit_error_handling do
+        file_content_response(filename).download_url
+      end
+    end
+
+    private
+
+    def with_octokit_error_handling
+      yield
     rescue Octokit::NotFound
       ''
     rescue Octokit::Forbidden => error
-      return '' if error.errors.any? && error.errors.first[:code] == 'too_large'
+      return '' if
+        error.errors.any? && error.errors.first[:code] == 'too_large'
 
       raise error
     end
 
-    private
+    def file_content_response(filename)
+      @github_client.contents(@repo, path: filename, ref: @sha)
+    end
 
     def decode(content)
       if content&.content
